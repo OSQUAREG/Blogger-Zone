@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	{{ message }}
+	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+<div class="form-group">
+	<div class="form-group">
+        <h2 style="font-weight:bold">Login to Your Account</h2>
+    </div>
+    <br>
+	<form class="row g-3" action="{{ url_for('login') }}" method="POST">		
+		<div class="col-md-6">
+			{{ form.username_email.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+			{{ form.username_email(class="form-control shadow p-3 mb-5 bg-body rounded border border-primary") }}
+			{% for error in form.username_email.errors %}
+			<small>{{ error }}</small>
+			{% endfor %}
+		</div>
+		<div class="col-md-6">
+			{{ form.password.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+			{{ form.password(class="form-control shadow p-3 mb-5 bg-body rounded border border-primary") }}
+			{% for error in form.password.errors %}
+			<small text-color="red">{{ error }}</small>
+			{% endfor %}
+		</div>
+		<div class="d-grid gap-2 col-3 mx-auto">
+			{{ form.submit(class="btn btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
+		</div>
+        <div class="form-group text-center">
+            <small>
+                Do not have an account? <a href="{{ url_for('sign_up') }}" style="text-decoration:none"><strong>Sign Up</strong></a>
+            </small>
+        </div>
+	</form>
+</div>
+
+{% endblock content %}

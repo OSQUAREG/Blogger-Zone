@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<a href="/#jump-to-articles-list" class="btn btn-outline-primary border border-primary">Back to Articles List</a>
+{% if current_user.is_authenticated %}
+<a href="{{ url_for('create_article') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
+{% endif %}
+<br><br>
+<h2 style="font-weight:bold">About Page</h2>
+<hr>
+<br>
+<p>
+    Hi there, my name is <a href="https://linktr.ee/osquareg" style="text-decoration:none"><b>Gregory Ogbemudia</b></a>, a Backend (Python) Engineering Student at <a href="https://thealtschool.com/" style="text-decoration:none"><b>AltSchool Africa School of Engineering</b></a>, studying Python Flask Framework. I am currently a Business Solutions Specialist and Data Analyst, looking forward to <b>#CreateMagic</b> in Software Engineering! I also lead a community of Software Developers (ranging from Newbies to Experts) on Telegram (<a href="https://t.me/tech_dev_hub" style="text-decoration:none"><b>Tech Dev Hub</b></a>) and mentoring teenagers.
+</p>
+<p>
+    <strong>Blogger's Dome</strong> is a blog I created as my 2nd Semester Exam Project in the above named great School of Engineering, and I'm loving it, <b>"creating magic!!!"</b>, because Software Engineering has become something I really love: the coding, the bug fixing or squashing etc..😉.
+</p>
+<p>
+    I desire to become a skilled and renowned Software Developer/Engineer, creating solutions that will change (improve) the world and how we live generally. Watch out!!!
+</p>
+<p>
+    Below are a list of the great <b>Authors</b> registered in the <a href="{{ url_for('index') }}" style="text-decoration:none"><b>Blogger's Zone</b></a> and their contact email addresses, if you wish to contact them. <br> You can join in too. Just <a href="{{ url_for('sign_up') }}" style="text-decoration:none">sign up here</a> and <a href="{{ url_for('create_article') }}" style="text-decoration:none">create</a> an inspiring article.
+</p>
+
+<table class="table">
+    <thead class="table-primary table-responsive">
+        <th>Name</th>
+        <th>Email Address</th>
+    </thead>
+    <tbody>
+        {% for author in authors() %}
+        <tr>
+            <td>{{ author.firstname }} {{ author.lastname }}</td>
+            <td>{{ author.email }} </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+
+<p><b>Enjoy reading!!!</b></p>
+<p><b>Enjoy writing!!!</b></p>
+<p><b>Touch lives!!!</b></p>
+
+{% endblock content %}

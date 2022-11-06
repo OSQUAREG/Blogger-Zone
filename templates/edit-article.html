@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+<div class="form-group">
+    <div class="form-group">
+        <h2>Edit Your Article</h2>
+    </div>
+    <br><br>
+    <form class="row g-3" action="{{ url_for('edit_article', id=article.id) }}" method="POST">
+        <div class="row">{{ form.hidden_tag() }}</div>
+        <div class="row">            
+            {{ form.title.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+            {{ form.title(class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+        </div>
+        <div class="row">
+            {{ form.slug.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+            {{ form.slug(size=10, class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+        </div>
+        <div class="row">
+            {{ form.content.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+            {{ form.content(class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+        </div>
+        <div class="form-check">
+            {{ form.is_draft.label(class="form-check-label", for="flexCheckDefault") }}
+            {{ form.is_draft(class="form-check-input shadow p-2 rounded border border-primary", type="checkbox", id="flexCheckDefault") }}
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            {{ form.submit(class="btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
+        </div>
+    </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='content', class='form-control shadow p-3 mb-5 bg-body rounded border border-primary') }}
+    <script>
+        CKEDITOR.addCss(".cke_editable{cursor:text; font-size: 16px; font-family: Arial, sans-serif;}");
+    </script>
+</div>
+
+{% endblock content %}

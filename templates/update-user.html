@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+<div class="form-group">
+    <div class="form-group">
+        <h2 style="font-weight:bold">Update Your Profile</h2>
+    </div>
+    <br>
+    <form class="row g-3" action="{{ url_for('update_user', id=user.id) }}" method="POST">
+        <div class="row">{{ form.hidden_tag() }}</div>
+        <div class="col-md-6">
+            {{ form.hidden_tag() }}
+            {{ form.firstname.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+            {{ form.firstname(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.lastname.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+            {{ form.lastname(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary") }}
+        </div>
+        <div class="row-cols-auto">
+            {{ form.about_author.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+            {{ form.about_author(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary") }}
+        </div>
+        <div class="row-cols-7">
+            {{ form.submit(class="btn btn btn-outline-primary border border-primary", style="font-weight:bold; font-size:18px") }}
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

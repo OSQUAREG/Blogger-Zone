@@ -1,0 +1,45 @@
+a {
+  text-decoration: none;
+}
+
+/* Set height of body and the document to 100% to enable "full page tabs" */
+.articles-container {
+  height: 100%;
+  margin: 0;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: white;
+  color: black;
+  float: left;
+  outline: rgb(2, 117, 216);
+  cursor: pointer;
+  padding: 10px 10px;
+  width: auto;
+}
+
+.tablink:hover {
+  background-color: rgb(2, 117, 216);
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  display: none;
+  padding: 20px 20px;
+  height: 100%;
+}
+
+#Published {
+  background-color: white;
+}
+#Draft {
+  background-color: white;
+}
+
+.content-trunc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}

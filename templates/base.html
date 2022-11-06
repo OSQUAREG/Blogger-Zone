@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/content-styles.css" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Blogger's Dome</title>
+</head>
+
+<body onload="openPage('Published', this, 'rgb(0, 89, 250)', 'white')">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar navbar-light fixed-top text-lg-center bg-primary border border-primary"
+        style="background-color: #e3f2fd;">
+        <div class="container container-sm">
+            <!-- <div class="logo"><img src="" alt="my_logo"></div> -->
+            <div class="container">
+                <a class="navbar-brand" href="{{url_for('index')}}">
+                    <h1 class="text-white"><b>Blogger's Zone</b></h1>
+                </a>
+            </div>
+            <div class="container">
+                <ul class="nav navbar-dark nav-tabs nav-justified">
+                    <li class="nav-item">
+                        <a class="nav-link active " href="{{url_for('index')}}"><b>Home</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('about') }}"><b>About</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('message') }}"><b>Contact</b></a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('dashboard')}}"><b>Dashboard</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('logout') }}"><b>Logout</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <small class="align-bottom"><b class="text-end">Hi, {{current_user.firstname}} 🤚</b></small>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('sign_up')}}"><b>Sign Up</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('login')}}"><b>Login</b></a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <div><br><br><br><br><br><br><br><br></div>
+        <div class="container container-sm container-fluid">
+            {% block content %}
+
+            {% endblock content %}
+        </div>
+        <div><br><br><br><br><br><br><br><br></div>
+    </main>
+
+    <!-- Footer Note -->
+    <div class="text-md-center text-muted bg-primary border border-primary fixed-bottom">
+        <footer>
+            <p class="text-light">
+                &copy Gregory (OSQUAREG Tech)
+                <script>document.write(new Date().getFullYear())</script> | AltSchool Africa 2nd Semester Exam Project
+                2022
+            </p>
+        </footer>
+    </div>
+</body>
+
+</html>
