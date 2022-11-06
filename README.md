@@ -78,7 +78,59 @@ On the **User Profile Section**, users have button links to:
 * update their profile
 * delete their profile
 
-On the User's Article Section, users only see their articles under2 tabs:
+On the User's Article Section, users see only their articles under 2 tabs:
 
 * Published
 * Saved As Drafts
+
+## 7) Article Viewing & Commenting
+
+Logged in users are able to view/read and also add comments on a published article.
+
+However, not signed up or logged in viewers can only view comments but cannot add comments.
+
+## 8) Screenshots Samples
+
+#### a) Home Page
+
+![1667776361483](image/README/1667776361483.png)
+
+#### b) Home Page (Logged in User)
+
+![1667776487192](image/README/1667776487192.png)
+
+#### c) Sign Up Page
+
+![1667776537079](image/README/1667776537079.png)
+
+#### d) Login Page
+
+![1667776581548](image/README/1667776581548.png)
+
+#### e) About Page
+
+![1667776664064](image/README/1667776664064.png)
+
+#### f) Contact Page
+
+![1667776700613](image/README/1667776700613.png)
+
+#### g) Single Article View Page (with Comments)
+
+![1667776810435](image/README/1667776810435.png)
+
+#### h) User Dashboard
+
+![1667777051620](image/README/1667777051620.png)
+
+#### i) User Article List on Dashboard
+
+![1667777402378](image/README/1667777402378.png)
+
+#### j) Creat Article Page
+
+![1667777440625](image/README/1667777440625.png)
+
+#### k) Update Profile
+
+![1667777499545](image/README/1667777499545.png)

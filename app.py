@@ -7,9 +7,6 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user
 
 
-
-
-
 # Home Page Routing (done)
 @app.route("/")
 def index():
