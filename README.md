@@ -12,7 +12,7 @@
 
 ## 1. Introduction
 
-**Blogger's Zone** is an exam project created and designed by Gregory Ogbemudia, a student of [AltSchool Africa School of Software Engineering](https://thealtschool.com/software-engineering/) in Backend (Python) Engineer, already creating magic using Flask framework!
+**Blogger's Zone** is an exam project created and designed by [Gregory Ogbemudia](https://github.com/OSQUAREG), a student of [AltSchool Africa School of Software Engineering](https://thealtschool.com/software-engineering/) in Backend (Python) Engineer, already creating magic using Flask framework!
 
 This documentation sets to introduce and give you details of the design features of the Blogger's Zone.
 
