@@ -7,8 +7,9 @@
 3. Design/Specifications
 4. User Authentication
 5. User Authorization
-6. User's Dashboard (User Profile and User Articles)
-7. Article Viewing & Commenting
+6. What I Learnt
+7. How to Run it Locally
+8. Screenshots Sample
 
 ## 1. Introduction
 
@@ -127,7 +128,66 @@ Logged-in users only see their articles, which are displayed under 2 separate ta
 
 Here, they also have buttons links to either create, view, edit, delete their articles.
 
-## 8) Screenshots Samples
+## 6) What I Learnt
+
+On this project, below are a list of what I learnt:
+
+* Routing
+* User Authentication
+* User Authorization
+* Debugging
+* Web Design
+* Using Bootstrap CSS & JavaScripts
+* Database Management
+* Using Flash Message
+* Documentation
+
+## 7) How to Run it Locally
+
+### a) Prerequisites
+
+Python 3
+
+### b) Installation
+
+Run the below steps on the terminal.
+
+#### i) Clone this Repository
+
+```
+$ git clone https://github.com/OSQUAREG/Blogger-Zone.git
+```
+
+#### ii) Activate the Virtual Environment
+
+```
+$ source blog_app/Scripts/activate
+```
+
+#### iii) Install the Project Packages
+
+```
+$ pip install -r requirements.txt
+```
+
+#### iv) Run App on Terminal
+
+```
+$ python app.py
+```
+
+#### v) Run App on Browser
+
+On the terminal, copy the generated link and paste on your browser to access the application.
+
+## 8) Aknowledgements
+
+* [AltSchool Africa School of Software Engineering](https://thealtschool.com/software-engineering/)
+* [StackOverflow](https://stackoverflow.com/)
+* [Caleb Emelike](https://github.com/CalebEmelike)
+* [Codemy.com](https://www.youtube.com/c/Codemycom)
+
+## 9) Screenshots Samples
 
 #### a) Home Page
 
@@ -172,3 +232,18 @@ Here, they also have buttons links to either create, view, edit, delete their ar
 #### k) Update Profile
 
 ![1667777499545](image/README/1667777499545.png)
+
+## 10) Conclusion
+
+It was worth the while to have engaged on this project, and it has helped to improve my Backend skills in Flask framework and exploring its related packages.
+
+Contact or collaborate with me on:
+
+* [GitHub](https://github.com/OSQUAREG)
+* [Twitter](https://twitter.com/OSQUAREG)
+* [Replit](https://replit.com/@OSQUAREG)
+* [LeetCode](https://leetcode.com/OSQUAREG/)
+
+Thanks, AltSchool Africa for this oportunity!
+
+Let's continue to #CreateMagic!
