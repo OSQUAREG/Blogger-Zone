@@ -8,7 +8,7 @@
 4. User Authentication
 5. User Authorization
 6. User's Dashboard (User Profile and User Articles)
-7. 
+7. Article Viewing & Commenting
 
 ## 1. Introduction
 
@@ -22,17 +22,29 @@ The **Blooger's Zone** is a blog site where both authors and readers can explore
 
 This Blog have the following pages:
 
-### a) Main (General) Page/Menu
+### A) Main (General) Page/Menu
 
 These comprises of Home Page (which lists only publised articles and authors), About Page, Contact Page and View Single Article Page, visible to everyone.
 
-### b) Auth Pages/Menu
+#### i) Home Page
+
+* This page has button links to Sign-Up or Login (when not logged in) but has button links to " "create articles" and "view your dashboard".
+* It has list of only published articles and authors.
+
+#### ii) About Page
+
+* This page tells about the creator and the blog.
+* In addition, it has the list of authors and their email.
+
+Contact Page
+
+### B) Auth Pages/Menu
 
 These are the Sign Up and Login Pages, only visible when you are not logged in.
 
-### c) User Pages/Menu
+### C) User Pages/Menu
 
-These are Dashboard Page, Logout Menu, Create Article Page, Edit Article Page, Update Profile Page, only visible to logged-in users.
+These are pages and menus only logged users have access to. They include the Dashboard Page, Logout Menu, Create Article Page, Edit Article Page, Update Profile Page.
 
 ## 3. Packages Installed/Used
 
@@ -46,48 +58,74 @@ The main packages that were pip installed are:
 
 ## 4. User Authentication
 
-Contributors (Authors and Commenters) are required to sign up and login with their account to be able to create, save or publish, edit and delete their articles.
+### A) Authentication Category
 
-However, Viewers (Readers) can access and view or read articles published on the home page of this Blog, but cannot drop comments or write an article.
+There are 2 main category of access to this Blog:
 
-**Sign Up Process:**
+#### i) Contributors
 
-* Every user must have a first name, last name, username (unique), email (unique) and a password. About Author is optional.
+These consists of **Authors** and **Commenters** are required to sign up and login with their account to be able to create, save or publish, edit and delete their articles.
 
-**Login Process:**
+#### ii) Viewers/Readers
 
-* Contributors can either log in using a unique "username" (or a unique "email") and password.
+However, **Viewers/Readers** can only view or read articles only published articles on the Home Page of this Blog. They can also view comments but cannot drop comments or write an article.
+
+### B) Authentication Processes
+
+#### i) Sign Up Process:
+
+* Every user must have a first name, last name, username (unique), email (unique) and a password to sign up using the Sign-Up Page to become a contributor. Also, 'About Author' field is optional.
+
+#### ii) Login Process:
+
+* Every contributor can either log in using a unique "username" (or a unique "email") and password.
 
 *NOTE: the passwords are hashed before they are saved on the database*
 
 ## 5) User Authorization
 
-Below are the authorizations checks put in place
+Below are various implemented authorizations level on this Blog:
 
-* Only logged users can create, save or publish, edit and delete only their own articles.
-* A logged-in user cannot edit or delete other authors publiched articles
-* A logged-in user cannot view other authors articles "saved as draft".
-* Logged-in users can only edit their user profile.
+### A) Articles
 
-## 6) User's Dashboard
+#### i) Creating, Saving and Publishing Articles
 
-Logged in users are able to see their dashboard, which comprises of their User Profile and their Articles (published and saved as draft).
+Only contributors can create and either "save as draft" or publish articles on this blog. Saved articles can only be accessed by their authors and then, can still edit or publish them.
 
-On the **User Profile Section**, users have button links to:
+#### ii) Viewing/Reading Articles
+
+All contributors and viewers can view/read all publised articles on the Home Page.
+
+#### iii) Editing and Deleting Articles
+
+Only the author of an article can edit or delete the article, either saved or published.
+
+#### iv) Viewing and Adding Comments
+
+All can view comments by others but only contributors can add comments to an article.
+
+### B) Users
+
+#### i) User Dashboard
+
+Only logged in users can see their own dashboard, which has 2 sections namely; Your Profile and Your Articles (published and saved as draft).
+
+###### a. Your Profile section
+
+Here, only logged-in users have button links to:
 
 * update their profile
 * delete their profile
+* log out of their session
 
-On the User's Article Section, users see only their articles under 2 tabs:
+###### b. Your Article section
+
+Logged-in users only see their articles, which are displayed under 2 separate tabs:
 
 * Published
-* Saved As Drafts
+* Saved As Draft
 
-## 7) Article Viewing & Commenting
-
-Logged in users are able to view/read and also add comments on a published article.
-
-However, not signed up or logged in viewers can only view comments but cannot add comments.
+Here, they also have buttons links to either create, view, edit, delete their articles.
 
 ## 8) Screenshots Samples
 
