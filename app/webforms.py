@@ -1,16 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, ValidationError
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import EqualTo, Length, InputRequired
 from wtforms.widgets import TextArea
-from flask_ckeditor import CKEditor, CKEditorField
-from models import app
-
-
-# Configuring CKEditor
-app.config["CKEDITOR_HEIGHT"] = 400
-app.config["CKEDITOR_WIDTH"] = 2000
-
-ckeditor = CKEditor(app)
+from flask_ckeditor import CKEditorField
+# from main import app
 
 
 # Create UserForm Class
@@ -25,18 +18,14 @@ class UserForm(FlaskForm):
         label="Username",
         validators=[
             InputRequired(message="*Required"),
-            Length(
-                min=5, max=25, message="Password must be between 5 and 15 characters"
-            ),
+            Length(5, 25, message="Password must be between 5 and 15 characters"),
         ],
     )
     email = StringField(
         label="Email",
         validators=[
             InputRequired(message="*Required"),
-            Length(
-                5, 120, message="Password must be between 5 and 120 characters"
-            ),
+            Length(5, 120, message="Password must be between 5 and 120 characters"),
         ],
     )
     password = PasswordField(
@@ -64,9 +53,7 @@ class LoginForm(FlaskForm):
         label="Username/Email",
         validators=[
             InputRequired(message="*Required"),
-            Length(
-                min=5, max=120, message="Password must be between 5 and 15 characters"
-            ),
+            Length(5, 120, message="Password must be between 5 and 15 characters"),
         ],
     )
     password = PasswordField(

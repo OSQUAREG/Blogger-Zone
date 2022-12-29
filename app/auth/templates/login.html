@@ -13,7 +13,7 @@
         <h2 style="font-weight:bold">Login to Your Account</h2>
     </div>
     <br>
-	<form class="row g-3" action="{{ url_for('login') }}" method="POST">		
+	<form class="row g-3" action="{{ url_for('auth.login') }}" method="POST">
 		<div class="col-md-6">
 			{{ form.username_email.label(class="form-label", style="font-weight:bold; font-size:18px") }}
 			{{ form.username_email(class="form-control shadow p-3 mb-5 bg-body rounded border border-primary") }}
@@ -33,7 +33,7 @@
 		</div>
         <div class="form-group text-center">
             <small>
-                Do not have an account? <a href="{{ url_for('sign_up') }}" style="text-decoration:none"><strong>Sign Up</strong></a>
+                Do not have an account? <a href="{{ url_for('auth.sign_up') }}" style="text-decoration:none"><strong>Sign Up</strong></a>
             </small>
         </div>
 	</form>

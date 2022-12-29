@@ -35,15 +35,17 @@
             <br>
             <div class="container">
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('create_article') }}"
+                <a href="{{ url_for('article.create_article') }}"
                     class="btn btn-light btn-outline-primary mb-2 border border-primary">Create New Article</a>
-                <a href="{{ url_for('dashboard') }}"
+                <a href="{{ url_for('user.dashboard') }}"
                     class="btn btn-light btn-outline-primary mb-2 border border-primary">Your Dashboard</a>
                 <br>
                 {% else %}
-                <a href="{{ url_for('login') }}" class="btn btn-light btn-outline-primary border border-primary">Login
+                <a href="{{ url_for('auth.login') }}" 
+                    class="btn btn-light btn-outline-primary border border-primary">Login
                     Here</a>
-                <a href="{{ url_for('sign_up') }}" class="btn btn-light btn-outline-primary border border-primary">Sign
+                <a href="{{ url_for('auth.sign_up') }}"
+                    class="btn btn-light btn-outline-primary border border-primary">Sign
                     Up Here</a>
                 <br>
                 {% endif %}
@@ -66,8 +68,8 @@
             {% if not article.is_draft %}
             <div class="card border-primary mb-3">
                 <small class="card-header">
-                    <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }}
-                    | <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                    <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} | 
+                    <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} | 
                     <strong>Status:</strong>
                     {% if article.is_draft %}
                     Saved as Draft
@@ -77,22 +79,28 @@
                 </small>
                 <div class="card-body">
                     <a class="fs-5 text-decoration-none"
-                        href="{{ url_for('view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                        href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
                     <div>
                         <p>{{ article.content | striptags() | truncate(255) }}</p>
                     </div><br>
+
                     <div>
-                        <a href="{{ url_for('view_article', id=article.id) }}"
+                        <a href="{{ url_for('article.view_article', id=article.id) }}"
                             class="btn btn-light btn-outline-primary border border-primary">Read Article</a>
-                        {% if current_user.is_authenticated %}
-                        {% if article.author_id == current_user.id %}
-                        <a href="{{ url_for('edit_article', id=article.id) }}"
+                        {% if current_user.is_authenticated and article.author_id == current_user.id %}
+                        {# {% if article.author_id == current_user.id %} #}
+                        <a href="{{ url_for('article.edit_article', id=article.id) }}"
                             class="btn btn-light btn-outline-primary border border-primary">Edit Article</a>
-                        <a href="{{ url_for('delete_article', id=article.id) }}"
+                        <a href="{{ url_for('article.delete_article', id=article.id) }}"
                             class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
                         {% endif %}
+                        <small class="float-end" >
+                        {% for comment in comments %}
+                        {% if comment.article_id == article.id %}
+                        {{ comment.count }} comments
                         {% endif %}
-
+                        {% endfor %}
+                        </small>
                     </div>
                 </div>
             </div>
@@ -106,7 +114,20 @@
     <div class="container col-4">
         <div>
             <div>
-                <h2 id="jump-to-authors-list">Authors</h2>
+                <h3 id="jump-to-authors-list">Top Authors</h3>
+                <hr>
+            </div>
+            <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+                <ul>
+                    {% for author in authors() %}
+                    <li>{{ author.firstname }} {{ author.lastname }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div>
+                <h3 id="jump-to-authors-list">Most Viewed</h3>
                 <hr>
             </div>
             <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">

@@ -17,7 +17,8 @@
 
 This documentation sets to introduce and give you details of the design features of the Blogger's Zone.
 
-The **Blooger's Zone** is a blog site where both authors and readers can explore the thoughts and minds of others, while getting inspired to write as well. In this Blog, you enjoy reading, enjoy writing and touch lives.
+The **Blogger's Zone** is a blog site where both authors and readers can explore the thoughts and minds of others, 
+while getting inspired to write as well. In this Blog, you enjoy reading, enjoy writing and touch lives.
 
 ## 2. Design/Specifications
 
@@ -25,11 +26,12 @@ This Blog have the following pages:
 
 ### A) Main (General) Page/Menu
 
-These comprises of Home Page (which lists only publised articles and authors), About Page, Contact Page and View Single Article Page, visible to everyone.
+These comprise Home Page (which lists only published articles and authors), About Page, Contact Page and View Single 
+Article Page, visible to everyone.
 
 #### i) Home Page
 
-* This page has button links to Sign-Up or Login (when not logged in) but has button links to " "create articles" and "view your dashboard".
+* This page has button links to Sign-Up or Login (when not logged in) but has button links to "create articles" and "view your dashboard".
 * It has list of only published articles and authors.
 
 #### ii) About Page
@@ -41,7 +43,7 @@ Contact Page
 
 ### B) Auth Pages/Menu
 
-These are the Sign Up and Login Pages, only visible when you are not logged in.
+These are the Sign-Up and Login Pages, only visible when you are not logged in.
 
 ### C) User Pages/Menu
 
@@ -95,7 +97,7 @@ Only contributors can create and either "save as draft" or publish articles on t
 
 #### ii) Viewing/Reading Articles
 
-All contributors and viewers can view/read all publised articles on the Home Page.
+All contributors and viewers can view/read all published articles on the Home Page.
 
 #### iii) Editing and Deleting Articles
 
@@ -109,7 +111,8 @@ All can view comments by others but only contributors can add comments to an art
 
 #### i) User Dashboard
 
-Only logged in users can see their own dashboard, which has 2 sections namely; Your Profile and Your Articles (published and saved as draft).
+Only logged-in users can see their own dashboard, which has 2 sections namely; Your Profile and Your Articles 
+(published and saved as draft).
 
 ###### a. Your Profile section
 
@@ -180,7 +183,7 @@ $ python app.py
 
 On the terminal, copy the generated link and paste on your browser to access the application.
 
-## 8) Aknowledgements
+## 8) Acknowledgments
 
 * [AltSchool Africa School of Software Engineering](https://thealtschool.com/software-engineering/)
 * [StackOverflow](https://stackoverflow.com/)
@@ -225,7 +228,7 @@ On the terminal, copy the generated link and paste on your browser to access the
 
 ![1667777402378](image/README/1667777402378.png)
 
-#### j) Creat Article Page
+#### j) Create Article Page
 
 ![1667777440625](image/README/1667777440625.png)
 
@@ -244,6 +247,6 @@ Contact or collaborate with me on:
 * [Replit](https://replit.com/@OSQUAREG)
 * [LeetCode](https://leetcode.com/OSQUAREG/)
 
-Thanks, AltSchool Africa for this oportunity!
+Thanks, AltSchool Africa for this opportunity!
 
 Let's continue to #CreateMagic!

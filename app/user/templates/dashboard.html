@@ -12,7 +12,7 @@
 <br>
 <div>
     <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles List</a>
-    <a href="{{ url_for('create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
+    <a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
         Article</a>
     <a href="#jump-to-your-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Your Articles List</a>
 </div>
@@ -34,10 +34,10 @@
     </div>
     <br> 
     <div>
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
-        <a href="{{ url_for('update_user', id=user.id) }}" class="btn btn-outline-primary mb-1 border border-primary">Update
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
+        <a href="{{ url_for('user.update_user', id=user.id) }}" class="btn btn-outline-primary mb-1 border border-primary">Update
             Profile</a>
-        <a href="{{ url_for('delete_user', id=user.id) }}" class="btn btn-outline-danger mb-1 border border-danger">Delete
+        <a href="{{ url_for('user.delete_user', id=user.id) }}" class="btn btn-outline-danger mb-1 border border-danger">Delete
             Profile</a>
     </div>
     <br id="jump-to-your-articles-list"><br>
@@ -74,20 +74,20 @@
                         {% endif %}
                     </small>
                     <div class="card-body">
-                        <h4 class="card-title"><a class="fs-5 text-decoration-none" href="{{ url_for('view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                        <h4 class="card-title"><a class="fs-5 text-decoration-none" href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
                         <div>
                             <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
                         </div><br>
                         <div>
-                            <a href="{{ url_for('view_article', id=article.id) }}"
+                            <a href="{{ url_for('article.view_article', id=article.id) }}"
                                 class="btn btn-outline-primary border border-primary">Read
                                 Article</a>
                             {% if current_user.is_authenticated %}
                             {% if article.author_id == current_user.id %}
-                            <a href="{{ url_for('edit_article', id=article.id) }}"
+                            <a href="{{ url_for('article.edit_article', id=article.id) }}"
                                 class="btn btn-outline-primary border border-primary">Edit
                                 Article</a>
-                            <a href="{{ url_for('delete_article', id=article.id) }}"
+                            <a href="{{ url_for('article.delete_article', id=article.id) }}"
                                 class="btn btn-outline-danger border border-danger">Delete Article</a>
                             {% endif %}
                             {% endif %}
@@ -119,15 +119,15 @@
                         {% endif %}
                     </small>
                     <div class="card-body">
-                        <h4 class="card-title"><a class="fs-5 text-decoration-none" href="{{ url_for('view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                        <h4 class="card-title"><a class="fs-5 text-decoration-none" href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
                         <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
                         <div><br>
                             {% if current_user.is_authenticated %}
                             {% if article.author_id == current_user.id %}
-                            <a href="{{ url_for('edit_article', id=article.id) }}"
+                            <a href="{{ url_for('article.edit_article', id=article.id) }}"
                                 class="btn btn-outline-primary border border-primary">Edit
                                 Article</a>
-                            <a href="{{ url_for('delete_article', id=article.id) }}"
+                            <a href="{{ url_for('article.delete_article', id=article.id) }}"
                                 class="btn btn-outline-danger border border-danger">Delete Article</a>
                             {% endif %}
                             {% endif %}
@@ -141,7 +141,7 @@
             </div>
         </div>
         <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles List</a>
-        <a href="{{ url_for('create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
+        <a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
             Article</a>
     </div>
 </div>

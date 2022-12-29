@@ -10,7 +10,7 @@
 
 <a href="/#jump-to-articles-list" class="btn btn-outline-primary border border-primary">Back to Articles List</a>
 {% if current_user.is_authenticated %}
-<a href="{{ url_for('create_article') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
+<a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
 {% endif %}
 <br><br>
 
@@ -21,7 +21,7 @@
     <div class="row">
         <div class="form-group col-6">
             <p>We would love to hear from you! <br> You can contact us using the form below:</p>
-            <form class="row g-3" action="{{ url_for('message') }}" method="POST">
+            <form class="row g-3" action="{{ url_for('general.message') }}" method="POST">
                 <div class="row">{{ form.hidden_tag() }}</div>
                 <div class="col-md-6">
                     {{ form.name.label(class="form-label", style="font-weight:bold; font-size:18px") }}

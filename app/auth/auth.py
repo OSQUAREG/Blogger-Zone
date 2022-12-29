@@ -1,21 +1,14 @@
-from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_user, login_required, LoginManager, logout_user, current_user
+from flask import render_template, request, redirect, url_for, flash, Blueprint
+from flask_login import login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import app, db, User, Article
-from webforms import UserForm, LoginForm
+from app.models import db, User
+from app.webforms import UserForm, LoginForm
 
-# setting up login manager
-login_manager = LoginManager(app)
-# login_manager.init_app(app)
-login_manager.login_view = "login"
-
-@login_manager.user_loader
-def user_loader(id):
-    return User.query.get(int(id))
+blueprint = Blueprint("auth", __name__, template_folder="templates")
 
 
 # Sign Up Routing (done)
-@app.route("/sign-up", methods=["GET", "POST"])
+@blueprint.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     form = UserForm()
 
@@ -57,7 +50,7 @@ def sign_up():
 
 
 # Login Page Routing (done)
-@app.route("/login", methods=["GET", "POST"])
+@blueprint.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if request.method == "POST":
@@ -73,7 +66,7 @@ def login():
                     if check_password_hash(user_exists.password_hash, password):
                         login_user(user_exists)
                         flash("Login Successful")
-                        return redirect(url_for("dashboard"))
+                        return redirect(url_for("user.dashboard"))
                     else:
                         password = ""
                         flash("Wrong Password! Please try again...")
@@ -81,7 +74,7 @@ def login():
                     if check_password_hash(email_exists.password_hash, password):
                         login_user(email_exists)
                         flash("Login Successful")
-                        return redirect(url_for("dashboard"))
+                        return redirect(url_for("user.dashboard"))
                     else:
                         password = ""
                         flash("Wrong Password! Please try again...")
@@ -97,84 +90,9 @@ def login():
 
 
 # Logout Routing (done)
-@app.route("/logout", methods=["GET", "POST"])
+@blueprint.route("/logout", methods=["GET", "POST"])
 @login_required
 def logout():
     logout_user()
     flash("You have been Logged Out!")
     return redirect(url_for("login"))
-
-
-# Dashboard Page Routing
-@app.route("/dashboard")
-@login_required
-def dashboard():
-    id = current_user.id    
-    user = User.query.get_or_404(id)
-    articles = Article.query.order_by(Article.date_posted.desc()).all
-    context = {
-        "id" : id,
-        "user" : user, 
-        "articles" : articles
-    }
-    return render_template("dashboard.html", **context)
-
-
-# Edit User Profile Page Routing (done)
-@app.route("/user/update/<int:id>", methods=["GET", "POST"])
-@login_required
-def update_user(id):
-    form = UserForm()
-    user = User.query.get_or_404(id)
-
-    if request.method == "POST":
-        if current_user.id == user.id:
-            user.firstname = form.firstname.data
-            user.lastname = form.lastname.data
-            user.about_author = form.about_author.data
-
-            try:
-                db.session.commit()
-                flash(f"User Profile updated successfully")
-                return redirect(url_for("dashboard", id=user.id))
-            except:
-                flash("Something went wrong. Please try again...")
-                return redirect(url_for("edit_article", id=user.id))
-    \
-    # only the author can edit his article
-    if current_user.id == user.id:
-        form.firstname.data = user.firstname
-        form.lastname.data = user.lastname
-        form.about_author.data = user.about_author
-    else:
-        flash(f"You are not authorized to edit this article!")
-        return redirect(url_for("view_article", user.id))
-    return render_template("update-user.html", form=form, user=user)
-
-
-# Delete User Profile Routing (done)
-@app.route("/user/delete/<int:id>", methods=["GET", "POST"])
-@login_required
-def delete_user(id):
-    user = User.query.get_or_404(id)
-
-    if current_user.id == user.id:
-        try:
-            # deleting from the DB
-            db.session.delete(user)
-            db.session.commit()
-
-            if current_user.is_authenticated:
-                logout_user()
-                flash(f"User: '{user.username}' deleted successfully!")
-                return redirect(url_for("sign_up"))
-            else:
-                flash(f"User: '{user.username}' deleted successfully!")
-        except:
-            flash("Whoops! Something went wrong! Please try again...!")
-            articles = Article.query.order_by(Article.date_posted.desc()).all
-            return redirect(url_for("sign_up"))
-    else:
-        flash(f"You are not authorized to delete this User: '{user.username}'")
-        return redirect(url_for("index", articles=articles))
-

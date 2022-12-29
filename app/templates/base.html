@@ -15,40 +15,40 @@
 <body onload="openPage('Published', this, 'rgb(0, 89, 250)', 'white')">
 
     <!-- NAVIGATION BAR -->
-    <nav class="navbar navbar-light fixed-top text-lg-center bg-primary border border-primary" style="background-color: #e3f2fd;">
+    <nav class="navbar navbar-light fixed-top sticky-top text-lg-center bg-primary border border-primary" style="background-color: #e3f2fd;">
         <div class="container container-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{url_for('index')}}">
+                <a class="navbar-brand" href="{{url_for('general.index')}}">
                     <h1 class="text-white"><b>Blogger's Zone</b></h1>
                 </a>
             </div>
             <div class="container">
                 <ul class="nav navbar-dark nav-tabs nav-justified">
                     <li class="nav-item">
-                        <a class="nav-link active " href="{{url_for('index')}}"><b>Home</b></a>
+                        <a class="nav-link active " href="{{url_for('general.index')}}"><b>Home</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('about') }}"><b>About</b></a>
+                        <a class="nav-link active" href="{{ url_for('general.about') }}"><b>About</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('message') }}"><b>Contact</b></a>
+                        <a class="nav-link active" href="{{ url_for('general.message') }}"><b>Contact</b></a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{url_for('dashboard')}}"><b>Dashboard</b></a>
+                        <a class="nav-link active" href="{{url_for('user.dashboard')}}"><b>Dashboard</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('logout') }}"><b>Logout</b></a>
+                        <a class="nav-link active" href="{{ url_for('auth.logout') }}"><b>Logout</b></a>
                     </li>
                     <li class="nav-item">
                         <small class="align-bottom"><b class="text-end">Hi, {{current_user.firstname}} 🤚</b></small>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{url_for('sign_up')}}"><b>Sign Up</b></a>
+                        <a class="nav-link active" href="{{url_for('auth.sign_up')}}"><b>Sign Up</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{url_for('login')}}"><b>Login</b></a>
+                        <a class="nav-link active" href="{{url_for('auth.login')}}"><b>Login</b></a>
                     </li>
                     {% endif %}
                 </ul>

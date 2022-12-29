@@ -3,7 +3,7 @@
 
 <a href="/#jump-to-articles-list" class="btn btn-outline-primary border border-primary">Back to Articles List</a>
 {% if current_user.is_authenticated %}
-<a href="{{ url_for('create_article') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
+<a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
 {% endif %}
 <br><br>
 <h2 style="font-weight:bold">About Page</h2>
@@ -19,7 +19,11 @@
     I desire to become a skilled and renowned Software Developer/Engineer, creating solutions that will change (improve) the world and how we live generally. Watch out!!!
 </p>
 <p>
-    Below are a list of the great <b>Authors</b> registered in the <a href="{{ url_for('index') }}" style="text-decoration:none"><b>Blogger's Zone</b></a> and their contact email addresses, if you wish to contact them. <br> You can join in too. Just <a href="{{ url_for('sign_up') }}" style="text-decoration:none">sign up here</a> and <a href="{{ url_for('create_article') }}" style="text-decoration:none">create</a> an inspiring article.
+    Below are a list of the great <b>Authors</b> registered in the <a href="{{ url_for('general.index') }}"
+                                                                      style="text-decoration:none"><b>Blogger's
+    Zone</b></a> and their contact email addresses, if you wish to contact them. <br> You can join in too. Just <a
+        href="{{ url_for('auth.sign_up') }}" style="text-decoration:none">sign up here</a> and <a
+        href="{{ url_for('article.create_article') }}" style="text-decoration:none">create</a> an inspiring article.
 </p>
 
 <table class="table">

@@ -13,7 +13,7 @@
         <h2>Edit Your Article</h2>
     </div>
     <br><br>
-    <form class="row g-3" action="{{ url_for('edit_article', id=article.id) }}" method="POST">
+    <form class="row g-3" action="{{ url_for('article.edit_article', id=article.id) }}" method="POST">
         <div class="row">{{ form.hidden_tag() }}</div>
         <div class="row">            
             {{ form.title.label(class="form-label", style="font-weight:bold; font-size:18px") }}

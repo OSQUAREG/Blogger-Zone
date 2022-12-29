@@ -1,25 +1,25 @@
-from flask import Flask
+# from main import db
+# from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
-import os
-# from main import db
+# from config import settings
+# import os
 
-# defining app and base directory
-app = Flask(__name__)
-base_dir = os.path.dirname(os.path.realpath(__file__))
+# #INIT APP
+# app = Flask(__name__)
 
-# configuring the app db
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    base_dir, "my_blog.db"
-)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SECRET_KEY"] = "026b0eb800ec2934fb5cf2e7"
+# #CONFIG
+# base_dir = os.path.dirname(os.path.realpath(__file__))
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(base_dir, "my_blog.db")
+# app.config["SQLALCHEMY_DATABASE_URI"] = settings.database_url
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# app.config["SECRET_KEY"] = settings.secret_key
 
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 
-# Creating Post Model
+# Creating Article Model
 class Article(db.Model):
     # __tablename__ = "Posts"
     id = db.Column(db.Integer, primary_key=True)
@@ -82,7 +82,3 @@ class Message(db.Model):
 
     def __repr__(self):
         return f"Send by: <{self.name}>"
-
-
-# with app.app_context():
-#     db.create_all()

@@ -13,7 +13,7 @@
 		<h2 style="font-weight:bold">Register An Account</h2>
 	</div>
 	<br>
-	<form class="row g-3" action="{{ url_for('sign_up') }}" method="POST">
+	<form class="row g-3" action="{{ url_for('auth.sign_up') }}" method="POST">
 		<div class="row">{{ form.hidden_tag() }}</div>
 		<div class="col-md-6">
 			{{ form.hidden_tag() }}
@@ -59,7 +59,7 @@
 		</div>
 		<div class="form-group text-center">
             <small>
-                Already have an account? <a href="{{url_for('login')}}" style="text-decoration:none"><strong>Login</strong></a>
+                Already have an account? <a href="{{url_for('auth.login')}}" style="text-decoration:none"><strong>Login</strong></a>
             </small>
         </div>
 	</form>

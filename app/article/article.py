@@ -1,27 +1,27 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, current_user
-from models import app, db, Article, Comment
-from webforms import ArticleForm, CommentForm
-# from main import 
+from app.models import db, Article, Comment
+from app.webforms import ArticleForm, CommentForm
 
-# articles_blp = Blueprint("articles_blp", "__name__",template_folder="template",url_prefix="/")
+blueprint = Blueprint("article", __name__, template_folder="templates")
 
 
 # Create Article Page Routing
-@app.route("/article/create", methods=["GET", "POST"])
+@blueprint.route("/article/create", methods=["GET", "POST"])
 @login_required
 def create_article():
     form = ArticleForm()
+    
     if request.method == "POST":
-        if form.validate_on_submit():
+        if form.validate_on_submit(): 
             title = form.title.data
             content = form.content.data
             slug = form.slug.data
             is_draft = form.is_draft.data
-            author = current_user.id # for the author foreign key link
+            author = current_user.id  # for the author foreign key link
             # adding new article to the db
             new_article = Article(
-                title=title, content=content, slug=slug, is_draft=is_draft,author_id=author
+                title=title, content=content, slug=slug, is_draft=is_draft, author_id=author
             )
             db.session.add(new_article)
             db.session.commit()
@@ -30,54 +30,60 @@ def create_article():
                 flash(f"Article titled: '{title}' Saved As Draft successfully")
             else:
                 flash(f"Article titled: '{title}' Published successfully")
-        
-            return redirect(url_for("dashboard"))
-        return redirect(url_for("dashboard"))
+
+            return redirect(url_for("user.dashboard"))
+        return redirect(url_for("user.dashboard"))
     return render_template("create-article.html", form=form)
 
 
 # View Single Published Article Page Routing
-@app.route("/article/view/<int:id>", methods=["GET","POST"])
-def view_article(id):    
+@blueprint.route("/article/view/<int:id>", methods=["GET", "POST"])
+def view_article(id):
     article = Article.query.get_or_404(id)
     form = CommentForm()
-    comments = Comment.query.order_by(Comment.date_added.desc()).all
-    
-    if article.is_draft == False:     
-        return render_template("view-article.html", article=article, form=form, comments=comments)
-    else:
-        return redirect(url_for("dashboard"))
+    comments = Comment.query.filter(Comment.article_id==article.id).order_by(Comment.date_added.desc()).all
+    count = Comment().query.filter(Comment.article_id==article.id).count()
+    # print(count)
 
+    if not article.is_draft:
+        context = {
+            "article": article,
+            "form": form,
+            "comments": comments,
+            "count": count
+            }
+        return render_template("view-article.html", **context)
+    else:
+        return redirect(url_for("user.dashboard"))
 
 
 # Edit Article Page Routing
-@app.route("/article/edit/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/article/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_article(id):
     form = ArticleForm()
     article = Article.query.get_or_404(id)
 
-    if form.validate_on_submit():
-        if current_user.id == article.author_id:
-            article.title = form.title.data
-            article.slug = form.slug.data
-            article.content = form.content.data
-            article.is_draft = form.is_draft
+    if form.validate_on_submit() and current_user.id == article.author_id:
+        article.title = form.title.data
+        article.slug = form.slug.data
+        article.content = form.content.data
+        article.is_draft = form.is_draft
 
-            if form.is_draft.data == True:
-                article.is_draft = True
-                flash(f"Article titled: '{article.title}' updated and saved successfully")
-            else:
-                article.is_draft = False
-                flash(f"Article titled: '{article.title}' updated and published successfully")
-            try:
-                db.session.add(article)
-                db.session.commit()
-                return redirect(url_for("view_article", id=article.id))
-            except:
-                flash("Something went wrong. Please try again...")
-                return redirect(url_for("edit_article", id=article.id))
-    \
+        if form.is_draft.data:
+            article.is_draft = True
+            flash(f"Article titled: '{article.title}' updated and saved successfully")
+        else:
+            article.is_draft = False
+            flash(f"Article titled: '{article.title}' updated and published successfully")
+        try:
+            db.session.add(article)
+            db.session.commit()
+            return redirect(url_for("view_article", id=article.id))
+        except:
+            flash("Something went wrong. Please try again...")
+            return redirect(url_for("edit_article", id=article.id))
+
     # only the author can edit his article
     if current_user.id == article.author_id:
         form.title.data = article.title
@@ -91,7 +97,7 @@ def edit_article(id):
 
 
 # Delete Article Routing (done)
-@app.route("/article/delete/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/article/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete_article(id):
     article = Article.query.get_or_404(id)
@@ -101,14 +107,12 @@ def delete_article(id):
             # deleting from the DB
             db.session.delete(article)
             db.session.commit()
-            
+
             flash(f"Article: '{article.title}' Deleted Successfully!")
             articles = Article.query.order_by(Article.date_posted.desc()).all
-            return redirect(url_for("dashboard", articles=articles))
-
+            return redirect(url_for("user.dashboard", articles=articles))
         except:
             flash("Whoops! Something went wrong! Please try again...!")
-            articles = Article.query.order_by(Article.date_posted.desc()).all
             return redirect(url_for("view_article", id=article.id))
     else:
         flash(f"You are not authorized to delete the Article: '{article.title}'")
@@ -116,7 +120,7 @@ def delete_article(id):
 
 
 # Add Comment Routing (done)
-@app.route("/article/add-comment/<int:id>", methods=["GET","POST"])
+@blueprint.route("/article/add-comment/<int:id>", methods=["GET", "POST"])
 @login_required
 def add_comment(id):
     article = Article.query.get_or_404(id)
@@ -131,10 +135,16 @@ def add_comment(id):
         db.session.add(comment)
         db.session.commit()
 
+        context = {
+            "id": article.id,
+            "form": form,
+            "comments": comments
+            }
+
         # resetting/clearing the form
         # comment = ""
         flash(f"Comment added successfully")
-        return redirect(url_for("view_article", id=article.id, form=form, comments=comments))
+        return redirect(url_for("article.view_article", **context))
     else:
         flash(f"Whoops! Something went wrong. Please try again...")
-        return redirect(url_for("view_article", id=article.id, form=form, comments=comments))
+        return redirect(url_for("article.view_article", **context))

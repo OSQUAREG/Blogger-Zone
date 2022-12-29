@@ -13,7 +13,7 @@
         <h2 style="font-weight:bold">Update Your Profile</h2>
     </div>
     <br>
-    <form class="row g-3" action="{{ url_for('update_user', id=user.id) }}" method="POST">
+    <form class="row g-3" action="{{ url_for('user.update_user', id=user.id) }}" method="POST">
         <div class="row">{{ form.hidden_tag() }}</div>
         <div class="col-md-6">
             {{ form.hidden_tag() }}
