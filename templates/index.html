@@ -7,8 +7,9 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endfor %}
-<div class="container">    
-    <div id="container carouselExampleSlidesOnly" class="carousel slide carousel-fade bg-primary card text-bg-dark" data-bs-ride="carousel">
+<div class="container">
+    <div id="container carouselExampleSlidesOnly" class="carousel slide carousel-fade bg-primary card text-bg-dark"
+        data-bs-ride="carousel">
         <img src="./static/images/blogger-image2.jpg" alt="" class="card-img">
         <center class="card-img-overlay">
             <div class="container text-dark">
@@ -34,15 +35,19 @@
             <br>
             <div class="container">
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('create_article') }}" class="btn btn-light btn-outline-primary mb-2 border border-primary">Create New Article</a>
-                <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-outline-primary mb-2 border border-primary">Your Dashboard</a>
+                <a href="{{ url_for('create_article') }}"
+                    class="btn btn-light btn-outline-primary mb-2 border border-primary">Create New Article</a>
+                <a href="{{ url_for('dashboard') }}"
+                    class="btn btn-light btn-outline-primary mb-2 border border-primary">Your Dashboard</a>
                 <br>
                 {% else %}
-                <a href="{{ url_for('login') }}" class="btn btn-light btn-outline-primary border border-primary">Login Here</a>
-                <a href="{{ url_for('sign_up') }}" class="btn btn-light btn-outline-primary border border-primary">Sign Up Here</a>
+                <a href="{{ url_for('login') }}" class="btn btn-light btn-outline-primary border border-primary">Login
+                    Here</a>
+                <a href="{{ url_for('sign_up') }}" class="btn btn-light btn-outline-primary border border-primary">Sign
+                    Up Here</a>
                 <br>
                 {% endif %}
-            </div>    
+            </div>
         </center>
     </div>
 </div>
@@ -54,14 +59,16 @@
     <div class="container col-8">
         <div>
             <h2>Articles List</h2>
-        </div><hr>
+        </div>
+        <hr>
         <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto" ;>
             {% for article in articles() %}
             {% if not article.is_draft %}
             <div class="card border-primary mb-3">
                 <small class="card-header">
                     <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }}
-                    | <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} | <strong>Status:</strong>
+                    | <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                    <strong>Status:</strong>
                     {% if article.is_draft %}
                     Saved as Draft
                     {% else %}
@@ -69,7 +76,8 @@
                     {% endif %}
                 </small>
                 <div class="card-body">
-                    <a class="fs-5 text-decoration-none" href="{{ url_for('view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                    <a class="fs-5 text-decoration-none"
+                        href="{{ url_for('view_article', id=article.id) }}">{{ article.title }}</a></h4>
                     <div>
                         <p>{{ article.content | striptags() | truncate(255) }}</p>
                     </div><br>
@@ -84,6 +92,7 @@
                             class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
                         {% endif %}
                         {% endif %}
+
                     </div>
                 </div>
             </div>
@@ -92,14 +101,15 @@
             {% endfor %}
         </div>
     </div>
-    
+
     <!-- Authors List Container -->
     <div class="container col-4">
         <div>
             <div>
-                <h2 id="jump-to-authors-list">Authors</h2><hr>
+                <h2 id="jump-to-authors-list">Authors</h2>
+                <hr>
             </div>
-            <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto" >
+            <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
                 <ul>
                     {% for author in authors() %}
                     <li>{{ author.firstname }} {{ author.lastname }}</li>

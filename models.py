@@ -2,8 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
-# from sqlalchemy.orm import relationship
 import os
+# from main import db
 
 # defining app and base directory
 app = Flask(__name__)
@@ -84,5 +84,5 @@ class Message(db.Model):
         return f"Send by: <{self.name}>"
 
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
