@@ -1,24 +1,51 @@
+from sqlalchemy import func
 from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import db, User, Article
-from app.webforms import UserForm, LoginForm
+from flask_login import login_required, logout_user, current_user
+from app.models import db, User, Article, Comment
+from app.webforms import UserForm
 
 blueprint = Blueprint("user", __name__, template_folder="templates")
+
+"""
+USER Routes:
+=> dashboard : INCOMPLETE
+    - required (login_required, current_user)
+    - context (user, articles, comments(count))
+    - pages (dashboard)
+=> update_user : INCOMPLETE
+    - required (login_required, current_user)
+    - pages (dashboard) 
+=> delete_user 
+    - required (login_required, admin_user)
+    - pages (admin)
+=> deactivate_user 
+    - required (login_required, current_user)
+    - pages (dashboard)
+"""
 
 
 # Dashboard Page Routing
 @blueprint.route("/dashboard")
 @login_required
 def dashboard():
-    id = current_user.id    
-    user = User.query.get_or_404(id)
-    articles = Article.query.order_by(Article.date_posted.desc()).all
+    user = User.query.get_or_404(current_user.id)
+    check_user = User.query.get_or_404(current_user.id)
+
+    articles = db.session.query(Article).\
+        filter(Article.author_id == current_user.id).\
+        order_by(Article.date_posted.desc()).all()
+
+    comments = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")). \
+        outerjoin(Comment, Comment.article_id == Article.id). \
+        group_by(Article.id).all()
+
     context = {
-        "id": id,
         "user": user,
-        "articles": articles
+        "check_user": check_user,
+        "articles": articles,
+        "comments": comments
     }
+
     return render_template("dashboard.html", **context)
 
 
@@ -28,6 +55,7 @@ def dashboard():
 def update_user(id):
     form = UserForm()
     user = User.query.get_or_404(id)
+    check_user = User.query.get_or_404(current_user.id)
 
     if request.method == "POST" and current_user.id == user.id:
         user.firstname = form.firstname.data
@@ -50,7 +78,14 @@ def update_user(id):
     else:
         flash(f"You are not authorized to update this user profile!")
         return redirect(url_for("dashboard", id=user.id))
-    return render_template("user.update-user.html", form=form, user=user)
+
+    context = {
+        "form": form,
+        "user": user,
+        "check_user": check_user
+    }
+
+    return render_template("update-user.html", **context)
 
 
 # Delete User Profile Routing (done)
@@ -78,3 +113,11 @@ def delete_user(id):
         flash(f"You are not authorized to delete this User: '{user.username}'")
         articles = Article.query.order_by(Article.date_posted.desc()).all
         return redirect(url_for("general.index", articles=articles))
+
+
+# Create User Role
+@blueprint.route("/user/delete/<int:id>", methods=["GET", "POST"])
+@login_required
+def create_role(id):
+    user = User.query.get_or_404(id)
+    pass

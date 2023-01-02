@@ -6,7 +6,7 @@ from flask_ckeditor import CKEditorField
 # from main import app
 
 
-# Create UserForm Class
+# User Form Class
 class UserForm(FlaskForm):
     firstname = StringField(
         label="First Name", validators=[InputRequired(message="*Required")]
@@ -47,7 +47,7 @@ class UserForm(FlaskForm):
     submit = SubmitField(label="Submit")
 
 
-# Create Login Form Class
+# Login Form Class
 class LoginForm(FlaskForm):
     username_email = StringField(
         label="Username/Email",
@@ -66,7 +66,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label="Login")
 
 
-# Create Article Form
+# ARTICLE FORM
 class ArticleForm(FlaskForm):
     title = StringField(label="Title", validators=[InputRequired()])
     content = CKEditorField(label="Content", validators=[InputRequired()])
@@ -75,7 +75,7 @@ class ArticleForm(FlaskForm):
     submit = SubmitField(label="Submit")
 
 
-# Create Edit Article Form
+# COMMENT FORM
 class CommentForm(FlaskForm):
     comment = TextAreaField(
         label="Add Comment Here", validators=[InputRequired()], widget=TextArea()
@@ -83,7 +83,7 @@ class CommentForm(FlaskForm):
     submit = SubmitField(label="Submit")
 
 
-# Create Message Form
+# MESSAGE FORM
 class MessageForm(FlaskForm):
     name = StringField(label="Name", validators=[InputRequired()])
     email = StringField(label="Email", validators=[InputRequired(message="*Required")])
@@ -91,3 +91,9 @@ class MessageForm(FlaskForm):
         label="Message", validators=[InputRequired()], widget=TextArea()
     )
     submit = SubmitField(label="Send")
+
+
+# USER ROLE FORM
+class UserRoleForm(FlaskForm):
+    role = StringField(label="Role", validators=[InputRequired()])
+    submit = SubmitField(label="Submit")

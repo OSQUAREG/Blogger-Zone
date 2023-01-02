@@ -15,7 +15,7 @@
 <body onload="openPage('Published', this, 'rgb(0, 89, 250)', 'white')">
 
     <!-- NAVIGATION BAR -->
-    <nav class="navbar navbar-light fixed-top sticky-top text-lg-center bg-primary border border-primary" style="background-color: #e3f2fd;">
+    <nav class="navbar navbar-light fixed-top text-lg-center bg-primary border border-primary" style="background-color: #e3f2fd;">
         <div class="container container-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{url_for('general.index')}}">
@@ -37,6 +37,11 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{{url_for('user.dashboard')}}"><b>Dashboard</b></a>
                     </li>
+                    {% if check_user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('admin.admin')}}"><b>Admin</b></a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ url_for('auth.logout') }}"><b>Logout</b></a>
                     </li>

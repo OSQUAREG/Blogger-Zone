@@ -44,7 +44,8 @@
 </div>
 <br>
 
-<script src="/static/script.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
 <div>
     <h2>Your Articles</h2>
     <hr>
@@ -59,7 +60,7 @@
         <div id="Published" class="tabcontent">
             <h6><b>Published Articles</b></h6>
             <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                {% for article in articles() %}
+                {% for article in articles %}
                 {% if article.author_id == current_user.id %}
                 {% if not article.is_draft: %}
                 <div class="card border-primary mb-3">
@@ -82,15 +83,24 @@
                             <a href="{{ url_for('article.view_article', id=article.id) }}"
                                 class="btn btn-outline-primary border border-primary">Read
                                 Article</a>
-                            {% if current_user.is_authenticated %}
-                            {% if article.author_id == current_user.id %}
+                            {% if current_user.is_authenticated and article.author_id == current_user.id %}
                             <a href="{{ url_for('article.edit_article', id=article.id) }}"
                                 class="btn btn-outline-primary border border-primary">Edit
                                 Article</a>
                             <a href="{{ url_for('article.delete_article', id=article.id) }}"
                                 class="btn btn-outline-danger border border-danger">Delete Article</a>
                             {% endif %}
-                            {% endif %}
+                            <small class="float-end">
+                                {% for comment in comments %}
+                                {% if comment.article_id == article.id %}
+                                {% if comment.count > 1 %}
+                                {{ comment.count }} comments
+                                {% else %}
+                                {{ comment.count }} comment
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -104,7 +114,7 @@
         <div id="Draft" class="tabcontent">
             <h6><b>Saved As Draft</b></h6>
             <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                {% for article in articles() %}
+                {% for article in articles %}
                 {% if article.author_id == current_user.id %}
                 {% if article.is_draft: %}
                 <div class="card border-primary mb-3">

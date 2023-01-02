@@ -41,7 +41,7 @@
                     class="btn btn-light btn-outline-primary mb-2 border border-primary">Your Dashboard</a>
                 <br>
                 {% else %}
-                <a href="{{ url_for('auth.login') }}" 
+                <a href="{{ url_for('auth.login') }}"
                     class="btn btn-light btn-outline-primary border border-primary">Login
                     Here</a>
                 <a href="{{ url_for('auth.sign_up') }}"
@@ -57,29 +57,23 @@
 <br><br>
 
 <div class="container row">
+
     <!-- Articles List Container -->
     <div class="container col-8">
         <div>
             <h2>Articles List</h2>
         </div>
         <hr>
-        <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto" ;>
-            {% for article in articles() %}
-            {% if not article.is_draft %}
+        <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+            {% for article in articles %}
             <div class="card border-primary mb-3">
                 <small class="card-header">
-                    <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} | 
-                    <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} | 
-                    <strong>Status:</strong>
-                    {% if article.is_draft %}
-                    Saved as Draft
-                    {% else %}
-                    Published
-                    {% endif %}
+                    <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
+                    <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}
                 </small>
                 <div class="card-body">
                     <a class="fs-5 text-decoration-none"
-                        href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                        href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a>
                     <div>
                         <p>{{ article.content | striptags() | truncate(255) }}</p>
                     </div><br>
@@ -88,24 +82,26 @@
                         <a href="{{ url_for('article.view_article', id=article.id) }}"
                             class="btn btn-light btn-outline-primary border border-primary">Read Article</a>
                         {% if current_user.is_authenticated and article.author_id == current_user.id %}
-                        {# {% if article.author_id == current_user.id %} #}
                         <a href="{{ url_for('article.edit_article', id=article.id) }}"
                             class="btn btn-light btn-outline-primary border border-primary">Edit Article</a>
                         <a href="{{ url_for('article.delete_article', id=article.id) }}"
-                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
-                        {% endif %}
-                        <small class="float-end" >
-                        {% for comment in comments %}
-                        {% if comment.article_id == article.id %}
-                        {{ comment.count }} comments
-                        {% endif %}
-                        {% endfor %}
+                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>                        
+                            {% endif %}
+                        <small class="float-end">
+                            {% for comment in comments %}
+                            {% if comment.article_id == article.id %}
+                            {% if comment.count > 1 %}
+                            {{ comment.count }} comments
+                            {% else %}
+                            {{ comment.count }} comment
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
                         </small>
                     </div>
                 </div>
             </div>
             <br>
-            {% endif %}
             {% endfor %}
         </div>
     </div>
