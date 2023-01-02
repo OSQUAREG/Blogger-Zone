@@ -69,7 +69,8 @@
             <div class="card border-primary mb-3">
                 <small class="card-header">
                     <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
-                    <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}
+                    <strong>Date Posted:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} | 
+                    <strong>Last Updated:</strong> {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
                 </small>
                 <div class="card-body">
                     <a class="fs-5 text-decoration-none"

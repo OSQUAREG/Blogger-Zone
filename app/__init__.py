@@ -5,4 +5,4 @@ from .article import article
 from .general import general
 from .comment import comment
 from .role import role
-from .admin import admin
+from .admin import admin_users

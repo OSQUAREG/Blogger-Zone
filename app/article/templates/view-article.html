@@ -54,22 +54,23 @@
             <div class="card-body">
                 <h5 class="card-title"><b>Comments</b></h5>
                 <hr>
-                {# {% for comment_count in comment_counts %}
-                    {% if comment_count.count < 0 %}
-                    <small class="card-subtitle mb-2 text-muted fs-7"></small>
-                    <p class="card-text">No comment yet. Be the first to comment</p>
-                    <hr>
-                    {% else %} #}
-                        {% for comment in comments() %}
-                        <small class="card-subtitle mb-2 text-muted fs-7">
+                {% for count in counts %}
+                    {% if count.article_id == article.id %}
+                        {% if count.count == 0 %}
+                        <p class="card-text">No comment yet. Be the first to comment!</p>
+                        <hr>
+                        {% else %}
+                            {% for comment in comments %}
+                            <small class="card-subtitle mb-2 text-muted fs-7">
                             {{ comment.commenter.firstname }} {{ comment.commenter.lastname }}
                             | {{ comment.date_added.strftime('%Y-%m-%d %I:%M %p') }}
-                        </small>
-                        <p class="card-text">{{ comment.comment }}</p>
-                        <hr>
-                        {% endfor %}
-                    {# {% endif %}
-                {% endfor %} #}
+                            </small>
+                            <p class="card-text">{{ comment.comment }}</p>
+                            <hr>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
 

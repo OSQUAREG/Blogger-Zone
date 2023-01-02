@@ -56,6 +56,8 @@ class User(db.Model, UserMixin):
     # profile_pic = db.Column(db.String(), nullable=True)
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
+    # modified_by = db.Column(db.Integer)
+    # modified_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # # create foreign key with roles.
     # role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))

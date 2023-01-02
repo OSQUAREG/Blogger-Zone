@@ -38,17 +38,17 @@
                 </td>
                 <td> | 
                     {% if user.is_active: %}
-                    <a href="">Deactivate</a> | {% else %}
-                    <a href="">Activate</a> |
+                    <a href="{{ url_for('admin-users.deactivate_user', id=user.id) }}">Deactivate</a> | {% else %}
+                    <a href="{{ url_for('admin-users.activate_user', id=user.id) }}">Activate</a> |
                     {% endif %}
 
-                    <a href="">Delete</a> | 
-                    <a href="">Update</a> | 
+                    <a href="{{ url_for('admin-users.delete_user', id=user.id) }}">Delete</a> | 
+                    <a href="{{ url_for('admin-users.update_user', id=user.id) }}">Update</a> | 
 
                     {% if user.is_admin: %}
-                    <a href="{{ url_for('admin.remove_admin', id=user.id) }}">Remove Admin</a>
+                    <a href="{{ url_for('admin-users.remove_admin', id=user.id) }}">Remove Admin</a>
                     {% else %}
-                    <a href="{{ url_for('admin.make_admin', id=user.id) }}">Make Admin</a> |
+                    <a href="{{ url_for('admin-users.make_admin', id=user.id) }}">Make Admin</a> |
                     {% endif %}
                 </td>
             </tr>

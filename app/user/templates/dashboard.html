@@ -37,7 +37,7 @@
         <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
         <a href="{{ url_for('user.update_user', id=user.id) }}" class="btn btn-outline-primary mb-1 border border-primary">Update
             Profile</a>
-        <a href="{{ url_for('user.delete_user', id=user.id) }}" class="btn btn-outline-danger mb-1 border border-danger">Delete
+        <a href="{{ url_for('user.deactivate_user', id=user.id) }}" class="btn btn-outline-danger mb-1 border border-danger">Deactivate
             Profile</a>
     </div>
     <br id="jump-to-your-articles-list"><br>

@@ -37,9 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{{url_for('user.dashboard')}}"><b>Dashboard</b></a>
                     </li>
-                    {% if check_user.is_admin %}
+                    {% if current_user.is_admin %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{url_for('admin.admin')}}"><b>Admin</b></a>
+                        <a class="nav-link active" href="{{url_for('admin-users.admin')}}"><b>Admin</b></a>
                     </li>
                     {% endif %}
                     <li class="nav-item">

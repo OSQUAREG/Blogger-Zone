@@ -22,7 +22,6 @@ def index():
         order_by(Article.date_posted.desc()).all()
 
     authors = db.session.query(User).order_by(User.id).all
-    check_user = User.query.get_or_404(current_user.id)
 
     comments = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")).\
         outerjoin(Comment, Comment.article_id == Article.id).\
@@ -31,7 +30,6 @@ def index():
     context = {
         "articles": articles,
         "authors": authors,
-        "check_user": check_user,
         "comments": comments
     }
 
@@ -42,10 +40,8 @@ def index():
 @blueprint.route("/about")
 def about():
     authors = User.query.order_by(User.id).all
-    check_user = User.query.get_or_404(current_user.id)
     context = {
-        "authors": authors,
-        "check_user": check_user
+        "authors": authors
     }
     return render_template("about.html", **context)
 
@@ -54,7 +50,6 @@ def about():
 @blueprint.route("/contact", methods=["GET", "POST"])
 def message():
     form = MessageForm()
-    check_user = User.query.get_or_404(current_user.id)
 
     if request.method == "POST":
         if form.validate_on_submit():
@@ -76,7 +71,6 @@ def message():
 
     context = {
         "form": form,
-        "check_user": check_user
     }
 
     return render_template("contact.html", **context)

@@ -1,10 +1,11 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_user, login_required, logout_user, current_user
+from markupsafe import Markup
+from sqlalchemy.sql import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import db, User
 from app.webforms import UserForm, LoginForm
-
-# from datetime import timedelta
+from datetime import timedelta
 
 blueprint = Blueprint("auth", __name__, template_folder="templates")
 
@@ -26,7 +27,6 @@ AUTH Routes:
 @blueprint.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     form = UserForm()
-    check_user = User.query.get_or_404(current_user.id)
 
     if request.method == "POST" and form.validate_on_submit():
         firstname = form.firstname.data
@@ -65,7 +65,6 @@ def sign_up():
 
     context = {
         "form": form,
-        "check_user": check_user
     }
 
     return render_template("sign-up.html", **context)
@@ -75,43 +74,31 @@ def sign_up():
 @blueprint.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    check_user = User.query.get_or_404(current_user.id)
 
     if request.method == "POST" and form.validate_on_submit:
         username_email = form.username_email.data
         password = form.password.data
 
-        user_exists = User.query.filter_by(username=username_email).first()
-        email_exists = User.query.filter_by(email=username_email).first()
+        user_exists = User.query.filter(or_(User.username == username_email, User.email == username_email)).first()
 
-        if user_exists or email_exists:
-            if user_exists:
+        if user_exists:
+            if user_exists.is_active:
                 if check_password_hash(user_exists.password_hash, password):
-                    login_user(user_exists)  # duration=timedelta(minutes=1))
+                    login_user(user_exists, duration=timedelta(minutes=1))
                     flash("Login Successful")
                     return redirect(url_for("user.dashboard"))
                 else:
                     flash("Wrong Password! Please try again...")
-
-            elif email_exists:
-                if check_password_hash(email_exists.password_hash, password):
-                    login_user(email_exists)  # duration=timedelta(minutes=1))
-                    flash("Login Successful")
-                    return redirect(url_for("user.dashboard"))
-                else:
-                    flash("Wrong Password! Please try again...")
+                    return redirect(url_for("auth.login"))
 
             else:
-                flash("Wrong Password! Please try again...")
-                return redirect(url_for("auth.login"))
-
+                flash("Your account has been deactivated! Please go to 'Contact' page to contact Admin!")
         else:
-            flash("Wrong Username or Email! Please try again...")
+            flash("User does not exist! Please try again...or Sign up.")
             return redirect(url_for("auth.login"))
 
     context = {
-        "form": form,
-        "check_user": check_user
+        "form": form
     }
 
     return render_template("login.html", **context)

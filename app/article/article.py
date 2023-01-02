@@ -8,13 +8,25 @@ from app.webforms import ArticleForm, CommentForm
 
 blueprint = Blueprint("article", __name__, template_folder="templates")
 
+"""
+ARTICLE Routes:
+=> create_article : COMPLETE
+    - required (form.data, form)
+    - templates (base, create-article, dashboard)
+=> view_article : COMPLETE
+    - required (id)
+    - templates (base, view-article, dashboard)
+=> delete-article : COMPLETE
+    - required (login_required, current_user)
+    - templates (base, login, dashboard)
+"""
+
 
 # Create Article Page Routing
 @blueprint.route("/article/create", methods=["GET", "POST"])
 @login_required
 def create_article():
     form = ArticleForm()
-    check_user = User.query.get_or_404(current_user.id)
     
     if request.method == "POST":
         if form.validate_on_submit(): 
@@ -41,7 +53,6 @@ def create_article():
 
     context = {
         "form": form,
-        "check_user": check_user
     }
 
     return render_template("create-article.html", **context)
@@ -52,21 +63,18 @@ def create_article():
 def view_article(id):
     article = Article.query.get_or_404(id)
     form = CommentForm()
-    comments = Comment.query.filter(Comment.article_id == article.id).order_by(Comment.date_added.desc()).all
+    comments = Comment.query.filter(Comment.article_id == article.id).order_by(Comment.date_added.desc()).all()
 
-    comment_counts = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")). \
+    counts = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")). \
         outerjoin(Comment, Comment.article_id == Article.id). \
         group_by(Article.id).all()
-
-    check_user = User.query.get_or_404(current_user.id)
 
     if not article.is_draft:
         context = {
             "article": article,
             "form": form,
             "comments": comments,
-            "comment_counts": comment_counts,
-            "check_user": check_user
+            "counts": counts,
             }
         return render_template("view-article.html", **context)
     else:
@@ -79,7 +87,6 @@ def view_article(id):
 def edit_article(id):
     form = ArticleForm()
     article = Article.query.get_or_404(id)
-    check_user = User.query.get_or_404(current_user.id)
 
     if form.validate_on_submit() and current_user.id == article.author_id:
         article.title = form.title.data
@@ -116,7 +123,6 @@ def edit_article(id):
     context = {
         "form": form,
         "article": article,
-        "check_user": check_user
     }
 
     return render_template("edit-article.html", **context)
@@ -127,7 +133,6 @@ def edit_article(id):
 @login_required
 def delete_article(id):
     article = Article.query.get_or_404(id)
-    check_user = User.query.get_or_404(current_user.id)
 
     if current_user.id == article.author_id:
         try:
