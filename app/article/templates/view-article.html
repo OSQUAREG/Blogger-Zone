@@ -40,38 +40,89 @@
 </div>
 <br>
 
-<!-- Article content -->
+<!-- Article Content -->
 <div class="shadow-lg p-3 mb-3 bg-body rounded border border-primary">
     <div class="fs-5">
         <p>{{ article.content | safe }}</p>
     </div>
+    <hr>
+
+    <!-- Article Likes Section -->
+    <div>
+        <small class="float-start">
+            {% if article_likes_count > 1 %}
+            {{ article_likes_count }} Likes
+            {% else %}
+            {{ article_likes_count }} Like
+            {% endif %}
+        </small>
+        <small class="float-end">
+            {% if current_user.is_authenticated: %}
+            {% if user_article_like %}
+            Liked |
+            <a href="{{ url_for('like.unlike_article', id=article.id) }}">Unlike</a>
+            {% else %}
+            <a href="{{ url_for('like.like_article', id=article.id) }}">Like</a>
+            {% endif %}
+            {% endif %}
+        </small>
+    </div><br>
 </div>
 
-<!-- Comment section -->
+<!-- Article Comment Section -->
 <section class="comment-section container row">
     <div class="col-8">
         <div class="card col-auto shadow border border-primary">
             <div class="card-body">
+
+                <!-- Article Comment Count -->
+                <small class="float-end">
+                    {% if comment_count > 1 %}
+                    {{ comment_count }} Comments
+                    {% else %}
+                    {{ comment_count }} Comment
+                    {% endif %}
+                </small>
+
+                <!-- Article Comment Details -->
                 <h5 class="card-title"><b>Comments</b></h5>
                 <hr>
-                {% for count in counts %}
-                    {% if count.article_id == article.id %}
-                        {% if count.count == 0 %}
-                        <p class="card-text">No comment yet. Be the first to comment!</p>
-                        <hr>
+                {% if count == 0 %}
+                <p class="card-text">No comment yet. Be the first to comment!</p>
+                <hr>
+                {% else %}
+                {% for comment in comments %}
+                <small class="card-subtitle mb-2 text-muted fs-7">
+                    {{ comment.commenter.firstname }} {{ comment.commenter.lastname }}
+                    | {{ comment.date_added.strftime('%Y-%m-%d %I:%M %p') }}
+                </small>
+                <p class="card-text">{{ comment.comment }}</p>
+
+                <!-- Comment Likes Count -->
+                {# <div>
+                    <small class="float-start text-muted">
+                        {% if comment_likes_count > 1 %}
+                        {{ comment_likes_count }} Likes
                         {% else %}
-                            {% for comment in comments %}
-                            <small class="card-subtitle mb-2 text-muted fs-7">
-                            {{ comment.commenter.firstname }} {{ comment.commenter.lastname }}
-                            | {{ comment.date_added.strftime('%Y-%m-%d %I:%M %p') }}
-                            </small>
-                            <p class="card-text">{{ comment.comment }}</p>
-                            <hr>
-                            {% endfor %}
+                        {{ comment_likes_count }} Like
                         {% endif %}
-                    {% endif %}
+                    </small>
+                    <small class="float-end text-muted">
+                        {% if current_user.is_authenticated: %}
+                        {% if user_comment_like %}
+                        Liked |
+                        <a href="{{ url_for('like.unlike_comment', art_id=article.id, com_id=comment.id) }}">Unlike</a>
+                        {% else %}
+                        <a href="{{ url_for('like.like_comment', art_id=article.id, com_id=comment.id) }}">Like</a>
+                        {% endif %}
+                        {% endif %}
+                    </small><br>
+                </div><hr> #}
+                
                 {% endfor %}
+                {% endif %}
             </div>
+            
         </div>
 
         <br>

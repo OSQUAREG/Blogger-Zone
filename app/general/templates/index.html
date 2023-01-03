@@ -69,8 +69,12 @@
             <div class="card border-primary mb-3">
                 <small class="card-header">
                     <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
-                    <strong>Date Posted:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} | 
-                    <strong>Last Updated:</strong> {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                    <strong>Date Posted:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                    <strong>Last Updated:</strong>
+                    {% if article.last_updated_on is none %} {{ None }}
+                    {% else %}
+                    {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                    {% endif %}
                 </small>
                 <div class="card-body">
                     <a class="fs-5 text-decoration-none"
@@ -86,15 +90,27 @@
                         <a href="{{ url_for('article.edit_article', id=article.id) }}"
                             class="btn btn-light btn-outline-primary border border-primary">Edit Article</a>
                         <a href="{{ url_for('article.delete_article', id=article.id) }}"
-                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>                        
-                            {% endif %}
+                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
+                        {% endif %}
                         <small class="float-end">
-                            {% for comment in comments %}
-                            {% if comment.article_id == article.id %}
-                            {% if comment.count > 1 %}
-                            {{ comment.count }} comments
+                            <!-- Articles Comments Count -->
+                            {% for comment_cnt in comment_cnts %}
+                            {% if comment_cnt.article_id == article.id %}
+                            {% if comment_cnt.count > 1 %}
+                            {{ comment_cnt.count }} Comments |
                             {% else %}
-                            {{ comment.count }} comment
+                            {{ comment_cnt.count }} Comment |
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            
+                            <!-- Articles Likes Count -->
+                            {% for like_cnt in like_cnts %}
+                            {% if like_cnt.article_id == article.id %}
+                            {% if like_cnt.count > 1 %}
+                            {{ like_cnt.count }} Likes
+                            {% else %}
+                            {{ like_cnt.count }} Like
                             {% endif %}
                             {% endif %}
                             {% endfor %}

@@ -15,9 +15,12 @@
     <hr>
     <table class="table">
         <thead class="table-primary table-responsive">
-            <th>Name</th>
+            <th>User Id</th>
+            <th>Full Name</th>
             <th>Username</th>
             <th>Email Address</th>
+            <th>Date Joined</th>
+            <th>Last Updated On</th>
             <th>Is Active</th>
             <th>Is Admin</th>
             <th>Actions</th>
@@ -25,31 +28,82 @@
         <tbody>
             {% for user in users %}
             <tr>
+                <td>{{ user.id }} </td>
                 <td>{{ user.firstname }} {{ user.lastname }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }} </td>
-                <td>{% if user.is_active: %}
-                    Yes {% else %} No
-                    {% endif %}
-                </td>
-                <td>{% if user.is_admin: %}
-                    Yes {% else %} No
-                    {% endif %}
-                </td>
-                <td> | 
-                    {% if user.is_active: %}
-                    <a href="{{ url_for('admin-users.deactivate_user', id=user.id) }}">Deactivate</a> | {% else %}
-                    <a href="{{ url_for('admin-users.activate_user', id=user.id) }}">Activate</a> |
-                    {% endif %}
-
-                    <a href="{{ url_for('admin-users.delete_user', id=user.id) }}">Delete</a> | 
-                    <a href="{{ url_for('admin-users.update_user', id=user.id) }}">Update</a> | 
-
-                    {% if user.is_admin: %}
-                    <a href="{{ url_for('admin-users.remove_admin', id=user.id) }}">Remove Admin</a>
+                <td>{{ user.date_joined.strftime('%Y-%m-%d %I:%M %p') }} </td>
+                <td> {% if user.last_updated_on is none %} {{ Null }}
                     {% else %}
-                    <a href="{{ url_for('admin-users.make_admin', id=user.id) }}">Make Admin</a> |
+                    {{ user.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
                     {% endif %}
+                </td>
+                <td>{% if user.is_active: %} Yes {% else %} No {% endif %} </td>
+                <td>{% if user.is_admin: %} Yes {% else %} No {% endif %} </td>
+                <td> <small>
+                        {% if user.is_active: %}
+                        <a href="{{ url_for('admin-users.deactivate_user', id=user.id) }}">Deactivate</a> | {% else %}
+                        <a href="{{ url_for('admin-users.activate_user', id=user.id) }}">Activate</a> |
+                        {% endif %}
+                        <a href="{{ url_for('admin-users.delete_user', id=user.id) }}">Delete</a> |
+                        <a href="{{ url_for('admin-users.update_user', id=user.id) }}">Update</a> |
+                        {% if user.is_admin: %}
+                        <a href="{{ url_for('admin-users.remove_admin', id=user.id) }}">Remove Admin</a>
+                        {% else %}
+                        <a href="{{ url_for('admin-users.make_admin', id=user.id) }}">Make Admin</a>
+                        {% endif %}
+                    </small>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<div>
+    <h2> Articles Management </h2>
+    <hr>
+    <table class="table">
+        <thead class="table-primary table-responsive">
+            <th>Article Id</th>
+            <th>Title</th>
+            <th>Date Posted</th>
+            <th>Author</th>
+            <th>Last Updated On</th>
+            <th>Last Updated By</th>
+            <th>Is Draft</th>
+            <th>Is Deleted</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+            <tr>
+                <td>{{ article.id }}</td>
+                <td>{{ article.title }}</td>
+                <td>{{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                <td>{{ article.author.username }}</td>
+                <td> {% if article.last_updated_on is none %}
+                    {{ Null }} {% else %}
+                    {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                    {% endif %}
+                </td>
+                <td>{{ article.last_updated_by }}</td>
+                <td>{% if article.is_draft: %} Yes {% else %} No {% endif %} </td>
+                <td>{% if article.is_deleted: %} Yes {% else %} No {% endif %} </td>
+                <td>
+                    <small>
+                        {% if article.is_draft: %}
+                        <a href="{{ url_for('admin-articles.publish_article', id=article.id) }}">Publish</a> |
+                        {% else %}
+                        <a href="{{ url_for('admin-articles.unpublish_article', id=article.id) }}">Unpublish</a> |
+                        {% endif %}
+                        {% if article.is_deleted: %}
+                        <a href="{{ url_for('admin-articles.add_article', id=article.id) }}">Add</a> |
+                        {% else %}
+                        <a href="{{ url_for('admin-articles.remove_article', id=article.id) }}">Remove</a> |
+                        {% endif %}
+                        <a href="{{ url_for('admin-articles.delete_article', id=article.id) }}">Delete</a>
+                    </small>
                 </td>
             </tr>
             {% endfor %}

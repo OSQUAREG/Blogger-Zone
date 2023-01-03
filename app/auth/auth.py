@@ -55,7 +55,7 @@ def sign_up():
             password_hash = generate_password_hash(password)
 
             # creating an instance of user
-            user = User(firstname=firstname, lastname=lastname, username=username, mail=email, password_hash=password_hash, about_author=about_author, is_admin=bool(0))
+            user = User(firstname=firstname, lastname=lastname, username=username, email=email, password_hash=password_hash, about_author=about_author, is_admin=bool(0))
             # adding to the db
             db.session.add(user)
             db.session.commit()
@@ -109,5 +109,5 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("You have been Logged Out!")
+    flash("You have been logged out!")
     return redirect(url_for("auth.login"))

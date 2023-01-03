@@ -1,6 +1,8 @@
+from sqlalchemy.sql import and_
+
 from app.webforms import MessageForm
 from flask import render_template, request, redirect, url_for, flash, Blueprint
-from app.models import db, Article, User, Message, Comment
+from app.models import db, Article, User, Message, Comment, ArticleLike
 from flask_login import current_user
 from sqlalchemy import func
 
@@ -15,29 +17,36 @@ GENERAL Routes:
 
 
 # Home Page Routing (done)
-@blueprint.route("/")
+@blueprint.route("/", methods=["GET"])
 def index():
     articles = db.session.query(Article).\
-        filter(Article.is_draft == False).\
+        filter(Article.is_draft == False, Article.is_deleted == False).\
         order_by(Article.date_posted.desc()).all()
 
     authors = db.session.query(User).order_by(User.id).all
 
-    comments = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")).\
+    comment_cnts = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")).\
         outerjoin(Comment, Comment.article_id == Article.id).\
         group_by(Article.id).all()
+
+    like_cnts = db.session.query(Article.id.label("article_id"), func.count(ArticleLike.user_id).label("count")). \
+        outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
+        group_by(Article.id).all()
+
+    print(like_cnts)
 
     context = {
         "articles": articles,
         "authors": authors,
-        "comments": comments
+        "comment_cnts": comment_cnts,
+        "like_cnts": like_cnts,
     }
 
     return render_template("index.html", **context)
 
 
 # About Page Routing (done)
-@blueprint.route("/about")
+@blueprint.route("/about", methods=["GET"])
 def about():
     authors = User.query.order_by(User.id).all
     context = {

@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from flask_ckeditor import CKEditor
 
 from app.models import db, User
-from app import settings, auth, user, article, general, admin_users
+from app import settings, auth, user, article, general, like, admin_users, admin_articles
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from datetime import timedelta
@@ -49,8 +49,11 @@ def user_loader(id):
 # with app.app_context():
 #     db.create_all()
 
+# REGISTER BLUEPRINTS
 app.register_blueprint(user.blueprint, url_prefix="/user")
 app.register_blueprint(auth.blueprint, url_prefix="")
-app.register_blueprint(article.blueprint, url_prefix="")
+app.register_blueprint(article.blueprint, url_prefix="/article")
 app.register_blueprint(general.blueprint, url_prefix="")
+app.register_blueprint(like.blueprint, url_prefix="/like")
 app.register_blueprint(admin_users.blueprint, url_prefix="/admin")
+app.register_blueprint(admin_articles.blueprint, url_prefix="/admin")

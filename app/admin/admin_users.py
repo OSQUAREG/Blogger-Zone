@@ -32,9 +32,8 @@ def admin():
 @login_required
 def make_admin(id):
     user = User.query.get_or_404(id)
-    is_admin = User.query.filter(User.is_admin == current_user.is_admin, User.username == "admin")
 
-    if current_user.is_authenticated and is_admin:
+    if current_user.is_authenticated and current_user.is_admin:
         user.is_admin = True
 
         try:

@@ -11,10 +11,12 @@
 <h1><b>Dashboard</b></h1>
 <br>
 <div>
-    <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles List</a>
+    <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
+        List</a>
     <a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
         Article</a>
-    <a href="#jump-to-your-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Your Articles List</a>
+    <a href="#jump-to-your-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Your Articles
+        List</a>
 </div>
 <br><br>
 <div>
@@ -25,19 +27,25 @@
         <strong>Username:</strong> {{ user.username }} <br>
         <strong>Email:</strong> {{ user.email }} <br>
         <strong>Join Date:</strong> {{ user.date_joined.strftime('%Y-%m-%d %I:%M %p') }} <br>
-        {% if user.is_admin %}
-        <strong>Admin:</strong>Yes
-        {% else %}
-        <strong>Admin: </strong>No
+        <strong>Admin:</strong>
+        {% if user.is_admin %} Yes
+        {% else %} No
         {% endif %} <br>
-        <strong>About Author:</strong> {{ user.about_author }}
+        <strong>Last Updated:</strong>
+        {% if user.last_updated_on is none %}
+        {{ None }} {% else %}
+        {{ user.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+        {% endif %} <br>
+        <strong>Bio:</strong> {{ user.about_author }}
     </div>
-    <br> 
+    <br>
     <div>
         <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
-        <a href="{{ url_for('user.update_user', id=user.id) }}" class="btn btn-outline-primary mb-1 border border-primary">Update
+        <a href="{{ url_for('user.update_user', id=user.id) }}"
+            class="btn btn-outline-primary mb-1 border border-primary">Update
             Profile</a>
-        <a href="{{ url_for('user.deactivate_user', id=user.id) }}" class="btn btn-outline-danger mb-1 border border-danger">Deactivate
+        <a href="{{ url_for('user.deactivate_user', id=user.id) }}"
+            class="btn btn-outline-danger mb-1 border border-danger">Deactivate
             Profile</a>
     </div>
     <br id="jump-to-your-articles-list"><br>
@@ -52,8 +60,10 @@
     <div class="articles-container">
         <!-- Tab Links -->
         <div class="nav nav-tabs nav-fill">
-            <button class="tablink" onclick="openPage('Published', this, 'rgb(2, 117, 216)', 'white')"><b>Published</b></button>
-            <button class="tablink" onclick="openPage('Draft', this, 'rgb(2, 117, 216)', 'white')"><b>Saved As Draft</b></button>
+            <button class="tablink"
+                onclick="openPage('Published', this, 'rgb(2, 117, 216)', 'white')"><b>Published</b></button>
+            <button class="tablink" onclick="openPage('Draft', this, 'rgb(2, 117, 216)', 'white')"><b>Saved As
+                    Draft</b></button>
         </div>
 
         <!-- Tab Contents for Published Articles -->
@@ -68,14 +78,16 @@
                         <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }}
                         | <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}
                         | <strong>Status:</strong>
-                        {% if article.is_draft %}
-                        Saved as Draft
-                        {% else %}
-                        Published
+                        {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %} |
+                        <strong>Last Updated:</strong>
+                        {% if article.last_updated_on is none %}
+                        {{ None }} {% else %}
+                        {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
                         {% endif %}
                     </small>
                     <div class="card-body">
-                        <h4 class="card-title"><a class="fs-5 text-decoration-none" href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                        <h4 class="card-title"><a class="fs-5 text-decoration-none"
+                                href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
                         <div>
                             <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
                         </div><br>
@@ -89,14 +101,28 @@
                                 Article</a>
                             <a href="{{ url_for('article.delete_article', id=article.id) }}"
                                 class="btn btn-outline-danger border border-danger">Delete Article</a>
+                            <a href="{{ url_for('article.unpublish_article', id=article.id) }}"
+                                class="btn btn-outline-primary border border-primary">Unpublish Article</a>
                             {% endif %}
                             <small class="float-end">
-                                {% for comment in comments %}
-                                {% if comment.article_id == article.id %}
-                                {% if comment.count > 1 %}
-                                {{ comment.count }} comments
+                                <!-- Articles Comments Count -->
+                                {% for comment_likes_cnt in comment_likes_cnts %}
+                                {% if comment_likes_cnt.article_id == article.id %}
+                                {% if comment_likes_cnt.comments_count > 1 %}
+                                {{ comment_likes_cnt.comments_count }} Comments |
                                 {% else %}
-                                {{ comment.count }} comment
+                                {{ comment_likes_cnt.comments_count }} Comment |
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+
+                                <!-- Articles Likes Count -->
+                                {% for comment_likes_cnt in comment_likes_cnts %}
+                                {% if comment_likes_cnt.article_id == article.id %}
+                                {% if comment_likes_cnt.likes_count > 1 %}
+                                {{ comment_likes_cnt.likes_count }} Likes
+                                {% else %}
+                                {{ comment_likes_cnt.likes_count }} Like
                                 {% endif %}
                                 {% endif %}
                                 {% endfor %}
@@ -129,7 +155,8 @@
                         {% endif %}
                     </small>
                     <div class="card-body">
-                        <h4 class="card-title"><a class="fs-5 text-decoration-none" href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
+                        <h4 class="card-title"><a class="fs-5 text-decoration-none"
+                                href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
                         <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
                         <div><br>
                             {% if current_user.is_authenticated %}
@@ -139,8 +166,33 @@
                                 Article</a>
                             <a href="{{ url_for('article.delete_article', id=article.id) }}"
                                 class="btn btn-outline-danger border border-danger">Delete Article</a>
+                            <a href="{{ url_for('article.publish_article', id=article.id) }}"
+                                class="btn btn-outline-primary border border-primary">Publish Article</a>
                             {% endif %}
                             {% endif %}
+                            <small class="float-end">
+                                <!-- Articles Comments Count -->
+                                {% for comment_likes_cnt in comment_likes_cnts %}
+                                {% if comment_likes_cnt.article_id == article.id %}
+                                {% if comment_likes_cnt.comments_count > 1 %}
+                                {{ comment_likes_cnt.comments_count }} Comments |
+                                {% else %}
+                                {{ comment_likes_cnt.comments_count }} Comment |
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            
+                                <!-- Articles Likes Count -->
+                                {% for comment_likes_cnt in comment_likes_cnts %}
+                                {% if comment_likes_cnt.article_id == article.id %}
+                                {% if comment_likes_cnt.likes_count > 1 %}
+                                {{ comment_likes_cnt.likes_count }} Likes
+                                {% else %}
+                                {{ comment_likes_cnt.likes_count }} Like
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -150,8 +202,10 @@
                 {% endfor %}
             </div>
         </div>
-        <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles List</a>
-        <a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
+        <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
+            List</a>
+        <a href="{{ url_for('article.create_article') }}"
+            class="btn btn-outline-primary mb-1 border border-primary">Create
             Article</a>
     </div>
 </div>

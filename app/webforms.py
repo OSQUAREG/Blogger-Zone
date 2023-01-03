@@ -70,7 +70,6 @@ class LoginForm(FlaskForm):
 class ArticleForm(FlaskForm):
     title = StringField(label="Title", validators=[InputRequired()])
     content = CKEditorField(label="Content", validators=[InputRequired()])
-    slug = StringField(label="Slug")
     is_draft = BooleanField(label="Save as Draft", default=False)
     submit = SubmitField(label="Submit")
 

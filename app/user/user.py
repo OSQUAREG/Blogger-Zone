@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, logout_user, current_user
-from app.models import db, User, Article, Comment
+from app.models import db, User, Article, Comment, ArticleLike
 from app.webforms import UserForm
 
 blueprint = Blueprint("user", __name__, template_folder="templates")
@@ -23,23 +23,26 @@ USER Routes:
 
 
 # Dashboard Page Routing
-@blueprint.route("/dashboard")
+@blueprint.route("/dashboard", methods=["GET"])
 @login_required
 def dashboard():
     user = User.query.get_or_404(current_user.id)
 
+    # To get all published and not deleted (from users) articles.
     articles = db.session.query(Article).\
-        filter(Article.author_id == current_user.id).\
+        filter(Article.author_id == current_user.id, Article.is_deleted == False).\
         order_by(Article.date_posted.desc()).all()
 
-    comments = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")). \
+    # To get the counts of comments and likes for all articles.
+    comment_likes_cnts = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("comments_count"), func.count(ArticleLike.user_id).label("likes_count")). \
         outerjoin(Comment, Comment.article_id == Article.id). \
+        outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
         group_by(Article.id).all()
 
     context = {
         "user": user,
         "articles": articles,
-        "comments": comments
+        "comment_likes_cnts": comment_likes_cnts,
     }
 
     return render_template("dashboard.html", **context)

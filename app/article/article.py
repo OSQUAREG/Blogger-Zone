@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import func
 from sqlalchemy.sql.elements import Null
 from datetime import datetime
-from app.models import db, Article, Comment, User
+from app.models import db, Article, Comment, User, ArticleLike, CommentLike
 from app.webforms import ArticleForm, CommentForm
 
 blueprint = Blueprint("article", __name__, template_folder="templates")
@@ -23,7 +23,7 @@ ARTICLE Routes:
 
 
 # Create Article Page Routing
-@blueprint.route("/article/create", methods=["GET", "POST"])
+@blueprint.route("/create", methods=["GET", "POST"])
 @login_required
 def create_article():
     form = ArticleForm()
@@ -32,12 +32,11 @@ def create_article():
         if form.validate_on_submit(): 
             title = form.title.data
             content = form.content.data
-            slug = form.slug.data
             is_draft = form.is_draft.data
             author = current_user.id  # for the author foreign key link
 
             # adding new article to the db
-            new_article = Article(title=title, content=content, slug=slug, is_draft=is_draft, author_id=author, last_updated_on=None)
+            new_article = Article(title=title, content=content, is_draft=is_draft, author_id=author, last_updated_on=None)
 
             db.session.add(new_article)
             db.session.commit()
@@ -59,30 +58,70 @@ def create_article():
 
 
 # View Single Published Article Page Routing
-@blueprint.route("/article/view/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/view/<int:id>", methods=["GET", "POST"])
 def view_article(id):
-    article = Article.query.get_or_404(id)
     form = CommentForm()
-    comments = Comment.query.filter(Comment.article_id == article.id).order_by(Comment.date_added.desc()).all()
+    article = Article.query.get_or_404(id)
 
-    counts = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")). \
-        outerjoin(Comment, Comment.article_id == Article.id). \
-        group_by(Article.id).all()
+    # To get all comments for current article.
+    comments = Comment.query\
+        .filter(Comment.article_id == article.id)\
+        .order_by(Comment.date_added.desc()).all()
+
+    # To count the comments for current article.
+    comment_cnts = db.session.query(func.count(Comment.comment).label("count"))\
+        .filter(Comment.article_id == article.id)\
+        .all()
+    comment_count = comment_cnts[0][0]
+
+    # To count the likes for current article.
+    article_likes_cnts = db.session.query(func.count(ArticleLike.user_id).label("count"))\
+        .filter(ArticleLike.article_id == article.id)\
+        .all()
+    article_likes_count = article_likes_cnts[0][0]
+
+    # To check if user has liked the current article.
+    user_article_like = db.session.query(ArticleLike)\
+        .filter(ArticleLike.article_id == article.id)\
+        .all()
+
+    # for comment in comments:
+    #     return comment
+    #
+    #     # To count the likes for current comment.
+    #     comment_likes_cnts = db.session.query(comment.id, func.count(CommentLike.user_id).label("count")) \
+    #         .filter(CommentLike.comment_id == comment.id) \
+    #         .all()
+    #     comment_likes_count = comment_likes_cnts[0][1]
+    #
+    #     print(comment_likes_count)
+    #     # print(comment_likes_cnts)
+    #
+    #     # To check if user has liked the current comment.
+    #     user_comment_like = db.session.query(CommentLike) \
+    #         .filter(CommentLike.comment_id == comment.id) \
+    #         .all()
+
+    context = {
+        "form": form,
+        "article": article,
+        "comments": comments,
+        "comment_count": comment_count,
+        "article_likes_count": article_likes_count,
+        "user_article_like": user_article_like,
+        # "comment_likes_count": comment_likes_count,
+        # "user_comment_like": user_comment_like,
+        # "comment": comment,
+        }
 
     if not article.is_draft:
-        context = {
-            "article": article,
-            "form": form,
-            "comments": comments,
-            "counts": counts,
-            }
         return render_template("view-article.html", **context)
     else:
         return redirect(url_for("user.dashboard"))
 
 
 # Edit Article Page Routing
-@blueprint.route("/article/edit/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_article(id):
     form = ArticleForm()
@@ -90,17 +129,15 @@ def edit_article(id):
 
     if form.validate_on_submit() and current_user.id == article.author_id:
         article.title = form.title.data
-        article.slug = form.slug.data
         article.content = form.content.data
         article.is_draft = form.is_draft
+        article.last_updated_by = current_user.username
 
         if form.is_draft.data:
             article.is_draft = True
-            article.last_updated_on = datetime.utcnow
             flash(f"Article titled: '{article.title}' updated and saved successfully")
         else:
             article.is_draft = False
-            article.last_updated_on = datetime.utcnow
             flash(f"Article titled: '{article.title}' updated and published successfully")
         try:
             db.session.add(article)
@@ -113,7 +150,6 @@ def edit_article(id):
     # only the author can edit his own article
     if current_user.id == article.author_id:
         form.title.data = article.title
-        form.slug.data = article.slug
         form.content.data = article.content
         form.is_draft.data = article.is_draft
     else:
@@ -129,7 +165,7 @@ def edit_article(id):
 
 
 # Delete Article Routing (done)
-@blueprint.route("/article/delete/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete_article(id):
     article = Article.query.get_or_404(id)
@@ -141,7 +177,6 @@ def delete_article(id):
             db.session.commit()
 
             flash(f"Article: '{article.title}' Deleted Successfully!")
-            # articles = Article.query.order_by(Article.date_posted.desc()).all
             return redirect(url_for("user.dashboard"))
         except:
             flash("Whoops! Something went wrong! Please try again...!")
@@ -151,8 +186,44 @@ def delete_article(id):
         return redirect(url_for("article.view_article", id=article.id))
 
 
+# Publish Saved Article (done)
+@blueprint.route("/publish/<int:id>", methods=["GET", "POST"])
+@login_required
+def publish_article(id):
+    article = Article.query.get_or_404(id)
+
+    if current_user.id == article.author_id:
+        article.is_draft = False
+
+        try:
+            db.session.commit()
+            flash(f"Article: '{article.title}' is now published.")
+            return redirect(url_for("user.dashboard"))
+        except:
+            flash(f"Whoops! Something went wrong. Please try again!")
+            return redirect(url_for("user.dashboard"))
+
+
+# Unpublish Saved Article (done)
+@blueprint.route("/unpublish/<int:id>", methods=["GET", "POST"])
+@login_required
+def unpublish_article(id):
+    article = Article.query.get_or_404(id)
+
+    if current_user.id == article.author_id:
+        article.is_draft = True
+
+        try:
+            db.session.commit()
+            flash(f"Article: '{article.title}' is now unpublished.")
+            return redirect(url_for("user.dashboard"))
+        except:
+            flash(f"Whoops! Something went wrong. Please try again!")
+            return redirect(url_for("user.dashboard"))
+
+
 # Add Comment Routing (done)
-@blueprint.route("/article/add-comment/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/add-comment/<int:id>", methods=["GET", "POST"])
 @login_required
 def add_comment(id):
     article = Article.query.get_or_404(id)
