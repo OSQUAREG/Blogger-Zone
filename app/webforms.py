@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField#, FileField
+from flask_wtf.file import FileField
 from wtforms.validators import EqualTo, Length, InputRequired
 from wtforms.widgets import TextArea
 from flask_ckeditor import CKEditorField
-# from main import app
 
 
 # User Form Class
@@ -42,7 +42,8 @@ class UserForm(FlaskForm):
             EqualTo("password", message="Passwords do not match!"),
         ],
     )
-    about_author = TextAreaField(label="About Author", widget=TextArea())
+    bio = TextAreaField(label="Bio", widget=TextArea())
+    profile_pic = FileField(label="Profile Picture")
     is_admin = BooleanField(label="Set as Admin")
     submit = SubmitField(label="Submit")
 
@@ -90,9 +91,3 @@ class MessageForm(FlaskForm):
         label="Message", validators=[InputRequired()], widget=TextArea()
     )
     submit = SubmitField(label="Send")
-
-
-# USER ROLE FORM
-class UserRoleForm(FlaskForm):
-    role = StringField(label="Role", validators=[InputRequired()])
-    submit = SubmitField(label="Submit")

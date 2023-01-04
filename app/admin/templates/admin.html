@@ -9,20 +9,23 @@
 {% endfor %}
 
 <h1><b>Admin Dashboard</b></h1>
+
 <br>
+
+<!-- Users Management -->
 <div>
     <h2> Users Management </h2>
     <hr>
     <table class="table">
         <thead class="table-primary table-responsive">
-            <th>User Id</th>
+            <th>Id</th>
             <th>Full Name</th>
             <th>Username</th>
             <th>Email Address</th>
             <th>Date Joined</th>
-            <th>Last Updated On</th>
-            <th>Is Active</th>
-            <th>Is Admin</th>
+            <th>Updated On</th>
+            <th>Active</th>
+            <th>Admin</th>
             <th>Actions</th>
         </thead>
         <tbody>
@@ -59,20 +62,25 @@
         </tbody>
     </table>
 </div>
+
 <br>
+
+<!-- Articles Management -->
 <div>
     <h2> Articles Management </h2>
     <hr>
     <table class="table">
         <thead class="table-primary table-responsive">
-            <th>Article Id</th>
+            <th>Id</th>
             <th>Title</th>
             <th>Date Posted</th>
             <th>Author</th>
-            <th>Last Updated On</th>
-            <th>Last Updated By</th>
-            <th>Is Draft</th>
-            <th>Is Deleted</th>
+            <th>Edited On</th>
+            <th>Edited By</th>
+            <th>Published</th>
+            <th>Deleted</th>
+            <th>Comments</th>
+            <th>Likes</th>
             <th>Actions</th>
         </thead>
         <tbody>
@@ -88,8 +96,24 @@
                     {% endif %}
                 </td>
                 <td>{{ article.last_updated_by }}</td>
-                <td>{% if article.is_draft: %} Yes {% else %} No {% endif %} </td>
+                <td>{% if article.is_draft: %} No {% else %} Yes {% endif %} </td>
                 <td>{% if article.is_deleted: %} Yes {% else %} No {% endif %} </td>
+                <td>
+                <!-- Articles Comments Count -->
+                {% for comment_likes_cnt in comment_likes_cnts %}
+                {% if comment_likes_cnt.article_id == article.id %}
+                {{ comment_likes_cnt.comments_count }}
+                {% endif %}
+                {% endfor %}
+                </td>
+                <td>
+                <!-- Articles Likes Count -->
+                {% for comment_likes_cnt in comment_likes_cnts %}
+                {% if comment_likes_cnt.article_id == article.id %}
+                {{ comment_likes_cnt.likes_count }}
+                {% endif %}
+                {% endfor %}
+                </td>
                 <td>
                     <small>
                         {% if article.is_draft: %}

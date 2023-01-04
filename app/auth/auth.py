@@ -35,7 +35,7 @@ def sign_up():
         email = form.email.data
         password = form.password.data
         confirm_password = form.confirm_password.data
-        about_author = form.about_author.data
+        bio = form.bio.data
 
         # checking if username and email already exists
         user_exists = User.query.filter_by(username=username).first()
@@ -55,7 +55,7 @@ def sign_up():
             password_hash = generate_password_hash(password)
 
             # creating an instance of user
-            user = User(firstname=firstname, lastname=lastname, username=username, email=email, password_hash=password_hash, about_author=about_author, is_admin=bool(0))
+            user = User(firstname=firstname, lastname=lastname, username=username, email=email, password_hash=password_hash, bio=bio, is_admin=bool(0))
             # adding to the db
             db.session.add(user)
             db.session.commit()

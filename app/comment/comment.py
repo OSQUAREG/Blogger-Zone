@@ -8,13 +8,12 @@ from app.webforms import CommentForm
 blueprint = Blueprint("comment", __name__, template_folder="templates")
 
 
-# Add Comment Routing (done)
-@blueprint.route("/article/<int:id>/add-comment", methods=["GET", "POST"])
+# ADD COMMENT ROUTE
+@blueprint.route("/add/<int:id>/add-comment", methods=["GET", "POST"])
 @login_required
 def add_comment(id):
     article = Article.query.get_or_404(id)
     form = CommentForm()
-    comments = Comment.query.order_by(Comment.date_added.desc()).all
 
     if request.method == "POST":
         comment = form.comment.data
@@ -24,28 +23,51 @@ def add_comment(id):
         db.session.add(comment)
         db.session.commit()
 
-        context = {
-            "id": article.id,
-            "form": form,
-            "comments": comments
-        }
-
         flash(f"Comment added successfully")
-        return redirect(url_for("article.view_article", **context))
+        return redirect(url_for("article.view_article", id=article.id))
     else:
         flash(f"Whoops! Something went wrong. Please try again...")
-        return redirect(url_for("article.view_article", **context))
+        return redirect(url_for("article.view_article", id=article.id))
 
 
-# Edit Comment
-@blueprint.route("/article/<int:article_id>/edit-comment/<int:comment_id>", methods=["GET", "POST"])
-@login_required
-def edit_comment(article_id, comment_id):
-    pass
-
-
-# Edit Comment
-@blueprint.route("/article/<int:article_id>/delete-comment/<int:comment_id>", methods=["GET", "POST"])
+# DELETE COMMENT ROUTE
+@blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete_comment(id):
-    pass
+    comment = Comment.query.get_or_404(id)
+
+    if current_user.id == comment.user_id or current_user.is_admin:
+        try:
+            # deleting from the DB
+            db.session.delete(comment)
+            db.session.commit()
+
+            return redirect(url_for("article.view_article", id=comment.article_id))
+        except:
+            flash("Whoops! Something went wrong! Please try again...!")
+            return redirect(url_for("article.view_article", id=comment.article_id))
+    else:
+        return redirect(url_for("article.view_article", id=comment.article_id))
+
+
+# # Edit Comment
+# @blueprint.route("/edit/<int:id>", methods=["GET", "POST"])
+# @login_required
+# def edit_comment(id):
+#     form = CommentForm()
+#     comment = Comment.query.get_or_404(id)
+#
+#     if request.method == "POST":
+#         comment.comment = form.comment.data
+#         try:
+#             db.session.commit()
+#             return redirect(url_for("article.view_article", id=comment.article_id))
+#         except:
+#             flash("Something went wrong. Please try again...")
+#             return redirect(url_for("article.edit_article", id=comment.article_id))
+#
+#     if current_user.id == comment.user_id:
+#         form.comment.data = comment.comment
+#     else:
+#         flash(f"You are not authorized to edit this comment!")
+#         return redirect(url_for("article.view_article", id=comment.article_id))

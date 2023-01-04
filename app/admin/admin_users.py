@@ -1,23 +1,33 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import db, User, Article
+from flask_login import login_required, current_user
+from sqlalchemy import func
+from app.models import db, User, Article, Comment, ArticleLike
 from app.webforms import UserForm
 # from datetime import timedelta
 
 blueprint = Blueprint("admin-users", __name__, template_folder="templates")
 
 
-# MAKE ADMIN
+# ADMIN ROUTE/REPORT
 @blueprint.route("/", methods=["GET"])
 @login_required
 def admin():
     users = db.session.query(User).all()
     articles = db.session.query(Article).all()
 
+    # To get the counts of comments and likes for all articles.
+    comment_likes_cnts = db.session \
+        .query(Article.id.label("article_id"),
+               func.count(Comment.comment).label("comments_count"),
+               func.count(ArticleLike.user_id).label("likes_count")) \
+        .outerjoin(Comment, Comment.article_id == Article.id) \
+        .outerjoin(ArticleLike, ArticleLike.article_id == Article.id) \
+        .group_by(Article.id).all()
+
     context = {
         "users": users,
         "articles": articles,
+        "comment_likes_cnts": comment_likes_cnts
     }
 
     if current_user.is_authenticated and current_user.is_admin:

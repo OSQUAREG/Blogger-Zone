@@ -19,27 +19,26 @@ GENERAL Routes:
 # Home Page Routing (done)
 @blueprint.route("/", methods=["GET"])
 def index():
+    authors = db.session.query(User).order_by(User.id).all
+
+    # To get all articles that are published and not deleted.
     articles = db.session.query(Article).\
         filter(Article.is_draft == False, Article.is_deleted == False).\
         order_by(Article.date_posted.desc()).all()
 
-    authors = db.session.query(User).order_by(User.id).all
-
-    comment_cnts = db.session.query(Article.id.label("article_id"), func.count(Comment.comment).label("count")).\
-        outerjoin(Comment, Comment.article_id == Article.id).\
-        group_by(Article.id).all()
-
-    like_cnts = db.session.query(Article.id.label("article_id"), func.count(ArticleLike.user_id).label("count")). \
-        outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
-        group_by(Article.id).all()
-
-    print(like_cnts)
+    # To get the counts of comments and likes for all articles.
+    comment_likes_cnts = db.session \
+        .query(Article.id.label("article_id"),
+               func.count(Comment.comment).label("comments_count"),
+               func.count(ArticleLike.user_id).label("likes_count")) \
+        .outerjoin(Comment, Comment.article_id == Article.id) \
+        .outerjoin(ArticleLike, ArticleLike.article_id == Article.id) \
+        .group_by(Article.id).all()
 
     context = {
         "articles": articles,
         "authors": authors,
-        "comment_cnts": comment_cnts,
-        "like_cnts": like_cnts,
+        "comment_likes_cnts": comment_likes_cnts,
     }
 
     return render_template("index.html", **context)

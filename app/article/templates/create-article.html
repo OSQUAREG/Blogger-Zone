@@ -20,11 +20,13 @@
         <div class="row">{{ form.hidden_tag() }}</div>
         <div class="row">
             {{ form.title.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-            {{ form.title(class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+            {{ form.title(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
         </div>
         <div class="row">
             {{ form.content.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-            {{ form.content(class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+            <div class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary">
+                {{ form.content }}
+            </div>
         </div>
         <div class="form-check">
             {{ form.is_draft.label(class="form-check-label", for="flexCheckDefault") }}
@@ -35,7 +37,10 @@
         </div>
     </form>
     {{ ckeditor.load() }}
-    {{ ckeditor.config(name='content') }}
+    {{ ckeditor.config(
+        name='content', 
+        custom_url=url_for("static", filename="venv/lib/site-packages/flask_ckeditor/static/basic/contents.css")
+        ) }}
 </div>
 
 {% endblock content %}

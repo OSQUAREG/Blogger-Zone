@@ -7,10 +7,11 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endfor %}
+
 <div class="container">
     <div id="container carouselExampleSlidesOnly" class="carousel slide carousel-fade bg-primary card text-bg-dark"
         data-bs-ride="carousel">
-        <img src="./static/images/blogger-image2.jpg" alt="" class="card-img">
+        <img src="{{url_for('static', filename='images/blogger-image2.jpg')}}" alt="logo" class="card-img">
         <center class="card-img-overlay">
             <div class="container text-dark">
                 {% if current_user.is_authenticated %}
@@ -59,7 +60,7 @@
 <div class="container row">
 
     <!-- Articles List Container -->
-    <div class="container col-8">
+    <div class="container col-8" id="all-articles-list">
         <div>
             <h2>Articles List</h2>
         </div>
@@ -68,9 +69,9 @@
             {% for article in articles %}
             <div class="card border-primary mb-3">
                 <small class="card-header">
-                    <strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
-                    <strong>Date Posted:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
-                    <strong>Last Updated:</strong>
+                    <strong class="badge rounded border border-primary" style="color: black;">Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
+                    <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                    <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
                     {% if article.last_updated_on is none %} {{ None }}
                     {% else %}
                     {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
@@ -94,23 +95,23 @@
                         {% endif %}
                         <small class="float-end">
                             <!-- Articles Comments Count -->
-                            {% for comment_cnt in comment_cnts %}
-                            {% if comment_cnt.article_id == article.id %}
-                            {% if comment_cnt.count > 1 %}
-                            {{ comment_cnt.count }} Comments |
+                            {% for comment_likes_cnt in comment_likes_cnts %}
+                            {% if comment_likes_cnt.article_id == article.id %}
+                            {% if comment_likes_cnt.comments_count > 1 %}
+                            {{ comment_likes_cnt.comments_count }} Comments |
                             {% else %}
-                            {{ comment_cnt.count }} Comment |
+                            {{ comment_likes_cnt.comments_count }} Comment |
                             {% endif %}
                             {% endif %}
                             {% endfor %}
-                            
+                        
                             <!-- Articles Likes Count -->
-                            {% for like_cnt in like_cnts %}
-                            {% if like_cnt.article_id == article.id %}
-                            {% if like_cnt.count > 1 %}
-                            {{ like_cnt.count }} Likes
+                            {% for comment_likes_cnt in comment_likes_cnts %}
+                            {% if comment_likes_cnt.article_id == article.id %}
+                            {% if comment_likes_cnt.likes_count > 1 %}
+                            {{ comment_likes_cnt.likes_count }} Likes
                             {% else %}
-                            {{ like_cnt.count }} Like
+                            {{ comment_likes_cnt.likes_count }} Like
                             {% endif %}
                             {% endif %}
                             {% endfor %}
@@ -123,37 +124,35 @@
         </div>
     </div>
 
-    <!-- Authors List Container -->
     <div class="container col-4">
+        <div><br><br><br></div>
+
+        <!-- Top Authors List Container -->
         <div>
-            <div>
-                <h3 id="jump-to-authors-list">Top Authors</h3>
-                <hr>
-            </div>
-            <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                <ul>
-                    {% for author in authors() %}
-                    <li>{{ author.firstname }} {{ author.lastname }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <h4>Top Authors</h4>
+            <hr>
         </div>
+        <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+            <ul>
+                {% for author in authors() %}
+                <li>{{ author.firstname }} {{ author.lastname }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+            
+        <!-- Top Authors List Container -->
         <div>
-            <div>
-                <h3 id="jump-to-authors-list">Most Viewed</h3>
-                <hr>
-            </div>
-            <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                <ul>
-                    {% for author in authors() %}
-                    <li>{{ author.firstname }} {{ author.lastname }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <h4>Most Popular Articles</h4>
+            <hr>
+        </div>
+        <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+            <ul>
+                {% for author in authors() %}
+                <li>{{ author.firstname }} {{ author.lastname }}</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>
-
-
 
 {% endblock content %}

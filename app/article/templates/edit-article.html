@@ -17,11 +17,13 @@
         <div class="row">{{ form.hidden_tag() }}</div>
         <div class="row">            
             {{ form.title.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-            {{ form.title(class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+            {{ form.title(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
         </div>
         <div class="row">
-            {{ form.content.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-            {{ form.content(class="form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+                {{ form.content.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+                <div class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary">
+                {{ form.content }}
+                </div>
         </div>
         <div class="form-check">
             {{ form.is_draft.label(class="form-check-label", for="flexCheckDefault") }}
@@ -31,9 +33,16 @@
             {{ form.submit(class="btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
         </div>
     </form>
-    {{ ckeditor.load() }}
-    {{ ckeditor.config(name='content', class='form-control shadow p-3 mb-5 bg-body rounded border border-primary') }}
 
+    <!-- CKEDITOR CONFIG -->
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(
+        name='content', 
+        class='form-control shadow p-3 mb-5 bg-body rounded border border-primary',
+        custom_url=url_for("static", filename="venv/lib/site-packages/flask_ckeditor/static/basic/contents.css"),
+        ) }}
+
+    <!-- TEXT AREA CKEDITOR CONFIG -->
     <script>
         CKEDITOR.addCss(".cke_editable{cursor:text; font-size: 16px; font-family: Arial, sans-serif;}");
     </script>

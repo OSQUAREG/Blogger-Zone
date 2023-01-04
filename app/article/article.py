@@ -22,7 +22,7 @@ ARTICLE Routes:
 """
 
 
-# Create Article Page Routing
+# CREATE ARTICLE ROUTE
 @blueprint.route("/create", methods=["GET", "POST"])
 @login_required
 def create_article():
@@ -57,7 +57,7 @@ def create_article():
     return render_template("create-article.html", **context)
 
 
-# View Single Published Article Page Routing
+# VIEW SINGLE ARTICLE ROUTE
 @blueprint.route("/view/<int:id>", methods=["GET", "POST"])
 def view_article(id):
     form = CommentForm()
@@ -85,22 +85,19 @@ def view_article(id):
         .filter(ArticleLike.article_id == article.id)\
         .all()
 
-    # for comment in comments:
-    #     return comment
+    # # To count the likes for current comment.
+    # comment_likes_cnts = db.session.query(func.count(CommentLike.user_id).label("count")) \
+    #     .filter(CommentLike.comment_id == article.comment_id) \
+    #     .all()
+    # comment_likes_count = comment_likes_cnts[0][1]
     #
-    #     # To count the likes for current comment.
-    #     comment_likes_cnts = db.session.query(comment.id, func.count(CommentLike.user_id).label("count")) \
-    #         .filter(CommentLike.comment_id == comment.id) \
-    #         .all()
-    #     comment_likes_count = comment_likes_cnts[0][1]
+    # print(comment_likes_count)
+    # print(comment_likes_cnts)
     #
-    #     print(comment_likes_count)
-    #     # print(comment_likes_cnts)
-    #
-    #     # To check if user has liked the current comment.
-    #     user_comment_like = db.session.query(CommentLike) \
-    #         .filter(CommentLike.comment_id == comment.id) \
-    #         .all()
+    # # To check if user has liked the current comment.
+    # user_comment_like = db.session.query(CommentLike) \
+    #     .filter(CommentLike.comment_id == article.comment_id) \
+    #     .all()
 
     context = {
         "form": form,
@@ -111,7 +108,6 @@ def view_article(id):
         "user_article_like": user_article_like,
         # "comment_likes_count": comment_likes_count,
         # "user_comment_like": user_comment_like,
-        # "comment": comment,
         }
 
     if not article.is_draft:
@@ -120,7 +116,7 @@ def view_article(id):
         return redirect(url_for("user.dashboard"))
 
 
-# Edit Article Page Routing
+# EDIT ARTICLE ROUTE
 @blueprint.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_article(id):
@@ -140,7 +136,6 @@ def edit_article(id):
             article.is_draft = False
             flash(f"Article titled: '{article.title}' updated and published successfully")
         try:
-            db.session.add(article)
             db.session.commit()
             return redirect(url_for("article.view_article", id=article.id))
         except:
@@ -154,7 +149,7 @@ def edit_article(id):
         form.is_draft.data = article.is_draft
     else:
         flash(f"You are not authorized to edit this article!")
-        return redirect(url_for("article.view_article", article.id))
+        return redirect(url_for("article.view_article", id=article.id))
 
     context = {
         "form": form,
@@ -164,7 +159,7 @@ def edit_article(id):
     return render_template("edit-article.html", **context)
 
 
-# Delete Article Routing (done)
+# DELETE ARTICLE ROUTE
 @blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete_article(id):
@@ -186,7 +181,7 @@ def delete_article(id):
         return redirect(url_for("article.view_article", id=article.id))
 
 
-# Publish Saved Article (done)
+# PUBLISH ARTICLE ROUTE
 @blueprint.route("/publish/<int:id>", methods=["GET", "POST"])
 @login_required
 def publish_article(id):
@@ -204,7 +199,7 @@ def publish_article(id):
             return redirect(url_for("user.dashboard"))
 
 
-# Unpublish Saved Article (done)
+# UNPUBLISH ARTICLE ROUTE
 @blueprint.route("/unpublish/<int:id>", methods=["GET", "POST"])
 @login_required
 def unpublish_article(id):
@@ -220,32 +215,3 @@ def unpublish_article(id):
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
             return redirect(url_for("user.dashboard"))
-
-
-# Add Comment Routing (done)
-@blueprint.route("/add-comment/<int:id>", methods=["GET", "POST"])
-@login_required
-def add_comment(id):
-    article = Article.query.get_or_404(id)
-    form = CommentForm()
-    comments = Comment.query.order_by(Comment.date_added.desc()).all
-
-    context = {
-        "id": article.id,
-        "form": form,
-        "comments": comments
-    }
-
-    if request.method == "POST":
-        comment = form.comment.data
-        commenter = current_user.id
-
-        comment = Comment(comment=comment, user_id=commenter, article_id=article.id)
-        db.session.add(comment)
-        db.session.commit()
-
-        flash(f"Comment added successfully")
-        return redirect(url_for("article.view_article", **context))
-    else:
-        flash(f"Whoops! Something went wrong. Please try again...")
-        return redirect(url_for("article.view_article", **context))

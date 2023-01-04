@@ -30,11 +30,12 @@ class Article(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
 
     # creates foreign keys with related users (authors).
-    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
 
     # create relationship to comments and likes.
     comments = db.relationship("Comment", backref="articles")
-    likes = db.relationship("ArticleLike", backref="articles")
+    article_likes = db.relationship("ArticleLike", backref="articles")
+    comment_likes = db.relationship("CommentLike", backref="articles")
 
     def __repr__(self):
         return f"Article: <{self.title}>"
@@ -50,7 +51,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(25), nullable=False, unique=True)
     email = db.Column(db.Text(150), nullable=False, unique=True)
     password_hash = db.Column(db.Text(255), nullable=False, unique=True)
-    about_author = db.Column(db.Text(), nullable=True)
+    bio = db.Column(db.Text(), nullable=True)
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
@@ -78,8 +79,8 @@ class Comment(db.Model):
     edited = db.Column(db.Boolean, default=False)
 
     # create foreign keys with related users and articles.
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    article_id = db.Column(db.Integer, db.ForeignKey("articles.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+    article_id = db.Column(db.Integer, db.ForeignKey("articles.id", ondelete="CASCADE"))
 
     # create relationship to likes.
     likes = db.relationship("CommentLike", backref="comments")
@@ -92,7 +93,7 @@ class Comment(db.Model):
 class ArticleLike(db.Model):
     __tablename__ = "article_likes"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     article_id = db.Column(db.Integer, db.ForeignKey("articles.id", ondelete="CASCADE"), primary_key=True)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -104,8 +105,9 @@ class ArticleLike(db.Model):
 class CommentLike(db.Model):
     __tablename__ = "comment_likes"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     comment_id = db.Column(db.Integer, db.ForeignKey("comments.id", ondelete="CASCADE"), primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey("articles.id", ondelete="CASCADE"))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):

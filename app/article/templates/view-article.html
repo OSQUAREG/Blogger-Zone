@@ -96,6 +96,7 @@
                     {{ comment.commenter.firstname }} {{ comment.commenter.lastname }}
                     | {{ comment.date_added.strftime('%Y-%m-%d %I:%M %p') }}
                 </small>
+                <small class="float-end" style="font-size:12px"><a href="{{ url_for('comment.delete_comment', id=comment.id) }}">Delete Comment</a></small>
                 <p class="card-text">{{ comment.comment }}</p>
 
                 <!-- Comment Likes Count -->
@@ -118,20 +119,18 @@
                         {% endif %}
                     </small><br>
                 </div><hr> #}
-                
+
                 {% endfor %}
                 {% endif %}
-            </div>
-            
+            </div>            
         </div>
-
         <br>
     </div>
     {% if current_user.is_authenticated %}
     <div class="col-4">
-        <form action="{{ url_for('article.add_comment', id=article.id) }}" method="POST">
+        <form action="{{ url_for('comment.add_comment', id=article.id) }}" method="POST">
             <div class="col-md-12 mb-3 mx-auto">
-                {{ form.comment.label (class="form-label text-center", style="font-weight:bold; font-size:18px") }}
+                <h6 class="text-center", style="font-size:17px"><b>Add your comment here</b></h6>
                 {{ form.comment (class="form-control shadow p-2 bg-body rounded border border-primary") }}
             </div>
             <div class="col-md-2 mx-auto">
@@ -140,6 +139,8 @@
         </form>
     </div>
     {% endif %}
+
+
 </section>
 
 
