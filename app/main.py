@@ -10,7 +10,7 @@ from datetime import timedelta
 app = Flask(__name__)
 
 # SQLALCHEMY CONFIG
-app.config["SQLALCHEMY_DATABASE_URI"] = settings.database_url
+app.config["SQLALCHEMY_DATABASE_URI"] = settings.database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = settings.secret_key
 # Init DB
@@ -23,10 +23,10 @@ db.init_app(app)
 # jwt = JWTManager(app)
 
 # CKEDITOR CONFIG FOR WEB FORMS
-app.config["CKEDITOR_PKG_TYPE"] = 'standard'
-app.config["CKEDITOR_SERVE_LOCAL"] = True
-app.config["CKEDITOR_HEIGHT"] = 400
-app.config["CKEDITOR_WIDTH"] = 2000
+app.config["CKEDITOR_PKG_TYPE"] = settings.package_type
+app.config["CKEDITOR_SERVE_LOCAL"] = settings.serve_local
+app.config["CKEDITOR_HEIGHT"] = settings.height
+app.config["CKEDITOR_WIDTH"] = settings.width
 # Init CKEditor
 ckeditor = CKEditor(app)
 
