@@ -34,6 +34,7 @@
 		<div class="col-md-6">
 			{{ form.email.label(class="form-label", style="font-weight:bold; font-size:18px") }}
 			{{ form.email(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary") }}
+			<small>{{ form.email.error }}</small>
 		</div>
 		<div class="col-md-6">
 			{{ form.password.label(class="form-label", style="font-weight:bold; font-size:18px") }}
@@ -51,8 +52,8 @@
 			{% endfor %}
 		</div>
 		<div class="row-cols-auto">
-			{{ form.about_author.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-			{{ form.about_author(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary") }}
+			{{ form.bio.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+			{{ form.bio(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary") }}
 		</div>
 		<div class="d-grid gap-2 col-3 mx-auto">
 			{{ form.submit(class="btn btn btn-outline-primary border border-primary", style="font-weight:bold; font-size:18px") }}

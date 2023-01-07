@@ -1,9 +1,6 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import db, User, Article
-from app.webforms import UserForm
-# from datetime import timedelta
+from flask import redirect, url_for, flash, Blueprint
+from flask_login import login_required, current_user
+from app.models import db, Article
 
 blueprint = Blueprint("admin-articles", __name__, template_folder="templates")
 
@@ -29,9 +26,9 @@ AUTH Routes:
 
 
 # PUBLISH ARTICLE
-@blueprint.route("/publish-article/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/publish/<int:id>", methods=["GET", "POST"])
 @login_required
-def publish_article(id):
+def publish(id):
     article = Article.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -40,16 +37,16 @@ def publish_article(id):
         try:
             db.session.commit()
             flash(f"Article: '{article.title}' is now published.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # UNPUBLISH ARTICLE
-@blueprint.route("/unpublish-article/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/unpublish/<int:id>", methods=["GET", "POST"])
 @login_required
-def unpublish_article(id):
+def unpublish(id):
     article = Article.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -58,33 +55,33 @@ def unpublish_article(id):
         try:
             db.session.commit()
             flash(f"Article: '{article.title}' is now unpublished.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # DELETE ARTICLE FROM DATABASE
-@blueprint.route("/delete-from-db/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
-def delete_article(id):
+def delete(id):
     article = Article.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
         try:
-            db.sessoin.delete(article)
+            db.session.delete(article)
             db.session.commit()
             flash(f"Article: '{article.title}' is deleted successfully.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # REMOVE ARTICLE FROM USER
-@blueprint.route("/remove-article/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/remove/<int:id>", methods=["GET", "POST"])
 @login_required
-def remove_article(id):
+def remove(id):
     article = Article.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -92,16 +89,16 @@ def remove_article(id):
         try:
             db.session.commit()
             flash(f"Article: '{article.title}' is removed from user's articles successfully.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # ADD ARTICLE TO USER
-@blueprint.route("/add-article/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/add/<int:id>", methods=["GET", "POST"])
 @login_required
-def add_article(id):
+def add(id):
     article = Article.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -109,7 +106,7 @@ def add_article(id):
         try:
             db.session.commit()
             flash(f"Article: '{article.title}' is added to user's articles successfully.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))

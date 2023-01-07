@@ -1,46 +1,43 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
-
-<a href="/#jump-to-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
-    <br><br>
-
-<div class="form-group">
-    <div class="form-group">
-        <h2 style="font-weight:bold">Create An Article</h2>
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <br><br>
-    <form class="row g-3" action="{{ url_for('article.create_article') }}" method="POST">
-        <div class="row">{{ form.hidden_tag() }}</div>
-        <div class="row">
-            {{ form.title.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-            {{ form.title(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+    {% endfor %}
+    
+    <a href="/#jump-to-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
+        <br><br>
+    
+    <div>
+        <h2 style="font-weight:bold">Create An Article</h2>
+        <br><br>
+        <div class="container form-group">
+            <form class="row g-3" action="{{ url_for('article.create') }}" method="POST">
+                <div class="row">{{ form.hidden_tag() }}</div>
+                <div class="row">
+                    {{ form.title.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+                    {{ form.title(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary") }}
+                </div>
+                <div class="row">
+                    {{ form.content.label(class="form-label", style="font-weight:bold; font-size:18px") }}
+                    <div class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary">
+                        {{ form.content }}
+                    </div>
+                </div>
+                <div class="form-check">
+                    {{ form.is_draft.label(class="form-check-label", for="flexCheckDefault") }}
+                    {{ form.is_draft(class="form-check-input shadow p-2 rounded border border-primary", type="checkbox", id="flexCheckDefault") }}
+                </div>
+                <div class="d-grid gap-2 col-3 mx-auto">
+                    {{ form.submit(class="btn btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
+                </div>
+            </form>
         </div>
-        <div class="row">
-            {{ form.content.label(class="form-label", style="font-weight:bold; font-size:18px") }}
-            <div class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary">
-                {{ form.content }}
-            </div>
-        </div>
-        <div class="form-check">
-            {{ form.is_draft.label(class="form-check-label", for="flexCheckDefault") }}
-            {{ form.is_draft(class="form-check-input shadow p-2 rounded border border-primary", type="checkbox", id="flexCheckDefault") }}
-        </div>
-        <div class="d-grid gap-2 col-3 mx-auto">
-            {{ form.submit(class="btn btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
-        </div>
-    </form>
-    {{ ckeditor.load() }}
-    {{ ckeditor.config(
-        name='content', 
-        custom_url=url_for("static", filename="venv/lib/site-packages/flask_ckeditor/static/basic/contents.css")
-        ) }}
+    </div>
 </div>
 
 {% endblock content %}

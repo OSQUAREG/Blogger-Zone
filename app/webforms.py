@@ -1,12 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField#, FileField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, EmailField
 from flask_wtf.file import FileField
 from wtforms.validators import EqualTo, Length, InputRequired
 from wtforms.widgets import TextArea
 from flask_ckeditor import CKEditorField
 
 
-# User Form Class
+# USER FORM
 class UserForm(FlaskForm):
     firstname = StringField(
         label="First Name", validators=[InputRequired(message="*Required")]
@@ -21,7 +21,7 @@ class UserForm(FlaskForm):
             Length(5, 25, message="Password must be between 5 and 15 characters"),
         ],
     )
-    email = StringField(
+    email = EmailField(
         label="Email",
         validators=[
             InputRequired(message="*Required"),
@@ -48,7 +48,7 @@ class UserForm(FlaskForm):
     submit = SubmitField(label="Submit")
 
 
-# Login Form Class
+# LOGIN FORM
 class LoginForm(FlaskForm):
     username_email = StringField(
         label="Username/Email",
@@ -86,8 +86,16 @@ class CommentForm(FlaskForm):
 # MESSAGE FORM
 class MessageForm(FlaskForm):
     name = StringField(label="Name", validators=[InputRequired()])
-    email = StringField(label="Email", validators=[InputRequired(message="*Required")])
+    email = EmailField(label="Email", validators=[InputRequired(message="*Required")])
     message = TextAreaField(
         label="Message", validators=[InputRequired()], widget=TextArea()
     )
     submit = SubmitField(label="Send")
+
+
+# SEARCH FORM
+class SearchForm(FlaskForm):
+    search_word = StringField(label="Search Here", validators=[InputRequired()])
+    submit = SubmitField(label="Search")
+
+

@@ -1,22 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 
-<a href="/#jump-to-articles-list" class="btn btn-outline-primary border border-primary">Back to Articles List</a>
-{% if current_user.is_authenticated %}
-<a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
-{% endif %}
-<br><br>
+    <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Articles List</a>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+    <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
+    {% endif %}
+    <br><br>
+</div>
 
 <div class="container">
     <div class="row" >
-        <h2 style="font-weight:bold">Contact</h2>
+        <h2 style="font-weight:bold">Contact Me</h2>
     </div>
     <div class="row">
         <div class="form-group col-6">

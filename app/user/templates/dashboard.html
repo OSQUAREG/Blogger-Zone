@@ -1,233 +1,268 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 
-<div>
-    <h2><b>Dashboard</b></h2>
-</div>
-<br>
-<div class="container row">
-    <div class="col-8">
-        <div>
-            <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
-                List</a>
-            <a href="{{ url_for('article.create_article') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
-                Article</a>
-            <a href="#your-articles" class="btn btn-outline-primary mb-1 border border-primary">Your Articles
-                List</a>
+    <div>
+        <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
+            List</a>
+        <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
+            Article</a>
+        <a href="#your-articles" class="btn btn-outline-primary mb-1 border border-primary">Your Articles
+            List</a>
+    </div>
+    <br>
+    <div>
+        <h2><b>Dashboard</b></h2>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <br>
+            <div>
+                <h3>Your Profile</h3>
+                <hr>
+                <strong>Name:</strong> {{ user.firstname }} {{ user.lastname }} <br>
+                <strong>Username:</strong> {{ user.username }} <br>
+                <strong>Email:</strong> {{ user.email }} <br>
+                <strong>Join Date:</strong> {{ user.date_joined.strftime('%Y-%m-%d %I:%M %p') }} <br>
+                <strong>Admin:</strong>
+                {% if user.is_admin %} Yes
+                {% else %} No
+                {% endif %} <br>
+                <strong>Last Updated:</strong>
+                {% if user.last_updated_on is none %}
+                {{ None }} {% else %}
+                {{ user.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                {% endif %} <br>
+                <strong>Bio:</strong> {{ user.bio }} <br>
+            </div><br>
+
+        </div>
+        <div class="row col-3">
+            <div>
+                <br><br><br>
+                {% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='images/profile_pic/' + user.profile_pic)}}"
+                    class="float-right img-thumbnail border-primary" width="200">
+                {% else %}
+                <center>
+                    <small><a href="{{ url_for('user.update') }}">Add Profile Picture</a></small>
+                </center>
+                <img src="{{ url_for('static', filename='images/default_profile_pic.png')}}"
+                    class="float-right img-thumbnail border-primary" width="200">
+                {% endif %}
+            </div>
         </div>
 
-        <br>
-
-        <div>
-            <h3>Your Profile</h3>
-            <hr>
-            <strong>Name:</strong> {{ user.firstname }} {{ user.lastname }} <br>
-            <strong>Username:</strong> {{ user.username }} <br>
-            <strong>Email:</strong> {{ user.email }} <br>
-            <strong>Join Date:</strong> {{ user.date_joined.strftime('%Y-%m-%d %I:%M %p') }} <br>
-            <strong>Admin:</strong>
-            {% if user.is_admin %} Yes
-            {% else %} No
-            {% endif %} <br>
-            <strong>Last Updated:</strong>
-            {% if user.last_updated_on is none %}
-            {{ None }} {% else %}
-            {{ user.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
-            {% endif %} <br>
-            <strong>Bio:</strong> {{ user.bio }} <br>
-            <strong>Profile Pic:</strong> {{ user.profile_pic }}
-        </div><br>
-    
     </div>
-    <div class="row col-4">
-        {% if current_user.profile_pic %}
-        <center><strong>Profile Picture</strong></center>
-        <img src="{{ url_for('static', filename='images/' + user.profile_pic)}}" width="200" align="right">
-        {% else %}
-        <center><strong>Profile Picture</strong><br><small><a href="{{ url_for('user.update_user', id=user.id) }}">Update
-                    Profile</a> to upload profile picture</small></center>
-        <img src="{{ url_for('static', filename='images/default_profile_pic.png')}}" width="200" align="right">
-        {% endif %}
-    </div>
-    {# <br><br><br> #}
-    
-</div>
-<div class="container">
     <div>
-        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
-        <a href="{{ url_for('user.update_user', id=user.id) }}"
-            class="btn btn-outline-primary mb-1 border border-primary">Update Profile</a>
-        <a href="{{ url_for('user.deactivate_user', id=user.id) }}"
-            class="btn btn-outline-danger mb-1 border border-danger">Delete Profile</a>
+        <div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
+            <a href="{{ url_for('user.update') }}" class="btn btn-outline-primary mb-1 border border-primary">Update
+                Profile</a>
+            <a href="{{ url_for('user.deactivate') }}" class="btn btn-outline-danger mb-1 border border-danger">Delete
+                Profile</a>
+        </div>
     </div>
-</div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-<div class="container">
-    <div id="your-articles">
-    <br><br><br>
-        <h3>Your Articles</h3>
-        <hr>
-        <div class="articles-container">
-            <!-- Tab Links -->
-            <div class="nav nav-tabs nav-fill">
-                <button class="tablink shadow rounded border border-primary"
-                    onclick="openPage('Published', this, 'rgb(2, 117, 216)', 'white')"><b>Published</b></button>
-                <button class="tablink shadow rounded border border-primary" onclick="openPage('Draft', this, 'rgb(2, 117, 216)', 'white')"><b>Saved As
-                        Draft</b></button>
+    <div>
+        <div id="your-articles">
+            <br><br>
+            <div class="row">
+                <div class="col-8">
+                    <h3>Your Articles</h3>
+                </div>
+                
+                <!-- Search Area -->
+                <div class="col-4 float-right">
+                    <form action="{{ url_for('user.article_search') }}" method="POST" class="d-flex">
+                        <div class="">{{ form.hidden_tag() }}</div>
+                        <div class="col-9">
+                            {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search your article") }}
+                        </div>
+                        <div class="col-5">
+                            {{ form.submit(class="btn btn btn-outline-primary border border-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
+                        </div>
+                    </form>
+                </div>
             </div>
-            <!-- Tab Contents for Published Articles -->
-            <div id="Published" class="tabcontent">
-                <h6><b>Published Articles</b></h6>
-                <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                    {% for article in articles %}
-                    {% if article.author_id == current_user.id %}
-                    {% if not article.is_draft: %}
-                    <div class="card border-primary mb-3">
-                        <small class="card-header">
-                            <strong class="badge rounded border border-primary" style="color: black;">Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
-                            <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
-                            <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
-                            {% if article.last_updated_on is none %}
-                            {{ None }} | {% else %}
-                            {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }} |
-                            {% endif %}
-                            <strong class="badge rounded border border-primary" style="color: black;">Status:</strong>
-                            {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
-                        </small>
-                        <div class="card-body">
-                            <h4 class="card-title"><a class="fs-5 text-decoration-none"
-                                    href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
-                            <div>
+            <hr>
+            <div class="articles-container">
+                <!-- Tab Links -->
+                <div class="nav nav-tabs nav-fill">
+                    <button class="col-6 tablink shadow border border-primary"
+                        onclick="openPage('Published', this, 'rgb(2, 117, 216)', 'white')"><b>Published</b></button>
+                    <button class="col-6 tablink shadow border border-primary"
+                        onclick="openPage('Draft', this, 'rgb(2, 117, 216)', 'white')"><b>Saved As
+                            Draft</b></button>
+                </div>
+                <!-- Tab Contents for Published Articles -->
+                <div id="Published" class="tabcontent">
+                    <h6><b>Published Articles</b></h6>
+                    <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+                        {% for article in articles %}
+                        {% if article.author_id == current_user.id %}
+                        {% if not article.is_draft: %}
+                        <div class="card border-primary mb-3">
+                            <small class="card-header">
+                                <strong class="badge rounded border border-primary"
+                                    style="color: black;">Author:</strong> {{ article.author.firstname }}
+                                {{ article.author.lastname }} |
+                                <strong class="badge rounded border border-primary" style="color: black;">Date
+                                    Created:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                                <strong class="badge rounded border border-primary" style="color: black;">Last
+                                    Updated:</strong>
+                                {% if article.last_updated_on is none %}
+                                {{ None }} | {% else %}
+                                {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }} |
+                                {% endif %}
+                                <strong class="badge rounded border border-primary"
+                                    style="color: black;">Status:</strong>
+                                {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
+                            </small>
+                            <div class="card-body">
+                                <h4 class="card-title"><a class="fs-5 text-decoration-none"
+                                        href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a></h4>
+                                <div>
+                                    <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
+                                </div>
+                                <br>
+                                <div>
+                                    <small class="float-end">
+                                        <!-- Articles Comments Count -->
+                                        {% for comment_likes_cnt in comment_likes_cnts %}
+                                        {% if comment_likes_cnt.article_id == article.id %}
+                                        {% if comment_likes_cnt.comments_count > 1 %}
+                                        {{ comment_likes_cnt.comments_count }} Comments |
+                                        {% else %}
+                                        {{ comment_likes_cnt.comments_count }} Comment |
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+                                        <!-- Articles Likes Count -->
+                                        {% for comment_likes_cnt in comment_likes_cnts %}
+                                        {% if comment_likes_cnt.article_id == article.id %}
+                                        {% if comment_likes_cnt.likes_count > 1 %}
+                                        {{ comment_likes_cnt.likes_count }} Likes
+                                        {% else %}
+                                        {{ comment_likes_cnt.likes_count }} Like
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </div>
+                                <br>
+                                <div>
+                                    <a href="{{ url_for('article.view', id=article.id) }}"
+                                        class="btn btn-outline-primary border border-primary">Read
+                                        Article</a>
+                                    {% if current_user.is_authenticated and article.author_id == current_user.id %}
+                                    <a href="{{ url_for('article.edit', id=article.id) }}"
+                                        class="btn btn-outline-primary border border-primary">Edit
+                                        Article</a>
+                                    <a href="{{ url_for('article.remove', id=article.id) }}"
+                                        class="btn btn-outline-danger border border-danger">Delete Article</a>
+                                    <a href="{{ url_for('article.unpublish', id=article.id) }}"
+                                        class="btn btn-outline-primary border border-primary">Unpublish Article</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Tab Contents for Saved As Draft Articles -->
+                <div id="Draft" class="tabcontent">
+                    <h6><b>Saved As Draft Articles</b></h6>
+                    <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+                        {% for article in articles %}
+                        {% if article.author_id == current_user.id %}
+                        {% if article.is_draft: %}
+                        <div class="card border-primary mb-3">
+                            <small class="card-header">
+                                <strong class="badge rounded border border-primary"
+                                    style="color: black;">Author:</strong>
+                                {{ article.author.firstname }} {{ article.author.lastname }} |
+                                <strong class="badge rounded border border-primary" style="color: black;">Date
+                                    Created:</strong>
+                                {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                                <strong class="badge rounded border border-primary" style="color: black;">Last
+                                    Updated:</strong>
+                                {% if article.last_updated_on is none %}
+                                {{ None }} | {% else %}
+                                {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }} |
+                                {% endif %}
+                                <strong class="badge rounded border border-primary"
+                                    style="color: black;">Status:</strong>
+                                {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
+                            </small>
+                            <div class="card-body">
+                                <h4 class="card-title"><a class="fs-5 text-decoration-none"
+                                        href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a></h4>
                                 <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
-                            </div><br>
-                            <div>
-                                <a href="{{ url_for('article.view_article', id=article.id) }}"
-                                    class="btn btn-outline-primary border border-primary">Read
-                                    Article</a>
-                                {% if current_user.is_authenticated and article.author_id == current_user.id %}
-                                <a href="{{ url_for('article.edit_article', id=article.id) }}"
-                                    class="btn btn-outline-primary border border-primary">Edit
-                                    Article</a>
-                                <a href="{{ url_for('article.delete_article', id=article.id) }}"
-                                    class="btn btn-outline-danger border border-danger">Delete Article</a>
-                                <a href="{{ url_for('article.unpublish_article', id=article.id) }}"
-                                    class="btn btn-outline-primary border border-primary">Unpublish Article</a>
-                                {% endif %}
-                                <small class="float-end">
-                                    <!-- Articles Comments Count -->
-                                    {% for comment_likes_cnt in comment_likes_cnts %}
-                                    {% if comment_likes_cnt.article_id == article.id %}
-                                    {% if comment_likes_cnt.comments_count > 1 %}
-                                    {{ comment_likes_cnt.comments_count }} Comments |
-                                    {% else %}
-                                    {{ comment_likes_cnt.comments_count }} Comment |
+                                <div><br>
+                                    {% if current_user.is_authenticated %}
+                                    {% if article.author_id == current_user.id %}
+                                    <a href="{{ url_for('article.edit', id=article.id) }}"
+                                        class="btn btn-outline-primary border border-primary">Edit
+                                        Article</a>
+                                    <a href="{{ url_for('article.remove', id=article.id) }}"
+                                        class="btn btn-outline-danger border border-danger">Delete Article</a>
+                                    <a href="{{ url_for('article.publish', id=article.id) }}"
+                                        class="btn btn-outline-primary border border-primary">Publish Article</a>
                                     {% endif %}
                                     {% endif %}
-                                    {% endfor %}
-                                    <!-- Articles Likes Count -->
-                                    {% for comment_likes_cnt in comment_likes_cnts %}
-                                    {% if comment_likes_cnt.article_id == article.id %}
-                                    {% if comment_likes_cnt.likes_count > 1 %}
-                                    {{ comment_likes_cnt.likes_count }} Likes
-                                    {% else %}
-                                    {{ comment_likes_cnt.likes_count }} Like
-                                    {% endif %}
-                                    {% endif %}
-                                    {% endfor %}
-                                </small>
+                                    <small class="float-end">
+                                        <!-- Articles Comments Count -->
+                                        {% for comment_likes_cnt in comment_likes_cnts %}
+                                        {% if comment_likes_cnt.article_id == article.id %}
+                                        {% if comment_likes_cnt.comments_count > 1 %}
+                                        {{ comment_likes_cnt.comments_count }} Comments |
+                                        {% else %}
+                                        {{ comment_likes_cnt.comments_count }} Comment |
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+
+                                        <!-- Articles Likes Count -->
+                                        {% for comment_likes_cnt in comment_likes_cnts %}
+                                        {% if comment_likes_cnt.article_id == article.id %}
+                                        {% if comment_likes_cnt.likes_count > 1 %}
+                                        {{ comment_likes_cnt.likes_count }} Likes
+                                        {% else %}
+                                        {{ comment_likes_cnt.likes_count }} Like
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </div>
                             </div>
                         </div>
+                        <br>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                    <br>
-                    {% endif %}
-                    {% endif %}
-                    {% endfor %}
                 </div>
+                <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to
+                    Articles List</a>
+                <a href="{{ url_for('article.create') }}"
+                    class="btn btn-outline-primary mb-1 border border-primary">Create Article</a>
             </div>
-            <!-- Tab Contents for Saved As Draft Articles -->
-            <div id="Draft" class="tabcontent">
-                <h6><b>Saved As Draft Articles</b></h6>
-                <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                    {% for article in articles %}
-                    {% if article.author_id == current_user.id %}
-                    {% if article.is_draft: %}
-                    <div class="card border-primary mb-3">
-                        <small class="card-header">
-                            <strong class="badge rounded border border-primary" style="color: black;">Author:</strong>
-                            {{ article.author.firstname }} {{ article.author.lastname }} |
-                            <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong>
-                            {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
-                            <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
-                            {% if article.last_updated_on is none %}
-                            {{ None }} | {% else %}
-                            {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }} |
-                            {% endif %}
-                            <strong class="badge rounded border border-primary" style="color: black;">Status:</strong>
-                            {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
-                        </small>
-                        <div class="card-body">
-                            <h4 class="card-title"><a class="fs-5 text-decoration-none"
-                                    href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a></h4>
-                            <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
-                            <div><br>
-                                {% if current_user.is_authenticated %}
-                                {% if article.author_id == current_user.id %}
-                                <a href="{{ url_for('article.edit_article', id=article.id) }}"
-                                    class="btn btn-outline-primary border border-primary">Edit
-                                    Article</a>
-                                <a href="{{ url_for('article.delete_article', id=article.id) }}"
-                                    class="btn btn-outline-danger border border-danger">Delete Article</a>
-                                <a href="{{ url_for('article.publish_article', id=article.id) }}"
-                                    class="btn btn-outline-primary border border-primary">Publish Article</a>
-                                {% endif %}
-                                {% endif %}
-                                <small class="float-end">
-                                    <!-- Articles Comments Count -->
-                                    {% for comment_likes_cnt in comment_likes_cnts %}
-                                    {% if comment_likes_cnt.article_id == article.id %}
-                                    {% if comment_likes_cnt.comments_count > 1 %}
-                                    {{ comment_likes_cnt.comments_count }} Comments |
-                                    {% else %}
-                                    {{ comment_likes_cnt.comments_count }} Comment |
-                                    {% endif %}
-                                    {% endif %}
-                                    {% endfor %}
-    
-                                    <!-- Articles Likes Count -->
-                                    {% for comment_likes_cnt in comment_likes_cnts %}
-                                    {% if comment_likes_cnt.article_id == article.id %}
-                                    {% if comment_likes_cnt.likes_count > 1 %}
-                                    {{ comment_likes_cnt.likes_count }} Likes
-                                    {% else %}
-                                    {{ comment_likes_cnt.likes_count }} Like
-                                    {% endif %}
-                                    {% endif %}
-                                    {% endfor %}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    {% endif %}
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            <a href="/#jump-to-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles List</a>
-            <a href="{{ url_for('article.create_article') }}"
-                class="btn btn-outline-primary mb-1 border border-primary">Create Article</a>
         </div>
     </div>
 </div>
-
 
 {% endblock content %}

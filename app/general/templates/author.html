@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <div>
+        <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+        {% endif %}
+        <br><br>
+    </div>
+    <br>
+    <div>
+        <h2><b>{{ user.firstname }} {{ user.lastname }}'s Profile</b></h2>
+    </div>
+
+    <div class="row">
+        <div class="col-9">
+
+            <br>
+
+            <div>
+                <h2>Author's Details</h2>
+                <hr>
+                <strong>Name:</strong> {{ user.firstname }} {{ user.lastname }} <br>
+                <strong>Email:</strong> {{ user.email }} <br>
+                <strong>Articles Published:</strong> 
+                {% if user_details.articles_count < 1 %}
+                None <br>
+                {% else %}
+                {{ user_details.articles_count }} <br>
+                {% endif %}
+                <strong>Bio:</strong> {{ user.bio }} <br>
+            </div><br>
+        </div>
+        <div class="row col-3">
+            <div>
+                <br><br><br>
+                {% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='images/' + user.profile_pic)}}"
+                    class="float-right img-thumbnail border-primary" width="200">
+                {% else %}
+                <center><small>No Profile Picture</small></center>
+                <img src="{{ url_for('static', filename='images/default_profile_pic.png')}}"
+                    class="float-right img-thumbnail border-primary" width="200">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <div id="user-articles">
+        <h2> User's Articles </h2>
+        <hr>
+        <table class="table table-sm table-hover">
+            <thead class="table-responsive bg-primary text-light">
+                <th>Title</th>
+                <th>Date Posted</th>
+                <th>Updated On</th>
+                <th>Comments</th>
+                <th>Likes</th>
+            </thead>
+            <tbody>
+                {% for user_article in user_articles %}
+                <tr>
+                    <td><a href="{{ url_for('article.view_article', id=user_article.id) }}">{{ user_article.title }}</a>
+                    </td>
+                    <td>{{ user_article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                    <td> {% if user_article.last_updated_on is none %}
+                        {{ Null }} {% else %}
+                        {{ user_article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!-- Articles Comments Count -->
+                        {% for comment_likes_cnt in comment_likes_cnts %}
+                        {% if comment_likes_cnt.article_id == user_article.id %}
+                        {{ comment_likes_cnt.comments_count }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <!-- Articles Likes Count -->
+                        {% for comment_likes_cnt in comment_likes_cnts %}
+                        {% if comment_likes_cnt.article_id == user_article.id %}
+                        {{ comment_likes_cnt.likes_count }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock content %}

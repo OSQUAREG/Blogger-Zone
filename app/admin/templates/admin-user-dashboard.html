@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <div>
+        <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
+            List</a>
+        <a href="{{ url_for('admin.admin') }}" class="btn btn-outline-primary mb-1 border border-primary">Admin
+            Dashboard</a>
+    </div>
+    <br>
+    
+    <div>
+        <h2><b>{{ user.firstname }} {{ user.lastname }}'s Profile</b></h2>
+    </div>
+    
+    <br>
+    
+    <div class="row">
+        <div class="col-9">
+            <div>
+                <a href="#user-articles" class="btn btn-outline-primary mb-1 border border-primary">User's Articles</a>
+                <a href="{{ url_for('admin-users.update', id=user.id) }}" class="btn btn-outline-primary mb-1 border border-primary">Update User</a>
+                <a href="{{ url_for('admin-users.deactivate', id=user.id) }}"
+                    class="btn btn-outline-danger mb-1 border border-danger">Deactivate User</a>
+            </div>
+    
+            <br>
+    
+            <div>
+                <h2>User's Details</h2>
+                <hr>
+                <strong>Name:</strong> {{ user.firstname }} {{ user.lastname }} <br>
+                <strong>Username:</strong> {{ user.username }} <br>
+                <strong>Email:</strong> {{ user.email }} <br>
+                <strong>Join Date:</strong> {{ user.date_joined.strftime('%Y-%m-%d %I:%M %p') }} <br>
+                <strong>Admin:</strong>
+                {% if user.is_admin %} Yes
+                {% else %} No
+                {% endif %} <br>
+                <strong>Last Updated:</strong>
+                {% if user.last_updated_on is none %}
+                {{ None }} {% else %}
+                {{ user.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                {% endif %} <br>
+                <strong>Bio:</strong> {{ user.bio }} <br>
+            </div><br>
+        </div>
+        <div class="row col-3">
+            <div>
+                <br><br><br>
+                {% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='images/' + user.profile_pic)}}"  class="float-right img-thumbnail border-primary" width="200">
+                {% else %}
+                <center><small>No Profile Picture</small></center>
+                <img src="{{ url_for('static', filename='images/default_profile_pic.png')}}" class="float-right img-thumbnail border-primary" width="200">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <br>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <div id="user-articles">
+        <h2> User's Articles </h2>
+        <hr>
+        <table class="table table-sm table-hover">
+            <thead class="table-responsive bg-primary text-light">
+                <th>Id</th>
+                <th>Title</th>
+                <th>Date Posted</th>
+                <th>Edited On</th>
+                <th>Published</th>
+                <th>Deleted</th>
+                <th>Comments</th>
+                <th>Likes</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                {% for user_article in user_articles %}
+                <tr>
+                    <td>{{ user_article.id }}</td>
+                    <td><a href="{{ url_for('article.view', id=user_article.id) }}">{{ user_article.title }}</a></td>
+                    <td>{{ user_article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                    <td> {% if user_article.last_updated_on is none %}
+                        {{ Null }} {% else %}
+                        {{ user_article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                        {% endif %}
+                    </td>
+                    <td>{% if user_article.is_draft: %} No {% else %} Yes {% endif %} </td>
+                    <td>{% if user_article.is_deleted: %} Yes {% else %} No {% endif %} </td>
+                    <td>
+                        <!-- Articles Comments Count -->
+                        {% for comment_likes_cnt in comment_likes_cnts %}
+                        {% if comment_likes_cnt.article_id == user_article.id %}
+                        {{ comment_likes_cnt.comments_count }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <!-- Articles Likes Count -->
+                        {% for comment_likes_cnt in comment_likes_cnts %}
+                        {% if comment_likes_cnt.article_id == user_article.id %}
+                        {{ comment_likes_cnt.likes_count }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <small>
+                            {% if user_article.is_draft: %}
+                            <a href="{{ url_for('admin-articles.publish', id=user_article.id) }}">Publish</a> |
+                            {% else %}
+                            <a href="{{ url_for('admin-articles.unpublish', id=user_article.id) }}">Unpublish</a> |
+                            {% endif %}
+                            {% if user_article.is_deleted: %}
+                            <a href="{{ url_for('admin-articles.add', id=user_article.id) }}">Add</a> |
+                            {% else %}
+                            <a href="{{ url_for('admin-articles.remove', id=user_article.id) }}">Remove</a> |
+                            {% endif %}
+                            <a href="{{ url_for('admin-articles.delete', id=user_article.id) }}">Delete</a>
+                        </small>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock content %}

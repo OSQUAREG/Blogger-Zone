@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    
+    {% for message in get_flashed_messages() %}
+    <div id="top" class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    
+    <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+    <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
+    {% endif %}
+    <br><br>
+
+    <!-- Articles Search List Container -->
+    <div class="row">
+        <div>
+            <h2>Search Results</h2>
+            <p>You searched for <b>"{{ search_word }}"</b></p>
+        </div>
+        <hr>
+        <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
+            {% for search_result in search_results %}
+            <div>
+                <p>
+                    <a class="fs-5 text-decoration-none" href="{{ url_for('article.view', id=search_result.id) }}">{{ search_result.title }}</a>
+                </p>
+            </div>
+            <div>
+                <p>{{ search_result.content | striptags() | truncate(150) }}</p>
+            </div>
+            <div><i>
+                
+                    <small class="card-header" style="font-size:13px">
+                        <strong class="badge rounded border border-primary" style="color: black;">Author:</strong>
+                        {{ search_result.author.firstname }} {{ search_result.author.lastname }} |
+                        <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong>
+                        {{ search_result.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                        <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
+                        {% if search_result.last_updated_on is none %} {{ None }}
+                        {% else %}
+                        {{ search_result.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
+                        {% endif %}
+                    </small>
+            </i>
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+    {% endblock content %}

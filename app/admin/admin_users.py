@@ -7,40 +7,40 @@ from app.webforms import UserForm
 
 blueprint = Blueprint("admin-users", __name__, template_folder="templates")
 
-
-# ADMIN ROUTE/REPORT
-@blueprint.route("/", methods=["GET"])
-@login_required
-def admin():
-    users = db.session.query(User).all()
-    articles = db.session.query(Article).all()
-
-    # To get the counts of comments and likes for all articles.
-    comment_likes_cnts = db.session \
-        .query(Article.id.label("article_id"),
-               func.count(Comment.comment).label("comments_count"),
-               func.count(ArticleLike.user_id).label("likes_count")) \
-        .outerjoin(Comment, Comment.article_id == Article.id) \
-        .outerjoin(ArticleLike, ArticleLike.article_id == Article.id) \
-        .group_by(Article.id).all()
-
-    context = {
-        "users": users,
-        "articles": articles,
-        "comment_likes_cnts": comment_likes_cnts
-    }
-
-    if current_user.is_authenticated and current_user.is_admin:
-        return render_template("admin.html", **context)
-    else:
-        flash(f"You are not an admin!")
-        return redirect(url_for("user.dashboard"))
-
+#
+# # ADMIN DASHBOARD ROUTE
+# @admin.route("/", methods=["GET"])
+# @login_required
+# def admin():
+#     users = db.session.query(User).all()
+#     articles = db.session.query(Article).all()
+#
+#     # To get the counts of comments and likes for all articles.
+#     comment_likes_cnts = db.session \
+#         .query(Article.id.label("article_id"),
+#                func.count(Comment.comment).label("comments_count"),
+#                func.count(ArticleLike.user_id).label("likes_count")) \
+#         .outerjoin(Comment, Comment.article_id == Article.id) \
+#         .outerjoin(ArticleLike, ArticleLike.article_id == Article.id) \
+#         .group_by(Article.id).all()
+#
+#     context = {
+#         "users": users,
+#         "articles": articles,
+#         "comment_likes_cnts": comment_likes_cnts
+#     }
+#
+#     if current_user.is_authenticated and current_user.is_admin:
+#         return render_template("admin.html", **context)
+#     else:
+#         flash(f"You are not an admin!")
+#         return redirect(url_for("user.dashboard"))
+#
 
 # MAKE ADMIN
-@blueprint.route("/make-admin/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/promote/<int:id>", methods=["GET", "POST"])
 @login_required
-def make_admin(id):
+def promote(id):
     user = User.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -49,16 +49,16 @@ def make_admin(id):
         try:
             db.session.commit()
             flash(f"User: '{user.username}' is now an admin.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # REMOVE ADMIN
-@blueprint.route("/remove-admin/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/demote/<int:id>", methods=["GET", "POST"])
 @login_required
-def remove_admin(id):
+def demote(id):
     user = User.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -67,33 +67,33 @@ def remove_admin(id):
         try:
             db.session.commit()
             flash(f"User: '{user.username}' is removed from admin.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # DELETE USER
-@blueprint.route("/delete-user/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
-def delete_user(id):
+def delete(id):
     user = User.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
         try:
-            db.sessoin.delete(user)
+            db.session.delete(user)
             db.session.commit()
             flash(f"User: '{user.username}' is deleted successfully.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # DEACTIVATE USER
-@blueprint.route("/deactivate-user/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/deactivate/<int:id>", methods=["GET", "POST"])
 @login_required
-def deactivate_user(id):
+def deactivate(id):
     user = User.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -101,16 +101,16 @@ def deactivate_user(id):
         try:
             db.session.commit()
             flash(f"User: '{user.username}' is deactivated successfully.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # ACTIVATE USER
-@blueprint.route("/activate-user/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/activate/<int:id>", methods=["GET", "POST"])
 @login_required
-def activate_user(id):
+def activate(id):
     user = User.query.get_or_404(id)
 
     if current_user.is_authenticated and current_user.is_admin:
@@ -118,37 +118,37 @@ def activate_user(id):
         try:
             db.session.commit()
             flash(f"User: '{user.username}' is activated successfully.")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("admin-users.admin"))
+            return redirect(url_for("admin.admin"))
 
 
 # UPDATE USER
-@blueprint.route("/update-user/<int:id>", methods=["GET", "POST"])
+@blueprint.route("/update/<int:id>", methods=["GET", "POST"])
 @login_required
-def update_user(id):
+def update(id):
     form = UserForm()
     user = User.query.get_or_404(id)
 
-    if request.method == "POST" and current_user.id == user.id and current_user.is_admin:
+    if request.method == "POST" and current_user.is_admin:
         user.firstname = form.firstname.data
         user.lastname = form.lastname.data
-        user.about_author = form.about_author.data
+        user.bio = form.bio.data
 
         try:
             db.session.commit()
             flash(f"User Profile updated successfully")
-            return redirect(url_for("user.dashboard", id=user.id))
+            return redirect(url_for("admin.admin", id=user.id))
         except:
             flash("Something went wrong. Please try again...")
-            return redirect(url_for("user.update_user", id=user.id))
+            return redirect(url_for("admin-users.update", id=user.id))
 
-    # only the user or admin can edit this user profile
-    if current_user.id == user.id or current_user.is_admin:
+    # only admin can edit this user profile via this route
+    if current_user.is_admin:
         form.firstname.data = user.firstname
         form.lastname.data = user.lastname
-        form.about_author.data = user.about_author
+        form.bio.data = user.bio
     else:
         flash(f"You are not authorized to update this user profile!")
         return redirect(url_for("user.dashboard", id=user.id))
@@ -158,4 +158,28 @@ def update_user(id):
         "user": user,
     }
 
-    return render_template("update-user.html", **context)
+    return render_template("admin-update-user.html", **context)
+
+
+# VIEW USER PROFILE
+@blueprint.route("/view/<int:id>", methods=["GET"])
+@login_required
+def view(id):
+    user = User.query.get_or_404(id)
+    user_articles = Article.query.filter(Article.author_id == user.id).all()
+
+    comment_likes_cnts = db.session \
+        .query(Article.id.label("article_id"),
+               func.count(Comment.comment).label("comments_count"),
+               func.count(ArticleLike.user_id).label("likes_count")) \
+        .outerjoin(Comment, Comment.article_id == Article.id) \
+        .outerjoin(ArticleLike, ArticleLike.article_id == Article.id) \
+        .group_by(Article.id).all()
+
+    context = {
+        "user": user,
+        "user_articles": user_articles,
+        "comment_likes_cnts": comment_likes_cnts
+    }
+
+    return render_template("admin-user-dashboard.html", **context)

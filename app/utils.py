@@ -22,7 +22,7 @@ def upload_image():
         db.session.commit()
         saved_image.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_image_name))
         flash(f"User Profile Picture uploaded successfully")
-        return redirect(url_for("user.dashboard", id=user.id))
+        return redirect(url_for("user.dashboard"))
     except:
         flash("Something went wrong. Please try uploading again...")
-        return redirect(url_for("user.update_user", id=user.id))
+        return redirect(url_for("user.update_user"))

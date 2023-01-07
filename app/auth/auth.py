@@ -1,6 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user, login_required, logout_user, current_user
-from markupsafe import Markup
+from flask_login import login_user, login_required, logout_user
 from sqlalchemy.sql import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import db, User
@@ -23,7 +22,7 @@ AUTH Routes:
 """
 
 
-# Sign Up Routing (done)
+# SIGN UP ROUTE
 @blueprint.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     form = UserForm()
@@ -70,7 +69,7 @@ def sign_up():
     return render_template("sign-up.html", **context)
 
 
-# Login Page Routing (done)
+# LOGIN ROUTE
 @blueprint.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -86,7 +85,7 @@ def login():
                 if check_password_hash(user_exists.password_hash, password):
                     login_user(user_exists, duration=timedelta(minutes=1))
                     flash("Login Successful")
-                    return redirect(url_for("user.dashboard"))
+                    return redirect(url_for("general.index"))
                 else:
                     flash("Wrong Password! Please try again...")
                     return redirect(url_for("auth.login"))
@@ -104,7 +103,7 @@ def login():
     return render_template("login.html", **context)
 
 
-# Logout Routing (done)
+# LOGOUT ROUTE
 @blueprint.route("/logout", methods=["GET", "POST"])
 @login_required
 def logout():

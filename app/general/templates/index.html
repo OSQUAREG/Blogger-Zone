@@ -2,18 +2,18 @@
 {% block content %}
 
 {% for message in get_flashed_messages() %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
+<div id="top" class="alert alert-warning alert-dismissible fade show" role="alert">
     {{ message }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endfor %}
 
 <div class="container">
-    <div id="container carouselExampleSlidesOnly" class="carousel slide carousel-fade bg-primary card text-bg-dark"
+    <div id="container carouselExampleSlidesOnly" class="carousel slide carousel-fade bg-primary card"
         data-bs-ride="carousel">
         <img src="{{url_for('static', filename='images/blogger-image2.jpg')}}" alt="logo" class="card-img">
         <center class="card-img-overlay">
-            <div class="container text-dark">
+            <div>
                 {% if current_user.is_authenticated %}
                 <h3 data-animation="fadeInUp"><b>Welcome {{ current_user.firstname }},</b></h3>
                 <small class="mb-1"><i><b>You are logged in!!!</b></i></small>
@@ -34,9 +34,9 @@
                 </div>
             </div>
             <br>
-            <div class="container">
+            <div>
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('article.create_article') }}"
+                <a href="{{ url_for('article.create') }}"
                     class="btn btn-light btn-outline-primary mb-2 border border-primary">Create New Article</a>
                 <a href="{{ url_for('user.dashboard') }}"
                     class="btn btn-light btn-outline-primary mb-2 border border-primary">Your Dashboard</a>
@@ -69,8 +69,10 @@
             {% for article in articles %}
             <div class="card border-primary mb-3">
                 <small class="card-header">
-                    <strong class="badge rounded border border-primary" style="color: black;">Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }} |
-                    <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                    <strong class="badge rounded border border-primary" style="color: black;">Author:</strong>
+                    {{ article.author.firstname }} {{ article.author.lastname }} |
+                    <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong>
+                    {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
                     <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
                     {% if article.last_updated_on is none %} {{ None }}
                     {% else %}
@@ -79,20 +81,12 @@
                 </small>
                 <div class="card-body">
                     <a class="fs-5 text-decoration-none"
-                        href="{{ url_for('article.view_article', id=article.id) }}">{{ article.title }}</a>
+                        href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a>
                     <div>
                         <p>{{ article.content | striptags() | truncate(255) }}</p>
-                    </div><br>
-
+                    </div>
+                    <br>
                     <div>
-                        <a href="{{ url_for('article.view_article', id=article.id) }}"
-                            class="btn btn-light btn-outline-primary border border-primary">Read Article</a>
-                        {% if current_user.is_authenticated and article.author_id == current_user.id %}
-                        <a href="{{ url_for('article.edit_article', id=article.id) }}"
-                            class="btn btn-light btn-outline-primary border border-primary">Edit Article</a>
-                        <a href="{{ url_for('article.delete_article', id=article.id) }}"
-                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
-                        {% endif %}
                         <small class="float-end">
                             <!-- Articles Comments Count -->
                             {% for comment_likes_cnt in comment_likes_cnts %}
@@ -104,7 +98,6 @@
                             {% endif %}
                             {% endif %}
                             {% endfor %}
-                        
                             <!-- Articles Likes Count -->
                             {% for comment_likes_cnt in comment_likes_cnts %}
                             {% if comment_likes_cnt.article_id == article.id %}
@@ -117,6 +110,17 @@
                             {% endfor %}
                         </small>
                     </div>
+                    <br>
+                    <div>
+                        <a href="{{ url_for('article.view', id=article.id) }}"
+                            class="btn btn-light btn-outline-primary border border-primary">Read Article</a>
+                        {% if current_user.is_authenticated and article.author_id == current_user.id %}
+                        <a href="{{ url_for('article.edit', id=article.id) }}"
+                            class="btn btn-light btn-outline-primary border border-primary">Edit Article</a>
+                        <a href="{{ url_for('article.remove', id=article.id) }}"
+                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
+                        {% endif %}                        
+                    </div>
                 </div>
             </div>
             <br>
@@ -127,32 +131,53 @@
     <div class="container col-4">
         <div><br><br><br></div>
 
-        <!-- Top Authors List Container -->
+        <!-- Search Area -->
         <div>
-            <h4>Top Authors</h4>
+            <div>
+                <h4>Search Article</h4>
+                <hr>
+            </div>
+            <div class="container">
+                <form action="{{ url_for('general.search') }}" method="POST" class="d-flex">
+                    <div class="">{{ form.hidden_tag() }}</div>
+                    <div class="col-9">
+                        {{ form.search_word(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary", placeholder="Type here") }}
+                    </div>
+                    <div class="col-5">
+                        {{ form.submit(class="btn btn btn-outline-primary border border-primary shadow p-2 mb-2", style="font-weight:bold; font-size:16px") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Top Authors List -->
+        <div>
+            <h4>Top 5 Authors</h4>
             <hr>
         </div>
         <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
             <ul>
-                {% for author in authors() %}
-                <li>{{ author.firstname }} {{ author.lastname }}</li>
+                {% for author in top_authors %}
+                <li><a href="{{ url_for('general.author', id=author.id) }}">{{ author.firstname }} {{ author.lastname }} ({{ author.articles_count }})</a></li>
                 {% endfor %}
             </ul>
         </div>
-            
-        <!-- Top Authors List Container -->
+
+        <!-- Top Authors List -->
         <div>
-            <h4>Most Popular Articles</h4>
+            <h4>Top 10 Articles</h4>
             <hr>
         </div>
         <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
             <ul>
-                {% for author in authors() %}
-                <li>{{ author.firstname }} {{ author.lastname }}</li>
+                {% for article in top_articles %}
+                <li><a href="{{ url_for('article.view', id=article.id) }}">{{ article.title }} ({{ article.likes_count }})</a> </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
 </div>
+
+<div class="container"><a href="#top" class="btn btn-light btn-outline-primary border border-primary">Back to Top</a></div>
 
 {% endblock content %}
