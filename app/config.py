@@ -26,5 +26,8 @@ class Settings:
     height = os.getenv("CKEDITOR_HEIGHT")
     width = os.getenv("CKEDITOR_WIDTH")
 
+    # Pagination Settings
+    per_page:int = os.getenv("PER_PAGE")
+
 
 settings = Settings()

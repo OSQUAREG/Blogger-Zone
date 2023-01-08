@@ -4,7 +4,7 @@
 <div class="container">
     <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Articles List</a>
     {% if current_user.is_authenticated %}
-    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+    <a href="{{ url_for('user.dashboard', un=current_user.username) }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
     <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary border border-primary">Create an Article</a>
     {% endif %}
     <br><br>

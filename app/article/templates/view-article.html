@@ -18,10 +18,10 @@
             Article</a>
         {% if article.author_id == current_user.id %}
         <a href="{{ url_for('article.edit', id=article.id) }}"
-            class="btn btn-outline-primary border border-primary">Edit
+            class="btn btn-outline-primary border border-primary">Edit this
             Article</a>
         <a href="{{ url_for('article.remove', id=article.id) }}"
-            class="btn btn-outline-danger border border-danger">Delete
+            class="btn btn-outline-danger border border-danger">Delete this
             Article</a>
         {% endif %}
         {% endif %}
@@ -90,12 +90,72 @@
     
                     <!-- Article Comment Details -->
                     <h5 class="card-title"><b>Comments</b></h5>
+
+                    <!-- Top Pagination Display -->
+                    {% if comments.total > 0 %}
+                    <center>
+                        <small>
+                            <p>
+                                displaying {{ ((comments.page - 1) * comments.per_page) + 1 }}
+                                {% if comments.total > comments.per_page %}
+                                - {{ comments.page * comments.per_page }} of {{ comments.total }} Comments
+                                {% else %}
+                                {% if comments.total > 1 %}
+                                - {{ comments.total }} of {{ comments.total }} Comments
+                                {% else %}
+                                Comment
+                                {% endif %}
+                                {% endif %}
+                            </p>
+                        </small>
+                    </center>
+                    {% endif %}
+
                     <hr>
-                    {% if count == 0 %}
+                    {% if comments.total == 0 %}
                     <p class="card-text">No comment yet. Be the first to comment!</p>
                     <hr>
                     {% else %}
-                    {% for comment in comments %}
+
+                    <!-- Bottom Pagination Area -->
+                    {% if comments.total > 0 %}
+                    <nav aria-label="Page navigation example">
+                        <div class="pagination justify-content-center mb-3">
+                            <li class="page-item">
+                                {% if prev_page %}
+                                <a class="page-link fs-1" href="{{ prev_page }}">Newer</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ prev_page }}">Newer</a>
+                                {% endif %}
+                            </li>
+                            {% for page in comments.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                            {% if page %}
+                            {% if page != comments.page %}
+                            <li class="page-item">
+                                <a href="{{ url_for('article.view', id=article.id, page=page) }}" class="page-link">{{ page }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                            </li>
+                            {% endif %}
+                            {% else %}
+                            <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                            {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if next_page %}
+                                <a class="page-link" href="{{ next_page }}">Older</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ next_page }}">Older</a>
+                                {% endif %}
+                            </li>
+                        </div>
+                    </nav>
+                    {% endif %}
+
+                    {% for comment in comments.items %}
+                    <hr>
                     <small class="card-subtitle mb-2 text-muted fs-7">
                         {{ comment.commenter.firstname }} {{ comment.commenter.lastname }}
                         | {{ comment.date_added.strftime('%Y-%m-%d %I:%M %p') }}
@@ -105,6 +165,44 @@
                     {% endfor %}
                     {% endif %}
                 </div>
+
+                <!-- Bottom Pagination Area -->
+                {% if comments.total > 0 %}
+                <nav aria-label="Page navigation example">
+                    <div class="container"><hr></div>                
+                    <div class="pagination justify-content-center mb-3">
+                        <li class="page-item">
+                            {% if prev_page %}
+                            <a class="page-link fs-1" href="{{ prev_page }}">Newer</a>
+                            {% else %}
+                            <a class="page-link disabled" href="{{ prev_page }}">Newer</a>
+                            {% endif %}
+                        </li>
+                        {% for page in comments.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                        {% if page %}
+                        {% if page != comments.page %}
+                        <li class="page-item">
+                            <a href="{{ url_for('article.view', id=article.id, page=page) }}" class="page-link">{{ page }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                        </li>
+                        {% endif %}
+                        {% else %}
+                        <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                        {% endif %}
+                        {% endfor %}
+                        <li class="page-item">
+                            {% if next_page %}
+                            <a class="page-link" href="{{ next_page }}">Older</a>
+                            {% else %}
+                            <a class="page-link disabled" href="{{ next_page }}">Older</a>
+                            {% endif %}
+                        </li>
+                    </div>
+                </nav>
+                {% endif %}
             </div>
             <br>
         </div>

@@ -10,7 +10,7 @@
     {% endfor %}
 
     <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
-    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+    <a href="{{ url_for('user.dashboard', un=current_user.username) }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
     <br><br>
 
         <h2>Edit Your Article</h2>

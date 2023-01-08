@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from app.models import db, Article, Comment, ArticleLike
+from app.utils import paginate_query
 from app.webforms import ArticleForm, CommentForm
 
 blueprint = Blueprint("article", __name__, template_folder="templates")
@@ -62,7 +63,10 @@ def view(id):
     # To get all comments for current article.
     comments = Comment.query\
         .filter(Comment.article_id == article.id)\
-        .order_by(Comment.date_added.desc()).all()
+        .order_by(Comment.date_added.desc())
+
+    # pagination
+    comments, next_page, prev_page = paginate_query(comments, "article.view")
 
     # To count the comments for current article.
     comment_cnts = db.session.query(func.count(Comment.comment).label("count"))\
@@ -88,6 +92,8 @@ def view(id):
         "comment_count": comment_count,
         "article_likes_count": article_likes_count,
         "user_article_like": user_article_like,
+        "next_page": next_page,
+        "prev_page": prev_page,
         }
 
     if not article.is_draft:

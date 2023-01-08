@@ -1,11 +1,12 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_login import LoginManager
 from flask_ckeditor import CKEditor
 from app.models import db, User
 from app import settings, auth, user, article, general, like, admin, admin_users, admin_articles, comment
-from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
-from datetime import timedelta
+
+# from flask_jwt_extended import JWTManager
+# from datetime import timedelta
 
 app = Flask(__name__)
 
@@ -15,6 +16,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = settings.secret_key
 # Init DB
 db.init_app(app)
+
+# Init Migrate
+migrate = Migrate(app, db, render_as_batch=True)
 
 # # JWT CONFIG FOR AUTH SESSIONS
 # app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=int(settings.access_token_expires))
@@ -30,9 +34,6 @@ app.config["CKEDITOR_WIDTH"] = settings.width
 # Init CKEditor
 ckeditor = CKEditor(app)
 
-# Init Migrate
-migrate = Migrate(app, db, render_as_batch=True)
-
 # LOGIN MANAGER SET UP
 login_man = LoginManager(app)
 login_man.login_view = "login"
@@ -46,6 +47,9 @@ def user_loader(id):
 # IMAGE UPLOAD CONFIG
 app.config['UPLOAD_FOLDER'] = settings.upload_folder
 app.config["ALLOWED_EXTENSIONS"] = settings.allowed_extensions
+
+# PAGINATION CONFIG
+app.config["PER_PAGE"] = settings.per_page
 
 # # CREATE ALL DB TABLES
 # with app.app_context():
@@ -61,3 +65,15 @@ app.register_blueprint(like.blueprint, url_prefix="/like")
 app.register_blueprint(admin.blueprint, url_prefix="/admin")
 app.register_blueprint(admin_users.blueprint, url_prefix="/admin-user")
 app.register_blueprint(admin_articles.blueprint, url_prefix="/admin-article")
+
+
+# CUSTOM ERROR HANDLERS
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500

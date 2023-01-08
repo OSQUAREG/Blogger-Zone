@@ -44,6 +44,7 @@
             <p>You searched for <b>"{{ search_word }}"</b>. See results below:</p>
         </div>
         <hr>
+
         <!-- Top Pagination Area -->
         {% if search_results.total > 0 %}
         <nav aria-label="Page navigation example">
@@ -59,7 +60,7 @@
                 {% if page %}
                 {% if page != search_results.page %}
                 <li class="page-item">
-                    <a href="{{ url_for('general.search', page=page) }}" class="page-link">{{ page }}</a>
+                    <a href="{{ url_for('user.article_search', page=page) }}" class="page-link">{{ page }}</a>
                 </li>
                 {% else %}
                 <li class="page-item">
@@ -95,7 +96,7 @@
             </center>
         </nav>
         {% endif %}
-
+        
         <div>
             <div class="shadow p-3 mb-3 bg-body rounded border border-primary" style="height: auto">
                 {% for search_result in search_results.items %}
@@ -104,8 +105,6 @@
                     <div>
                         <i>
                             <small class="card-header" style="font-size:12px">
-                                <strong>Author:</strong>
-                                {{ search_result.firstname }} {{ search_result.lastname }} |
                                 <strong>Date Created:</strong>
                                 {{ search_result.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
                                 <strong>Last Updated:</strong>
@@ -158,7 +157,7 @@
                 {% if page %}
                 {% if page != search_results.page %}
                 <li class="page-item">
-                    <a href="{{ url_for('general.search', page=page) }}" class="page-link">{{ page }}</a>
+                    <a href="{{ url_for('user.article_search', page=page) }}" class="page-link">{{ page }}</a>
                 </li>
                 {% else %}
                 <li class="page-item">

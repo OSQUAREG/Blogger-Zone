@@ -1,9 +1,9 @@
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, logout_user, current_user
 from app.models import db, User, Article, Comment, ArticleLike
 from app.webforms import UserForm, SearchForm
-from app.utils import upload_image
+from app.utils import upload_image, paginate_query
 
 blueprint = Blueprint("user", __name__, template_folder="templates")
 
@@ -30,9 +30,24 @@ def dashboard():
     user = User.query.get_or_404(current_user.id)
 
     # To get all articles that are published and not deleted (from users).
-    articles = db.session.query(Article).\
-        filter(Article.author_id == current_user.id, Article.is_deleted == False).\
-        order_by(Article.date_posted.desc()).all()
+    articles_published = db.session.query(Article).\
+        filter(Article.author_id == current_user.id,
+               Article.is_deleted == False,
+               Article.is_draft == False,
+               ).\
+        order_by(Article.date_posted.desc())
+
+    articles_saved = db.session.query(Article). \
+        filter(Article.author_id == current_user.id,
+               Article.is_deleted == False,
+               Article.is_draft == True,
+               ). \
+        order_by(Article.date_posted.desc())
+
+    # pagination
+    articles_pub, next_page_pub, prev_page_pub = paginate_query(articles_published, "user.dashboard")
+
+    articles_sav, next_page_sav, prev_page_sav = paginate_query(articles_saved, "user.dashboard")
 
     # To get the counts of comments and likes for all articles.
     comment_likes_cnts = db.session\
@@ -44,12 +59,20 @@ def dashboard():
         .group_by(Article.id).all()
 
     form = SearchForm()
+    search_word = form.search_word.data
 
     context = {
         "user": user,
-        "articles": articles,
+        # "articles": articles,
         "comment_likes_cnts": comment_likes_cnts,
         "form": form,
+        "search_word": search_word,
+        "next_page_pub": next_page_pub,
+        "prev_page_pub": prev_page_pub,
+        "next_page_sav": next_page_sav,
+        "prev_page_sav": prev_page_sav,
+        "articles_pub": articles_pub,
+        "articles_sav": articles_sav
     }
 
     return render_template("dashboard.html", **context)
@@ -125,18 +148,25 @@ def deactivate():
 @login_required
 def article_search():
     form = SearchForm()
-    word = form.search_word.data
+    search_word = form.search_word.data
+
+    search_results = Article.query. \
+        filter(or_(Article.author_id == current_user.id,
+               Article.content.contains(search_word),
+               Article.title.contains(search_word)
+                   )). \
+        order_by(Article.date_posted.desc())
 
     if form.validate_on_submit():
-        search_word = word
-
-        search_results = Article.query.\
-            filter(Article.content.contains(search_word), Article.author_id == current_user.id).all()
+        # pagination
+        search_results, next_page, prev_page = paginate_query(search_results, "user.article_search")
 
         context = {
             "form": form,
             "search_word": search_word,
-            "search_results": search_results
+            "search_results": search_results,
+            "next_page": next_page,
+            "prev_page": prev_page,
         }
 
-        return render_template("search.html", **context)
+        return render_template("user-search.html", **context)

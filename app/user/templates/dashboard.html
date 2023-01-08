@@ -81,12 +81,12 @@
                     <h3>Your Articles</h3>
                 </div>
                 
-                <!-- Search Area -->
+                <!-- Search Form Area -->
                 <div class="col-4 float-right">
-                    <form action="{{ url_for('user.article_search') }}" method="POST" class="d-flex">
+                    <form action="{{ url_for('user.article_search', s=search_word) }}" method="POST" class="d-flex">
                         <div class="">{{ form.hidden_tag() }}</div>
                         <div class="col-9">
-                            {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search your article") }}
+                            {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search articles") }}
                         </div>
                         <div class="col-5">
                             {{ form.submit(class="btn btn btn-outline-primary border border-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
@@ -104,11 +104,66 @@
                         onclick="openPage('Draft', this, 'rgb(2, 117, 216)', 'white')"><b>Saved As
                             Draft</b></button>
                 </div>
+
                 <!-- Tab Contents for Published Articles -->
                 <div id="Published" class="tabcontent">
                     <h6><b>Published Articles</b></h6>
-                    <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                        {% for article in articles %}
+
+                    <!-- Top Pagination Area -->
+                    {% if articles_pub.total > 0 %}
+                    <nav aria-label="Page navigation example">
+                        <div class="pagination justify-content-center mb-3">
+                            <li class="page-item">
+                                {% if prev_page_pub %}
+                                <a class="page-link" href="{{ prev_page_pub }}">Previous</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ prev_page_pub }}">Previous</a>
+                                {% endif %}
+                            </li>
+                            {% for page in articles_pub.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                            {% if page %}
+                            {% if page != articles_pub.page %}
+                            <li class="page-item">
+                                <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                            </li>
+                            {% endif %}
+                            {% else %}
+                            <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                            {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if next_page_pub %}
+                                <a class="page-link" href="{{ next_page_pub }}">Next</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ next_page_pub }}">Next</a>
+                                {% endif %}
+                            </li>
+                        </div>
+                        <center>
+                            <small>
+                                <p>displaying {{ ((articles_pub.page - 1) * articles_pub.per_page) + 1 }}
+                                    {% if articles_pub.total > articles_pub.per_page %}
+                                    - {{ articles_pub.page * articles_pub.per_page }} of {{ articles_pub.total }} Articles
+                                    {% else %}
+                                    {% if articles_pub.total > 1 %}
+                                    - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
+                                    {% else %}
+                                    Article
+                                    {% endif %}
+                                    {% endif %}
+                                </p>
+                            </small>
+                        </center>
+                    </nav>
+                    {% endif %}
+
+                    <!-- Published Article List -->
+                    <div class="shadow p-3 mb-3 bg-body rounded border border-primary" style="height: auto">
+                        {% for article in articles_pub.items %}
                         {% if article.author_id == current_user.id %}
                         {% if not article.is_draft: %}
                         <div class="card border-primary mb-3">
@@ -176,18 +231,123 @@
                                 </div>
                             </div>
                         </div>
-                        <br>
                         {% endif %}
                         {% endif %}
                         {% endfor %}
                     </div>
+
+                    <!-- Bottom Pagination Area -->
+                    {% if articles_pub.total > 0 %}
+                    <nav aria-label="Page navigation example">
+                        <center>
+                            <small>
+                                <p>displaying {{ ((articles_pub.page - 1) * articles_pub.per_page) + 1 }}
+                                    {% if articles_pub.total > articles_pub.per_page %}
+                                    - {{ articles_pub.page * articles_pub.per_page }} of {{ articles_pub.total }} Articles
+                                    {% else %}
+                                    {% if articles_pub.total > 1 %}
+                                    - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
+                                    {% else %}
+                                    Article
+                                    {% endif %}
+                                    {% endif %}
+                                </p>
+                            </small>
+                        </center>
+                        <div class="pagination justify-content-center mb3">
+                        <li class="page-item">
+                            {% if prev_page_pub %}
+                            <a class="page-link" href="{{ prev_page_pub }}">Previous</a>
+                            {% else %}
+                            <a class="page-link disabled" href="{{ prev_page_pub }}">Previous</a>
+                            {% endif %}
+                        </li>
+                            {% for page in articles_pub.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                                {% if page %}
+                                    {% if page != articles_pub.page %}
+                                    <li class="page-item">
+                                    <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item">
+                                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                                    </li>
+                                    {% endif %}
+                                {% else %}
+                                <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                                {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if next_page_pub %}
+                                <a class="page-link" href="{{ next_page_pub }}">Next</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ next_page_pub }}">Next</a>
+                                {% endif %}
+                            </li>
+                        </div>
+                    </nav>
+                    {% endif %}
                 </div>
 
                 <!-- Tab Contents for Saved As Draft Articles -->
                 <div id="Draft" class="tabcontent">
                     <h6><b>Saved As Draft Articles</b></h6>
-                    <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
-                        {% for article in articles %}
+
+                    <!-- Top Pagination Area -->
+                    {% if articles_sav.total > 0 %}
+                    <nav aria-label="Page navigation example">
+                        <div class="pagination justify-content-center mb-3">
+                            <li class="page-item">
+                                {% if prev_page_sav %}
+                                <a class="page-link" href="{{ prev_page_sav }}">Previous</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ prev_page_sav }}">Previous</a>
+                                {% endif %}
+                            </li>
+                            {% for page in articles_sav.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                            {% if page %}
+                            {% if page != articles_sav.page %}
+                            <li class="page-item">
+                                <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                            </li>
+                            {% endif %}
+                            {% else %}
+                            <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                            {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if next_page_sav %}
+                                <a class="page-link" href="{{ next_page_sav }}">Next</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ next_page_sav }}">Next</a>
+                                {% endif %}
+                            </li>
+                        </div>
+                        <center>
+                            <small>
+                                <p>displaying {{ ((articles_sav.page - 1) * articles_sav.per_page) + 1 }}
+                                    {% if articles_sav.total > articles_sav.per_page %} 
+                                    - {{ articles_sav.page * articles_sav.per_page }} of {{ articles_sav.total }} Articles
+                                    {% else %}
+                                    {% if articles_sav.total > 1 %}
+                                    - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
+                                    {% else %}
+                                    Article
+                                    {% endif %}
+                                    {% endif %}
+                                </p>
+                            </small>
+                        </center>
+                    </nav>
+                    {% endif %}
+                    
+                    <!-- Saved Article List -->
+                    <div class="shadow p-3 mb-3 bg-body rounded border border-primary" style="height: auto">
+                        {% for article in articles_sav.items %}
                         {% if article.author_id == current_user.id %}
                         {% if article.is_draft: %}
                         <div class="card border-primary mb-3">
@@ -250,11 +410,62 @@
                                 </div>
                             </div>
                         </div>
-                        <br>
                         {% endif %}
                         {% endif %}
                         {% endfor %}
                     </div>
+
+                    <!-- Bottom Pagination Area -->
+                    {% if articles_sav.total > 0 %}
+                    <nav aria-label="Page navigation example">
+                        <center>
+                            <small>
+                                <p>displaying {{ ((articles_sav.page - 1) * articles_sav.per_page) + 1 }}
+                                    {% if articles_sav.total > articles_sav.per_page %}
+                                    - {{ articles_sav.page * articles_sav.per_page }} of {{ articles_sav.total }} Articles
+                                    {% else %}
+                                    {% if articles_sav.total > 1 %}
+                                    - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
+                                    {% else %}
+                                    Article
+                                    {% endif %}
+                                    {% endif %}
+                                </p>
+                            </small>
+                        </center>
+                        <div class="pagination justify-content-center mb-3">
+                            <li class="page-item">
+                                {% if prev_page_sav %}
+                                <a class="page-link" href="{{ prev_page_sav }}">Previous</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ prev_page_sav }}">Previous</a>
+                                {% endif %}
+                            </li>
+                            {% for page in articles_sav.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                            {% if page %}
+                            {% if page != articles_sav.page %}
+                            <li class="page-item">
+                                <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                            </li>
+                            {% endif %}
+                            {% else %}
+                            <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                            {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if next_page_sav %}
+                                <a class="page-link" href="{{ next_page_sav }}">Next</a>
+                                {% else %}
+                                <a class="page-link disabled" href="{{ next_page_sav }}">Next</a>
+                                {% endif %}
+                            </li>
+                        </div>
+                    </nav>
+                    {% endif %}
                 </div>
                 <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to
                     Articles List</a>

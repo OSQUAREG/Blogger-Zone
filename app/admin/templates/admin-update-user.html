@@ -13,7 +13,7 @@
     <div>
         <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
             List</a>
-        <a href="{{ url_for('admin.admin') }}" class="btn btn-outline-primary mb-1 border border-primary">Admin
+        <a href="{{ url_for('admin.admin', un=current_user.username) }}" class="btn btn-outline-primary mb-1 border border-primary">Admin
             Dashboard</a>
     </div>
     <br>
