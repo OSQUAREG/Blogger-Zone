@@ -9,8 +9,8 @@
     </div>
     {% endfor %}
 
-    <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
-    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+    <a href="/#all-articles-list" class="btn btn-outline-primary">Back to Article List</a>
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary">Your Dashboard</a>
     <br><br>
     
     <div class="form-group">
@@ -38,7 +38,7 @@
                 {{ form.profile_pic(class="form-control shadow p-2 mb-3 bg-body rounded border border-primary", value=user.profile_pic) }}
             </div>
             <div class="row-cols-7">
-                {{ form.submit(class="btn btn btn-outline-primary border border-primary", style="font-weight:bold; font-size:18px") }}
+                {{ form.submit(class="btn btn btn-outline-primary", style="font-weight:bold; font-size:18px") }}
             </div>
         </form>
     </div>

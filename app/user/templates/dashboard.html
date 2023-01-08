@@ -10,11 +10,11 @@
     {% endfor %}
 
     <div>
-        <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
+        <a href="/#all-articles-list" class="btn btn-outline-primary">Back to Articles
             List</a>
-        <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary mb-1 border border-primary">Create
+        <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary">Create
             Article</a>
-        <a href="#your-articles" class="btn btn-outline-primary mb-1 border border-primary">Your Articles
+        <a href="#your-articles" class="btn btn-outline-primary">Your Articles
             List</a>
     </div>
     <br>
@@ -63,10 +63,10 @@
     </div>
     <div>
         <div>
-            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary mb-1 border border-primary">Logout</a>
-            <a href="{{ url_for('user.update') }}" class="btn btn-outline-primary mb-1 border border-primary">Update
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary">Logout</a>
+            <a href="{{ url_for('user.update') }}" class="btn btn-outline-primary">Update
                 Profile</a>
-            <a href="{{ url_for('user.deactivate') }}" class="btn btn-outline-danger mb-1 border border-danger">Delete
+            <a href="{{ url_for('user.deactivate') }}" class="btn btn-outline-danger">Delete
                 Profile</a>
         </div>
     </div>
@@ -89,7 +89,7 @@
                             {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search articles") }}
                         </div>
                         <div class="col-5">
-                            {{ form.submit(class="btn btn btn-outline-primary border border-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
+                            {{ form.submit(class="btn btn btn-outline-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
                         </div>
                     </form>
                 </div>
@@ -217,16 +217,16 @@
                                 <br>
                                 <div>
                                     <a href="{{ url_for('article.view', id=article.id) }}"
-                                        class="btn btn-outline-primary border border-primary">Read
+                                        class="btn btn-outline-primary">Read
                                         Article</a>
                                     {% if current_user.is_authenticated and article.author_id == current_user.id %}
                                     <a href="{{ url_for('article.edit', id=article.id) }}"
-                                        class="btn btn-outline-primary border border-primary">Edit
+                                        class="btn btn-outline-primary">Edit
                                         Article</a>
                                     <a href="{{ url_for('article.remove', id=article.id) }}"
-                                        class="btn btn-outline-danger border border-danger">Delete Article</a>
+                                        class="btn btn-outline-danger">Delete Article</a>
                                     <a href="{{ url_for('article.unpublish', id=article.id) }}"
-                                        class="btn btn-outline-primary border border-primary">Unpublish Article</a>
+                                        class="btn btn-outline-primary">Unpublish Article</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -376,12 +376,12 @@
                                     {% if current_user.is_authenticated %}
                                     {% if article.author_id == current_user.id %}
                                     <a href="{{ url_for('article.edit', id=article.id) }}"
-                                        class="btn btn-outline-primary border border-primary">Edit
+                                        class="btn btn-outline-primary">Edit
                                         Article</a>
                                     <a href="{{ url_for('article.remove', id=article.id) }}"
-                                        class="btn btn-outline-danger border border-danger">Delete Article</a>
+                                        class="btn btn-outline-danger">Delete Article</a>
                                     <a href="{{ url_for('article.publish', id=article.id) }}"
-                                        class="btn btn-outline-primary border border-primary">Publish Article</a>
+                                        class="btn btn-outline-primary">Publish Article</a>
                                     {% endif %}
                                     {% endif %}
                                     <small class="float-end">
@@ -467,10 +467,10 @@
                     </nav>
                     {% endif %}
                 </div>
-                <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to
+                <a href="/#all-articles-list" class="btn btn-outline-primary">Back to
                     Articles List</a>
                 <a href="{{ url_for('article.create') }}"
-                    class="btn btn-outline-primary mb-1 border border-primary">Create Article</a>
+                    class="btn btn-outline-primary">Create Article</a>
             </div>
         </div>
     </div>

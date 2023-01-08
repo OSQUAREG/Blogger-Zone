@@ -11,9 +11,9 @@
     {% endfor %}
 
     <div>
-        <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
+        <a href="/#all-articles-list" class="btn btn-outline-primary">Back to Article List</a>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('user.dashboard', un=current_user.username) }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+        <a href="{{ url_for('user.dashboard', un=current_user.username) }}" class="btn btn-outline-primary">Your Dashboard</a>
         {% endif %}
         <br><br>
     </div>

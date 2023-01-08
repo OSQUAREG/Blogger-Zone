@@ -12,16 +12,16 @@
     
     <div>
         <!-- Action links -->
-        <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
+        <a href="/#all-articles-list" class="btn btn-outline-primary">Back to Article List</a>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary border border-primary">Create an
+        <a href="{{ url_for('article.create') }}" class="btn btn-outline-primary">Create an
             Article</a>
         {% if article.author_id == current_user.id %}
         <a href="{{ url_for('article.edit', id=article.id) }}"
-            class="btn btn-outline-primary border border-primary">Edit this
+            class="btn btn-outline-primary">Edit this
             Article</a>
         <a href="{{ url_for('article.remove', id=article.id) }}"
-            class="btn btn-outline-danger border border-danger">Delete this
+            class="btn btn-outline-danger">Delete this
             Article</a>
         {% endif %}
         {% endif %}
@@ -214,7 +214,7 @@
                     {{ form.comment (class="form-control shadow p-2 bg-body rounded border border-primary") }}
                 </div>
                 <div class="col-md-2 mx-auto">
-                    {{ form.submit(class="btn btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
+                    {{ form.submit(class="btn btn btn-outline-primary" , style="font-weight:bold; font-size:18px") }}
                 </div>
             </form>
         </div>

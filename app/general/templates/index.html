@@ -36,18 +36,15 @@
             <br>
             <div>
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('article.create') }}"
-                    class="btn btn-light btn-outline-primary mb-2 border border-primary">Create New Article</a>
-                <a href="{{ url_for('user.dashboard', un=current_user.username) }}"
-                    class="btn btn-light btn-outline-primary mb-2 border border-primary">Your Dashboard</a>
+                <a href="{{ url_for('article.create') }}" style="font-weight:bold;"
+                    class="btn btn-light btn-outline-primary">Create New Article</a>
+                <a href="{{ url_for('user.dashboard', un=current_user.username) }}" style="font-weight:bold;" class="btn btn-light btn-outline-primary">Your Dashboard</a>
                 <br>
                 {% else %}
-                <a href="{{ url_for('auth.login') }}"
-                    class="btn btn-light btn-outline-primary border border-primary">Login
-                    Here</a>
-                <a href="{{ url_for('auth.sign_up') }}"
-                    class="btn btn-light btn-outline-primary border border-primary">Sign
-                    Up Here</a>
+                <a href="{{ url_for('auth.login') }}" style="font-weight:bold;"
+                    class="btn btn-light btn-outline-primary">Login Here</a>
+                <a href="{{ url_for('auth.sign_up') }}" style="font-weight:bold;"
+                    class="btn btn-light btn-outline-primary">Sign-up Here</a>
                 <br>
                 {% endif %}
             </div>
@@ -166,12 +163,12 @@
                     <br>
                     <div>
                         <a href="{{ url_for('article.view', id=article.id) }}"
-                            class="btn btn-light btn-outline-primary border border-primary">Read Article</a>
+                            class="btn btn-light btn-outline-primary">Read Article</a>
                         {% if current_user.is_authenticated and article.author_id == current_user.id %}
                         <a href="{{ url_for('article.edit', id=article.id) }}"
-                            class="btn btn-light btn-outline-primary border border-primary">Edit Article</a>
+                            class="btn btn-light btn-outline-primary">Edit Article</a>
                         <a href="{{ url_for('article.remove', id=article.id) }}"
-                            class="btn btn-light btn-outline-danger border border-danger">Delete Article</a>
+                            class="btn btn-light btn-outline-danger">Delete Article</a>
                         {% endif %}                        
                     </div>
                 </div>
@@ -247,7 +244,7 @@
                         {{ form.search_word(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary", placeholder="Type here") }}
                     </div>
                     <div class="col-5">
-                        {{ form.submit(class="btn btn btn-outline-primary border border-primary shadow p-2 mb-2", style="font-size:16px") }}
+                        {{ form.submit(class="btn btn btn-outline-primary shadow p-2 mb-2", style="font-size:16px") }}
                     </div>
                 </form>
             </div>
@@ -280,6 +277,8 @@
         </div>
     </div>
 </div>
-<div class="container p-3 mb-3"><a href="#top" class="btn btn-light btn-outline-primary border border-primary">Back to Top</a></div>
+<div class="container p-3 mb-3">
+<a href="#top" class="btn btn-light btn-outline-primary">Back to Top</a>
+</div>
 
 {% endblock content %}

@@ -9,8 +9,8 @@
     </div>
     {% endfor %}
 
-    <a href="/#all-articles-list" class="btn btn-outline-primary border border-primary">Back to Article List</a>
-    <a href="{{ url_for('user.dashboard', un=current_user.username) }}" class="btn btn-outline-primary border border-primary">Your Dashboard</a>
+    <a href="/#all-articles-list" class="btn btn-outline-primary">Back to Article List</a>
+    <a href="{{ url_for('user.dashboard', un=current_user.username) }}" class="btn btn-outline-primary">Your Dashboard</a>
     <br><br>
 
         <h2>Edit Your Article</h2>
@@ -34,7 +34,7 @@
                     {{ form.is_draft(class="form-check-input shadow p-2 rounded border border-primary", type="checkbox", id="flexCheckDefault") }}
                 </div>
                 <div class="d-grid gap-2 col-6 mx-auto">
-                    {{ form.submit(class="btn btn-outline-primary border border-primary" , style="font-weight:bold; font-size:18px") }}
+                    {{ form.submit(class="btn btn-outline-primary" , style="font-weight:bold; font-size:18px") }}
                 </div>
             </form>
         </div>

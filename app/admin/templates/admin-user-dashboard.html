@@ -11,10 +11,8 @@
     {% endfor %}
 
     <div>
-        <a href="/#all-articles-list" class="btn btn-outline-primary mb-1 border border-primary">Back to Articles
-            List</a>
-        <a href="{{ url_for('admin.admin', un=current_user.username) }}" class="btn btn-outline-primary mb-1 border border-primary">Admin
-            Dashboard</a>
+        <a href="/#all-articles-list" class="btn btn-outline-primary">Back to Articles List</a>
+        <a href="{{ url_for('admin.admin', un=current_user.username) }}" class="btn btn-outline-primary">Admin Dashboard</a>
     </div>
     <br>
     
@@ -27,8 +25,8 @@
     <div class="row">
         <div class="col-9">
             <div>
-                <a href="#user-articles" class="btn btn-outline-primary mb-1 border border-primary">User's Articles</a>
-                <a href="{{ url_for('admin-users.update', id=user.id) }}" class="btn btn-outline-primary mb-1 border border-primary">Update User</a>
+                <a href="#user-articles" class="btn btn-outline-primary">User's Articles</a>
+                <a href="{{ url_for('admin-users.update', id=user.id) }}" class="btn btn-outline-primary">Update User</a>
                 <a href="{{ url_for('admin-users.deactivate', id=user.id) }}"
                     class="btn btn-outline-danger mb-1 border border-danger">Deactivate User</a>
             </div>
