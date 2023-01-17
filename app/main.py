@@ -1,12 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from flask_login import LoginManager
 from flask_ckeditor import CKEditor
 from app.models import db, User
 from app import sett, auth, user, article, general, like, admin, admin_users, admin_articles, comment
 from flask_migrate import Migrate
-
-# from flask_jwt_extended import JWTManager
-# from datetime import timedelta
+from datetime import timedelta
 
 app = Flask(__name__)
 
@@ -18,14 +16,8 @@ app.config["SECRET_KEY"] = sett.secret_key
 # Init DB
 db.init_app(app)
 
-# Init Migrate
+# Instantiate Migrate
 migrate = Migrate(app, db, render_as_batch=False)
-
-# # JWT CONFIG FOR AUTH SESSIONS
-# app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=int(settings.access_token_expires))
-# app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=int(settings.refresh_token_expires))
-# # Init JWT
-# jwt = JWTManager(app)
 
 # CKEDITOR CONFIG FOR WEB FORMS
 app.config["CKEDITOR_PKG_TYPE"] = sett.package_type
@@ -33,17 +25,26 @@ app.config["CKEDITOR_SERVE_LOCAL"] = sett.serve_local
 app.config["CKEDITOR_HEIGHT"] = sett.height
 app.config["CKEDITOR_WIDTH"] = sett.width
 
-# Init CKEditor
+# Instantiate CKEditor
 ckeditor = CKEditor(app)
 
-# LOGIN MANAGER SET UP
+# FLASK LOGIN CONFIG
 login_man = LoginManager(app)
-login_man.login_view = "login"
+login_man.login_view = "auth.login"
+login_man.refresh_view = "accounts.reauthenticate"
+login_man.needs_refresh_message = (u"Session timed out, please re-login")
+login_man.needs_refresh_message_category = "info"
 
 
 @login_man.user_loader
 def user_loader(id):
     return User.query.get(int(id))
+
+
+@app.before_request
+def before_request():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=int(sett.login_session_minutes))
 
 
 # IMAGE UPLOAD CONFIG

@@ -27,7 +27,9 @@ class Settings:
     width = os.getenv("CKEDITOR_WIDTH")
 
     # Pagination Settings
-    per_page:int = os.getenv("PER_PAGE")
+    per_page: int = os.getenv("PER_PAGE")
+
+    login_session_minutes: int = os.getenv("PERMANENT_SESSION_LIFETIME")
 
 
 sett = Settings()

@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import login_user, login_required, logout_user, current_user, confirm_login
 from sqlalchemy.sql import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import db, User
@@ -110,6 +110,24 @@ def logout():
     logout_user()
     flash("You have been logged out!")
     return redirect(url_for("auth.login"))
+
+
+# # RE-AUTHENTICATE ROUTE
+# @blueprint.route("/confirm", methods=["GET", "POST"])
+# def confirm():
+#     form = LoginForm()
+#
+#     if request.method == "POST" and form.validate_on_submit():
+#         password = form.password.data
+#
+#         if check_password_hash(current_user.password_hash, password):
+#             confirm_login()
+#             flash(u"User re-authenticated!")
+#             # return redirect(request.args.get("next") or url_for("general.index"))
+#         else:
+#             flash("Password incorrect!")
+#
+#     return render_template("re-auth.html")
 
 
 # CHANGE PASSWORD ROUTE
