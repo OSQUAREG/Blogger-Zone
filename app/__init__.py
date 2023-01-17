@@ -1,4 +1,4 @@
-from .config import settings
+from .config import sett
 from .auth import auth
 from .user import user
 from .article import article

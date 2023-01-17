@@ -17,7 +17,7 @@
 
 This documentation sets to introduce and give you details of the design features of the Blogger's Zone.
 
-The **Blogger's Zone** is a blog site where both authors and readers can explore the thoughts and minds of others, 
+The **Blogger's Zone** is a blog site where both authors and readers can explore the thoughts and minds of others,
 while getting inspired to write as well. In this Blog, you enjoy reading, enjoy writing and touch lives.
 
 ## 2. Design/Specifications
@@ -26,7 +26,7 @@ This Blog have the following pages:
 
 ### A) Main (General) Page/Menu
 
-These comprise Home Page (which lists only published articles and authors), About Page, Contact Page and View Single 
+These comprise Home Page (which lists only published articles and authors), About Page, Contact Page and View Single
 Article Page, visible to everyone.
 
 #### i) Home Page
@@ -111,7 +111,7 @@ All can view comments by others but only contributors can add comments to an art
 
 #### i) User Dashboard
 
-Only logged-in users can see their own dashboard, which has 2 sections namely; Your Profile and Your Articles 
+Only logged-in users can see their own dashboard, which has 2 sections namely; Your Profile and Your Articles
 (published and saved as draft).
 
 ###### a. Your Profile section
@@ -164,7 +164,7 @@ $ git clone https://github.com/OSQUAREG/Blogger-Zone.git
 #### ii) Activate the Virtual Environment
 
 ```
-$ source blog_app/Scripts/activate
+$ source venv/Scripts/activate
 ```
 
 #### iii) Install the Project Packages

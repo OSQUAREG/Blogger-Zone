@@ -28,13 +28,17 @@ def create():
     form = ArticleForm()
     
     if request.method == "POST" and form.validate_on_submit():
-        title = form.title.data
-        content = form.content.data
+        title = form.title.data  # gets title data from form title field
+        content = form.content.data  # gets content data from form content field
         is_draft = form.is_draft.data
         author = current_user.id  # for the author foreign key link
 
-        # adding new article to the db
+        # creating a new instance of Article and adding it to db
         new_article = Article(title=title, content=content, is_draft=is_draft, author_id=author, last_updated_on=None)
+
+        # adding slug to published articles
+        if not new_article.is_draft:
+            new_article.slug = new_article.slugify_title
 
         db.session.add(new_article)
         db.session.commit()
@@ -45,7 +49,7 @@ def create():
         else:
             flash(f"Article titled: '{title}' Published successfully")
 
-        return redirect(url_for("article.view", id=new_article.id))
+        return redirect(url_for("article.view", id=new_article.id, slug=new_article.slug))
 
     context = {
         "form": form,
@@ -55,8 +59,8 @@ def create():
 
 
 # VIEW SINGLE ARTICLE ROUTE
-@blueprint.route("/view/<int:id>", methods=["GET", "POST"])
-def view(id):
+@blueprint.route("/view/<int:id>/<slug>", methods=["GET", "POST"])
+def view(id: int, slug):
     form = CommentForm()
     article = Article.query.get_or_404(id)
 
@@ -109,6 +113,7 @@ def edit(id):
     form = ArticleForm()
     article = Article.query.get_or_404(id)
 
+    # to update and save the edited article to database
     if form.validate_on_submit() and current_user.id == article.author_id:
         article.title = form.title.data
         article.content = form.content.data
@@ -117,9 +122,11 @@ def edit(id):
 
         if form.is_draft.data:
             article.is_draft = True
+            article.slug = None
             flash(f"Article titled: '{article.title}' updated and saved successfully")
         else:
             article.is_draft = False
+            article.slug = article.slugify_title
             flash(f"Article titled: '{article.title}' updated and published successfully")
         try:
             db.session.commit()
@@ -130,6 +137,7 @@ def edit(id):
 
     # only the author can edit his own article
     if current_user.id == article.author_id:
+        # to initially fill up the update form with existing data from database
         form.title.data = article.title
         form.content.data = article.content
         form.is_draft.data = article.is_draft
@@ -145,26 +153,26 @@ def edit(id):
     return render_template("edit-article.html", **context)
 
 
-# DELETE ARTICLE ROUTE
-@blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
-@login_required
-def delete(id):
-    article = Article.query.get_or_404(id)
-
-    if current_user.id == article.author_id:
-        try:
-            # deleting from the DB
-            db.session.delete(article)
-            db.session.commit()
-
-            flash(f"Article: '{article.title}' Deleted Successfully!")
-            return redirect(url_for("user.dashboard"))
-        except:
-            flash("Whoops! Something went wrong! Please try again...!")
-            return redirect(url_for("article.view", id=article.id))
-    else:
-        flash(f"You are not authorized to delete the Article: '{article.title}'")
-        return redirect(url_for("article.view", id=article.id))
+# # DELETE ARTICLE ROUTE
+# @blueprint.route("/delete/<int:id>", methods=["GET", "POST"])
+# @login_required
+# def delete(id):
+#     article = Article.query.get_or_404(id)
+#
+#     if current_user.id == article.author_id:
+#         try:
+#             # deleting from the DB
+#             db.session.delete(article)
+#             db.session.commit()
+#
+#             flash(f"Article: '{article.title}' Deleted Successfully!")
+#             return redirect(url_for("user.dashboard"))
+#         except:
+#             flash("Whoops! Something went wrong! Please try again...!")
+#             return redirect(url_for("article.view", id=article.id))
+#     else:
+#         flash(f"You are not authorized to delete the Article: '{article.title}'")
+#         return redirect(url_for("article.view", id=article.id))
 
 
 # PUBLISH ARTICLE ROUTE
@@ -175,6 +183,7 @@ def publish(id):
 
     if current_user.id == article.author_id:
         article.is_draft = False
+        article.slug = article.slugify_title
 
         try:
             db.session.commit()
@@ -193,6 +202,7 @@ def unpublish(id):
 
     if current_user.id == article.author_id:
         article.is_draft = True
+        article.slug = None
 
         try:
             db.session.commit()
@@ -211,10 +221,12 @@ def remove(id):
 
     if current_user.id == article.author_id:
         article.is_deleted = True
+        article.slug = None
+
         try:
             db.session.commit()
-            flash(f"Article: '{article.title}' is removed from user's articles successfully.")
-            return redirect(url_for("users.dashboard"))
+            flash(f"Article: '{article.title}' is deleted from user's articles successfully.")
+            return redirect(url_for("user.dashboard"))
         except:
             flash(f"Whoops! Something went wrong. Please try again!")
-            return redirect(url_for("users.dashboard"))
+            return redirect(url_for("user.dashboard"))

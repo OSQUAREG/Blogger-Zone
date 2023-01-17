@@ -1,10 +1,9 @@
-from flask_paginate import get_page_parameter, Pagination
+from sqlalchemy.sql.operators import is_
 
-from app import settings
 from app.webforms import MessageForm, SearchForm
-from flask import render_template, request, redirect, url_for, flash, Blueprint
+from flask import render_template, request, redirect, url_for, flash, Blueprint, session
 from app.models import db, Article, User, Message, Comment, ArticleLike
-from sqlalchemy import func, desc, or_
+from sqlalchemy import func, desc, or_, not_
 from app.utils import paginate_query
 
 blueprint = Blueprint("general", __name__, template_folder="templates")
@@ -20,15 +19,14 @@ GENERAL Routes:
 # Home Page Routing (done)
 @blueprint.route("/", methods=["GET"])
 def index():
-
-    # To get top 5 authors with the highest number of published article.
+    # To get top 10 authors with the highest number of published article.
     top_authors = db.session.query(User.firstname, User.lastname, User.id, func.count(Article.id).label("articles_count")).\
         outerjoin(Article, Article.author_id == User.id).\
-        filter(Article.is_draft == False,
-               Article.is_deleted == False,
-               User.is_active == True,
-               User.username != "admin",
-               "articles_count" != None).\
+        filter(is_(Article.is_draft, False),
+               is_(Article.is_deleted, False),
+               is_(User.is_active, True),
+               not_(User.username == "admin"),
+               not_("articles_count" == None)).\
         group_by(User.id).\
         order_by(desc("articles_count")).limit(10).all()
 
@@ -37,24 +35,25 @@ def index():
         query(Article.title, Article.id,
               func.count(ArticleLike.user_id).label("likes_count")).\
         outerjoin(ArticleLike, ArticleLike.article_id == Article.id).\
-        filter(Article.is_draft == False,
-               Article.is_deleted == False,
-               "likes_count" != None).\
+        filter(is_(Article.is_draft, False),
+               is_(Article.is_deleted, False),
+               not_("likes_count" == 0)).\
         group_by(Article.id).\
         order_by(desc("likes_count")).limit(10).all()
 
     # To get the counts of comments and likes for all articles.
     comment_likes_cnts = db.session. \
         query(Article.id.label("article_id"),
-               func.count(Comment.comment).label("comments_count"),
-               func.count(ArticleLike.user_id).label("likes_count")). \
+              func.count(Comment.comment).label("comments_count"),
+              func.count(ArticleLike.user_id).label("likes_count")). \
         outerjoin(Comment, Comment.article_id == Article.id). \
         outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
         group_by(Article.id).all()
 
     # to get all articles that are published and not deleted.
     articles = db.session.query(Article). \
-        filter(Article.is_draft == False, Article.is_deleted == False). \
+        filter(is_(Article.is_draft, False),
+               is_(Article.is_deleted, False),). \
         order_by(Article.date_posted.desc())\
 
     # pagination
@@ -78,36 +77,41 @@ def index():
 
 
 # SEARCH ROUTE
-@blueprint.route("/search", methods=["POST"])
-def search():
+@blueprint.route("/search", methods=["GET", "POST"])
+@blueprint.route("/search/<word>", methods=["GET", "POST"])
+def search(word=None):
     form = SearchForm()
-    search_word = form.search_word.data
 
-    search_query = db.session. \
-        query(Article, Article.id,
+    if not word:
+        search_word = form.search_word.data
+    else:
+        search_word = word
+
+    search_results = db.session. \
+        query(Article.id,
               User.firstname,
               User.lastname,
               Article.title,
+              Article.slug,
               Article.content,
               Article.date_posted,
               Article.last_updated_on, ). \
         outerjoin(User, User.id == Article.author_id). \
         outerjoin(Comment, Comment.article_id == Article.id). \
         outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
-        filter(or_(Article.is_draft == False,
-                   Article.is_deleted == False,
+        filter(Article.is_draft == False,
+               Article.is_deleted == False,
+               not_(Article.slug == None),
+               ).\
+        filter(or_(Article.title.contains(search_word),
                    Article.content.contains(search_word),
-                   Article.title.contains(search_word),
-                   Comment.comment.contains(search_word)
                    )). \
         order_by(desc(Article.date_posted))
 
-    # pagination
-    search_results, next_page, prev_page = paginate_query(search_query, "general.search")
+    print(search_results)
 
-    print(search_results.page)
-    print(search_results.items)
-    print(search_results.per_page)
+    # pagination
+    search_results, next_page, prev_page = paginate_query(search_results, "general.search")
 
     context = {
         "form": form,
@@ -117,19 +121,6 @@ def search():
         "prev_page": prev_page,
     }
 
-    # if request.method == "POST" and form.validate_on_submit():
-        # # pagination
-        # search_results, next_page, prev_page = paginate_query(search_query, "general.search")
-
-        # context = {
-        #     "form": form,
-        #     "search_word": search_word,
-        #     "search_results": search_results,
-        #     "next_page": next_page,
-        #     "prev_page": prev_page,
-        # }
-
-        # return render_template("search.html", **context)
     return render_template("search.html", **context)
 
 

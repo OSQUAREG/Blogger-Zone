@@ -66,6 +66,8 @@
             <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary">Logout</a>
             <a href="{{ url_for('user.update') }}" class="btn btn-outline-primary">Update
                 Profile</a>
+            <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline-primary">Change
+                Password</a>
             <a href="{{ url_for('user.deactivate') }}" class="btn btn-outline-danger">Delete
                 Profile</a>
         </div>
@@ -83,7 +85,7 @@
                 
                 <!-- Search Form Area -->
                 <div class="col-4 float-right">
-                    <form action="{{ url_for('user.article_search', s=search_word) }}" method="POST" class="d-flex">
+                    <form action="{{ url_for('user.search') }}" method="POST" class="d-flex">
                         <div class="">{{ form.hidden_tag() }}</div>
                         <div class="col-9">
                             {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search articles") }}
@@ -185,7 +187,7 @@
                             </small>
                             <div class="card-body">
                                 <h4 class="card-title"><a class="fs-5 text-decoration-none"
-                                        href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a></h4>
+                                        href="{{ url_for('article.view', id=article.id, slug=article.slug) }}">{{ article.title }}</a></h4>
                                 <div>
                                     <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
                                 </div>
@@ -216,7 +218,7 @@
                                 </div>
                                 <br>
                                 <div>
-                                    <a href="{{ url_for('article.view', id=article.id) }}"
+                                    <a href="{{ url_for('article.view', id=article.id, slug=article.slug) }}"
                                         class="btn btn-outline-primary">Read
                                         Article</a>
                                     {% if current_user.is_authenticated and article.author_id == current_user.id %}
@@ -369,8 +371,7 @@
                                 {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
                             </small>
                             <div class="card-body">
-                                <h4 class="card-title"><a class="fs-5 text-decoration-none"
-                                        href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a></h4>
+                                <h4 class="card-title">{{ article.title }}</h4>
                                 <p class="card-text">{{ article.content | striptags() | truncate(255) }}</p>
                                 <div><br>
                                     {% if current_user.is_authenticated %}

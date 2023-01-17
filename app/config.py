@@ -30,4 +30,4 @@ class Settings:
     per_page:int = os.getenv("PER_PAGE")
 
 
-settings = Settings()
+sett = Settings()

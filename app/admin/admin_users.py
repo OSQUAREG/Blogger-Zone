@@ -1,6 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, current_user
 from sqlalchemy import func
+from werkzeug.security import generate_password_hash
+
 from app.models import db, User, Article, Comment, ArticleLike
 from app.webforms import UserForm
 # from datetime import timedelta
@@ -183,3 +185,26 @@ def view(id):
     }
 
     return render_template("admin-user-dashboard.html", **context)
+
+
+# AUTO-RESET USER PASSWORD
+@blueprint.route("/reset-password/<int:id>", methods=["GET", "POST"])
+@login_required
+def reset_password(id):
+    # user = User.query.get_or_404(id)
+    user = User.query.filter_by(id=id)
+    user_to_reset = user.first()
+
+    if current_user.is_authenticated and current_user.is_admin:
+        # user = User.query.filter_by(email=user.email)
+
+        # hash the new password
+        new_pwd_hash = generate_password_hash("p@ssword123")
+        # update user password
+        user.update(dict(password_hash=new_pwd_hash))
+        # save/commit changes
+        db.session.commit()
+
+        flash(f"User: {user_to_reset.username}'s Password changed successfully!")
+        return redirect(url_for("admin.admin", id=user_to_reset.id))
+

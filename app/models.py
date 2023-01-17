@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from slugify import slugify
 from sqlalchemy import MetaData
 from flask_login import UserMixin
 from datetime import datetime
@@ -14,31 +15,6 @@ naming_convention = {
 
 metadata = MetaData(naming_convention=naming_convention)
 db = SQLAlchemy(metadata=metadata)
-
-
-# ARTICLE MODEL/TABLE
-class Article(db.Model):
-    __tablename__ = "articles"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
-    is_draft = db.Column(db.Boolean, default=False, nullable=False)
-    last_updated_on = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    last_updated_by = db.Column(db.String)
-    is_deleted = db.Column(db.Boolean, default=False)
-
-    # creates foreign keys with related users (authors).
-    author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
-
-    # create relationship to comments and likes.
-    comments = db.relationship("Comment", backref="articles")
-    article_likes = db.relationship("ArticleLike", backref="articles")
-    comment_likes = db.relationship("CommentLike", backref="articles")
-
-    def __repr__(self):
-        return f"Article: <{self.title}>"
 
 
 # USER MODEL/TABLE
@@ -67,6 +43,36 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User: <{self.username}>"
+
+
+# ARTICLE MODEL/TABLE
+class Article(db.Model):
+    __tablename__ = "articles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    slug = db.Column(db.String(255), nullable=True)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    is_draft = db.Column(db.Boolean, default=False, nullable=False)
+    last_updated_on = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    last_updated_by = db.Column(db.String)
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    # creates foreign keys with related users (authors).
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+
+    # create relationship to comments and likes.
+    comments = db.relationship("Comment", backref="articles")
+    article_likes = db.relationship("ArticleLike", backref="articles")
+    comment_likes = db.relationship("CommentLike", backref="articles")
+
+    def __repr__(self):
+        return f"Article: <{self.title}>"
+
+    @property
+    def slugify_title(self):
+        return slugify(self.title)
 
 
 # COMMENT MODEL/TABLE

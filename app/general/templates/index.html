@@ -132,7 +132,7 @@
                 </small>
                 <div class="card-body">
                     <a class="fs-5 text-decoration-none"
-                        href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a>
+                        href="{{ url_for('article.view', id=article.id, slug=article.slug) }}">{{ article.title }}</a>
                     <div>
                         <p>{{ article.content | striptags() | truncate(255) }}</p>
                     </div>
@@ -162,7 +162,7 @@
                     </div>
                     <br>
                     <div>
-                        <a href="{{ url_for('article.view', id=article.id) }}"
+                        <a href="{{ url_for('article.view', id=article.id, slug=article.slug) }}"
                             class="btn btn-light btn-outline-primary">Read Article</a>
                         {% if current_user.is_authenticated and article.author_id == current_user.id %}
                         <a href="{{ url_for('article.edit', id=article.id) }}"
@@ -238,7 +238,7 @@
                 <hr>
             </div>
             <div class="container">
-                <form action="{{ url_for('general.search', s=search_word) }}" method="POST" class="d-flex">
+                <form action="{{ url_for('general.search', page=page) }}" method="POST" class="d-flex">
                     <div class="">{{ form.hidden_tag() }}</div>
                     <div class="col-9">
                         {{ form.search_word(class="row form-control shadow p-2 mb-5 bg-body rounded border border-primary", placeholder="Type here") }}
@@ -271,7 +271,7 @@
         <div class="shadow p-3 mb-5 bg-body rounded border border-primary" style="height: auto">
             <ul>
                 {% for article in top_articles %}
-                <li><a href="{{ url_for('article.view', id=article.id) }}">{{ article.title }} ({{ article.likes_count }})</a> </li>
+                <li><a href="{{ url_for('article.view', id=article.id, slug=article.slug) }}">{{ article.title }} ({{ article.likes_count }})</a> </li>
                 {% endfor %}
             </ul>
         </div>

@@ -23,8 +23,29 @@
     
     <!-- User Profile -->
     <div class="container">
-        <h3> User Management </h3>
+        <div class="row">
+            <div class="col-8">
+                <h3> User Management </h3>
+            </div>
+            {# <!-- Search Form Area -->
+            <div class="col-4 float-right">
+                <form action="{{ url_for('admin.admin') }}" method="POST" class="d-flex">
+                    <div class="">{{ form.hidden_tag() }}</div>
+                    <div class="col-9">
+                        {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search users") }}
+                    </div>
+                    <div class="col-5">
+                        {{ form.submit(class="btn btn btn-outline-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
+                        {# {% if form.validate_on_submit and form.search_word.data != "" %}
+                        <div><small>You searched for: {{ search_word }}</small></div>
+                        {% endif %} #}
+                    </div>
+                </form>
+            </div> #}
+        </div>
+
         <hr>
+
         <table class="table table-sm table-hover">
             <thead class="table-responsive bg-primary text-light">
                 <th>Id</th>
@@ -55,15 +76,16 @@
                     <td>{% if user.is_admin: %} Yes {% else %} No {% endif %} </td>
                     <td> <small>
                             {% if user.is_active: %}
-                            <a href="{{ url_for('admin-users.deactivate', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 14px;">Deactivate</a> | {% else %}
-                            <a href="{{ url_for('admin-users.activate', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 14px;">Activate</a> |
+                            <a href="{{ url_for('admin-users.deactivate', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 12px;">Deactivate</a> | {% else %}
+                            <a href="{{ url_for('admin-users.activate', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 12px;">Activate</a> |
                             {% endif %}
-                            <a href="{{ url_for('admin-users.delete', id=user.id) }}" class="btn btn-outline-danger bt-sm mb-1 p-1" style="font-size: 14px;">Delete</a> |
-                            <a href="{{ url_for('admin-users.update', id=user.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 14px;">Edit</a> |
+                            <a href="{{ url_for('admin-users.delete', id=user.id) }}" class="btn btn-outline-danger bt-sm mb-1 p-1" style="font-size: 12px;">Delete</a> |
+                            <a href="{{ url_for('admin-users.update', id=user.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 12px;">Edit</a> |
+                            <a href="{{ url_for('admin-users.reset_password', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 12px;">Reset Password</a> |
                             {% if user.is_admin: %}
-                            <a href="{{ url_for('admin-users.demote', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 14px;">Demote</a>
+                            <a href="{{ url_for('admin-users.demote', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 12px;">Demote</a>
                             {% else %}
-                            <a href="{{ url_for('admin-users.promote', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 14px;">Promote</a>
+                            <a href="{{ url_for('admin-users.promote', id=user.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 12px;">Promote</a>
                             {% endif %}
                         </small>
                     </td>
@@ -125,11 +147,31 @@
         {% endif %}
     </div>
     
-    <br>
+    <br><br><br>
     
     <!-- Article Management -->
     <div class="container">
-        <h3> Article Management </h3>
+        <div class="row">
+            <div class="col-8">
+                <h3> Article Management </h3>
+            </div>
+            
+            <!-- Search Form Area -->
+            <div class="col-4 float-right">
+                <form action="{{ url_for('admin.admin') }}" method="POST" class="d-flex">
+                    <div class="">{{ form.hidden_tag() }}</div>
+                    <div class="col-9">
+                        {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search articles") }}
+                    </div>
+                    <div class="col-5">
+                        {{ form.submit(class="btn btn btn-outline-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
+                        {# {% if form.validate_on_submit and form.search_word.data != "" %}
+                        <div><small>You searched for: {{ search_word }}</small></div>
+                        {% endif %} #}
+                    </div>
+                </form>
+            </div>
+        </div>        
         <hr>
         <table class="table table-sm table-hover">
             <thead class="table-responsive bg-primary text-light">
@@ -149,7 +191,13 @@
                 {% for article in articles.items %}
                 <tr>
                     <td>{{ article.id }}</td>
-                    <td><a href="{{ url_for('article.view', id=article.id) }}">{{ article.title }}</a></td>
+                    <td>
+                    {% if article.slug  is none %}
+                    {{ article.title }}
+                    {% else %}
+                    <a href="{{ url_for('article.view', id=article.id, slug=article.slug) }}">{{ article.title }}</a>
+                    {% endif %}
+                    </td>
                     <td>{{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}</td>
                     <td>{{ article.author.username }}</td>
                     <td> {% if article.last_updated_on is none %}
@@ -179,16 +227,16 @@
                     <td>
                         <small>
                             {% if article.is_draft: %}
-                            <a href="{{ url_for('admin-articles.publish', id=article.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 14px;">Publish</a> |
+                            <a href="{{ url_for('admin-articles.publish', id=article.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 12px;">Publish</a> |
                             {% else %}
-                            <a href="{{ url_for('admin-articles.unpublish', id=article.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 14px;">Unpublish</a> |
+                            <a href="{{ url_for('admin-articles.unpublish', id=article.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 12px;">Unpublish</a> |
                             {% endif %}
                             {% if article.is_deleted: %}
-                            <a href="{{ url_for('admin-articles.add', id=article.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 14px;">Add</a> |
+                            <a href="{{ url_for('admin-articles.add', id=article.id) }}" class="btn btn-outline-primary bt-sm mb-1 p-1" style="font-size: 12px;">Add</a> |
                             {% else %}
-                            <a href="{{ url_for('admin-articles.remove', id=article.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 14px;">Remove</a> |
+                            <a href="{{ url_for('admin-articles.remove', id=article.id) }}" class="btn btn-outline-warning bt-sm mb-1 p-1" style="font-size: 12px;">Remove</a> |
                             {% endif %}
-                            <a href="{{ url_for('admin-articles.delete', id=article.id) }}" class="btn btn-outline-danger bt-sm mb-1 p-1" style="font-size: 14px;">Delete</a>
+                            <a href="{{ url_for('admin-articles.delete', id=article.id) }}" class="btn btn-outline-danger bt-sm mb-1 p-1" style="font-size: 12px;">Delete</a>
                         </small>
                     </td>
                 </tr>

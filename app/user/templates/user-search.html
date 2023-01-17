@@ -24,7 +24,7 @@
             <hr>
         </div>
         <div class="container">
-            <form action="{{ url_for('general.search', s=search_word) }}" method="POST" class="d-flex">
+            <form action="{{ url_for('user.search') }}" method="POST" class="d-flex">
                 <div class="">{{ form.hidden_tag() }}</div>
                 <div class="col-11">
                     {{ form.search_word(class="row form-control shadow p-2 mb-3 bg-body rounded border border-primary", placeholder="Search here") }}
@@ -40,7 +40,7 @@
     <div class="row">
         <div>
             <h3>Search Results</h3>
-            <p>You searched for <b>"{{ search_word }}"</b>. See results below:</p>
+            <p>You searched for <b>"{{ search_word }}"</b> in your articles list. See results below:</p>
         </div>
         <hr>
 
@@ -59,7 +59,7 @@
                 {% if page %}
                 {% if page != search_results.page %}
                 <li class="page-item">
-                    <a href="{{ url_for('user.article_search', page=page) }}" class="page-link">{{ page }}</a>
+                    <a href="{{ url_for('user.search', page=page, word=search_word) }}" class="page-link">{{ page }}</a>
                 </li>
                 {% else %}
                 <li class="page-item">
@@ -100,7 +100,7 @@
             <div class="shadow p-3 mb-3 bg-body rounded border border-primary" style="height: auto">
                 {% for search_result in search_results.items %}
                 <div class="shadow p-3 mb-3 bg-body rounded border border-primary" style="height: auto">
-                    <div><a class="fs-5 text-decoration-none" href="{{ url_for('article.view', id=search_result.id) }}">{{ search_result.title }}</a></div>
+                    <div><a class="fs-5 text-decoration-none" href="{{ url_for('article.view', id=search_result.id, slug=search_word.slug) }}">{{ search_result.title }}</a></div>
                     <div>
                         <i>
                             <small class="card-header" style="font-size:12px">
@@ -118,7 +118,7 @@
                         <p>{{ search_result.content | striptags() | truncate(200) }}</p>
                     </div>
                     <div>
-                        <a href="{{ url_for('article.view', id=search_result.id) }}"
+                        <a href="{{ url_for('article.view', id=search_result.id, slug=search_word.slug) }}"
                             class="btn btn-outline-primary">Read more</a>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                 {% if page %}
                 {% if page != search_results.page %}
                 <li class="page-item">
-                    <a href="{{ url_for('user.article_search', page=page) }}" class="page-link">{{ page }}</a>
+                    <a href="{{ url_for('user.search', page=page, word=search_word) }}" class="page-link">{{ page }}</a>
                 </li>
                 {% else %}
                 <li class="page-item">

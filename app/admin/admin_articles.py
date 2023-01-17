@@ -33,6 +33,7 @@ def publish(id):
 
     if current_user.is_authenticated and current_user.is_admin:
         article.is_draft = False
+        article.slug = article.slugify_title
 
         try:
             db.session.commit()
@@ -51,6 +52,7 @@ def unpublish(id):
 
     if current_user.is_authenticated and current_user.is_admin:
         article.is_draft = True
+        article.slug = None
 
         try:
             db.session.commit()
@@ -86,6 +88,8 @@ def remove(id):
 
     if current_user.is_authenticated and current_user.is_admin:
         article.is_deleted = True
+        article.slug = None
+
         try:
             db.session.commit()
             flash(f"Article: '{article.title}' is removed from user's articles successfully.")
@@ -103,6 +107,8 @@ def add(id):
 
     if current_user.is_authenticated and current_user.is_admin:
         article.is_deleted = False
+        article.slug = article.slugify_title
+
         try:
             db.session.commit()
             flash(f"Article: '{article.title}' is added to user's articles successfully.")

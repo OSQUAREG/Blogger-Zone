@@ -1,4 +1,4 @@
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, desc
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, logout_user, current_user
 from app.models import db, User, Article, Comment, ArticleLike
@@ -63,22 +63,21 @@ def dashboard():
 
     context = {
         "user": user,
-        # "articles": articles,
         "comment_likes_cnts": comment_likes_cnts,
-        "form": form,
-        "search_word": search_word,
         "next_page_pub": next_page_pub,
         "prev_page_pub": prev_page_pub,
         "next_page_sav": next_page_sav,
         "prev_page_sav": prev_page_sav,
         "articles_pub": articles_pub,
-        "articles_sav": articles_sav
+        "articles_sav": articles_sav,
+        "form": form,
+        "search_word": search_word,
     }
 
     return render_template("dashboard.html", **context)
 
 
-# Update User Profile Page Routing (done)
+# UPDATE USER ROUTE
 @blueprint.route("/update", methods=["GET", "POST"])
 @login_required
 def update():
@@ -120,7 +119,7 @@ def update():
     return render_template("update-user.html", **context)
 
 
-# DEACTIVATE USER PROFILE Route (done)
+# DEACTIVATE USER ROUTE
 @blueprint.route("/deactivate", methods=["GET", "POST"])
 @login_required
 def deactivate():
@@ -143,30 +142,34 @@ def deactivate():
         return redirect(url_for("general.index"))
 
 
-# SEARCH MY ARTICLE ROUTE
-@blueprint.route("/article/search", methods=["POST"])
+# SEARCH USER ARTICLE ROUTE
+@blueprint.route("/search", methods=["GET", "POST"])
+@blueprint.route("/search/<word>", methods=["GET", "POST"])
 @login_required
-def article_search():
+def search(word=None):
     form = SearchForm()
-    search_word = form.search_word.data
 
-    search_results = Article.query. \
-        filter(or_(Article.author_id == current_user.id,
-               Article.content.contains(search_word),
-               Article.title.contains(search_word)
+    if not word:
+        search_word = form.search_word.data
+    else:
+        search_word = word
+
+    search_results = db.session.query(Article).\
+        filter(Article.author_id == current_user.id).\
+        filter(or_(Article.content.contains(search_word),
+                   Article.title.contains(search_word)
                    )). \
-        order_by(Article.date_posted.desc())
+        order_by(desc(Article.date_posted))
 
-    if form.validate_on_submit():
-        # pagination
-        search_results, next_page, prev_page = paginate_query(search_results, "user.article_search")
+    # pagination
+    search_results, next_page, prev_page = paginate_query(search_results, "user.search")
 
-        context = {
-            "form": form,
-            "search_word": search_word,
-            "search_results": search_results,
-            "next_page": next_page,
-            "prev_page": prev_page,
-        }
+    context = {
+        "form": form,
+        "search_word": search_word,
+        "search_results": search_results,
+        "next_page": next_page,
+        "prev_page": prev_page,
+    }
 
-        return render_template("user-search.html", **context)
+    return render_template("user-search.html", **context)

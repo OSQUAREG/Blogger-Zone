@@ -18,14 +18,14 @@
 			{{ form.username_email.label(class="form-label", style="font-weight:bold; font-size:18px") }}
 			{{ form.username_email(class="form-control shadow p-3 mb-5 bg-body rounded border border-primary") }}
 			{% for error in form.username_email.errors %}
-			<small>{{ error }}</small>
+			<small class="text-danger">{{ error }}</small>
 			{% endfor %}
 		</div>
 		<div class="col-md-6">
 			{{ form.password.label(class="form-label", style="font-weight:bold; font-size:18px") }}
 			{{ form.password(class="form-control shadow p-3 mb-5 bg-body rounded border border-primary") }}
 			{% for error in form.password.errors %}
-			<small text-color="red">{{ error }}</small>
+			<small class="text-danger">{{ error }}</small>
 			{% endfor %}
 		</div>
 		<div class="d-grid gap-2 col-3 mx-auto">
