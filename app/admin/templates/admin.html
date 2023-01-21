@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
 
 <div class="container">
@@ -27,21 +28,23 @@
             <div class="col-8">
                 <h3> User Management </h3>
             </div>
-            {# <!-- Search Form Area -->
+
+            {# <!-- User Search Form Area -->
             <div class="col-4 float-right">
                 <form action="{{ url_for('admin.admin') }}" method="POST" class="d-flex">
                     <div class="">{{ form.hidden_tag() }}</div>
                     <div class="col-9">
-                        {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search users") }}
+                        {{ form.search_user(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search user") }}
                     </div>
                     <div class="col-5">
                         {{ form.submit(class="btn btn btn-outline-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
-                        {# {% if form.validate_on_submit and form.search_word.data != "" %}
-                        <div><small>You searched for: {{ search_word }}</small></div>
-                        {% endif %} #}
                     </div>
                 </form>
+                {% if form.validate_on_submit and form.search_user.data is not none %}
+                <div><small>Searched for: <b>{{ search_user }}</b></small></div>
+                {% endif %}
             </div> #}
+
         </div>
 
         <hr>
@@ -97,47 +100,58 @@
         <!-- Bottom Pagination Area -->
         {% if users.total > 0 %}
         <nav aria-label="Page navigation example">
+        
+            <!-- Pagination Info -->
             <center>
                 <small>
-                    <p>displaying {{ ((users.page - 1) * users.per_page) + 1 }}
+                    <p>
+                        displaying {{ ((users.page - 1) * users.per_page) + 1 }}
                         {% if users.total > users.per_page %}
-                        - {{ users.page * users.per_page }} of {{ users.total }} Users
+                            {% if (users.page * users.per_page) > users.total %}
+                            - {{ users.total }} of {{ users.total }} Users
+                            {% else %}
+                            - {{ users.page * users.per_page }} of {{ users.total }} Users
+                            {% endif %}
                         {% else %}
-                        {% if users.total > 1 %}
-                        - {{ users.total }} of {{ users.total }} Users
-                        {% else %}
-                        User
-                        {% endif %}
+                            {% if users.total > 1 %}
+                            - {{ users.total }} of {{ users.total }} Users
+                            {% else %}
+                            User
+                            {% endif %}
                         {% endif %}
                     </p>
                 </small>
             </center>
+
+            <!-- Pagination Buttons -->
             <div class="pagination justify-content-center">
-            <li class="page-item">
-                {% if prev_page_users %}
-                <a class="page-link" href="{{ prev_page_users }}">Previous</a>
-                {% else %}
-                <a class="page-link disabled" href="{{ prev_page_users }}">Previous</a>
-                {% endif %}
-            </li>
-                {% for page in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
-                    {% if page %}
-                        {% if page != users.page %}
-                        <li class="page-item">
-                        <a href="{{ url_for('admin.admin', page=page) }}" class="page-link">{{ page }}</a>
-                        </li>
-                        {% else %}
-                        <li class="page-item">
-                        <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                        </li>
-                        {% endif %}
+                <li class="page-item">
+                    {% if prev_page_users %}
+                    {# <a class="page-link" href="{{ prev_page_users }}">Previous</a> #}
+                    <a class="page-link" href="{{ url_for('admin.admin', user_page=users.prev_num, article_page=article_page) if users.has_prev else None }}">Previous</a>
                     {% else %}
-                    <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                    <a class="page-link disabled" href="{{ prev_page_users }}">Previous</a>
                     {% endif %}
+                </li>
+                {% for user_page in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                {% if user_page %}
+                {% if user_page != users.page %}
+                <li class="page-item">
+                    <a href="{{ url_for('admin.admin', user_page=user_page, article_page=article_page) }}" class="page-link">{{ user_page }}</a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <strong class="page-link disabled bg-primary text-light">{{ user_page }}</strong>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
+                {% endif %}
                 {% endfor %}
                 <li class="page-item">
                     {% if next_page_users %}
-                    <a class="page-link" href="{{ next_page_users }}">Next</a>
+                    {# <a class="page-link" href="{{ next_page_users }}">Next</a> #}
+                    <a class="page-link" href="{{ url_for('admin.admin', user_page=users.next_num, article_page=article_page) if users.has_next else None }}">Next</a>
                     {% else %}
                     <a class="page-link disabled" href="{{ next_page_users }}">Next</a>
                     {% endif %}
@@ -156,21 +170,22 @@
                 <h3> Article Management </h3>
             </div>
             
-            <!-- Search Form Area -->
+            {# <!-- Article Search Form Area -->
             <div class="col-4 float-right">
                 <form action="{{ url_for('admin.admin') }}" method="POST" class="d-flex">
                     <div class="">{{ form.hidden_tag() }}</div>
                     <div class="col-9">
-                        {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search articles") }}
+                        {{ form.search_word(class="row form-control shadow p-2 bg-body rounded border border-primary", placeholder="Search article") }}
                     </div>
                     <div class="col-5">
                         {{ form.submit(class="btn btn btn-outline-primary shadow p-2", style="font-weight:bold; font-size:16px") }}
-                        {# {% if form.validate_on_submit and form.search_word.data != "" %}
-                        <div><small>You searched for: {{ search_word }}</small></div>
-                        {% endif %} #}
                     </div>
                 </form>
-            </div>
+                {% if form.validate_on_submit and form.search_word.data is not none %}
+                <div><small>Searched for: <b>{{ search_word }}</b></small></div>
+                {% endif %}
+            </div> #}
+
         </div>        
         <hr>
         <table class="table table-sm table-hover">
@@ -193,7 +208,7 @@
                     <td>{{ article.id }}</td>
                     <td>
                     {% if article.slug  is none %}
-                    {{ article.title }}
+                    <a href="{{ url_for('article.view', id=article.id, slug='') }}">{{ article.title }}</a>
                     {% else %}
                     <a href="{{ url_for('article.view', id=article.id, slug=article.slug) }}">{{ article.title }}</a>
                     {% endif %}
@@ -247,38 +262,47 @@
         <!-- Bottom Pagination Area -->
         {% if articles.total > 0 %}
         <nav aria-label="Page navigation example">
+            
+            <!-- Pagination Info -->
             <center>
                 <small>
                     <p>displaying {{ ((articles.page - 1) * articles.per_page) + 1 }}
                         {% if articles.total > articles.per_page %}
-                        - {{ articles.page * articles.per_page }} of {{ articles.total }} Articles
+                            {% if (articles.page * articles.per_page) > articles.total %}
+                            - {{ articles.total }} of {{ articles.total }} Articles
+                            {% else %}
+                            - {{ articles.page * articles.per_page }} of {{ articles.total }} Articles
+                            {% endif %}
                         {% else %}
-                        {% if articles.total > 1 %}
-                        - {{ articles.total }} of {{ articles.total }} Articles
-                        {% else %}
-                        Article
-                        {% endif %}
+                            {% if articles.total > 1 %}
+                            - {{ articles.total }} of {{ articles.total }} Articles
+                            {% else %}
+                            Article
+                            {% endif %}
                         {% endif %}
                     </p>
                 </small>
             </center>
+
+            <!-- Pagination Buttons -->
             <div class="pagination justify-content-center">
             <li class="page-item">
                 {% if prev_page_articles %}
-                <a class="page-link" href="{{ prev_page_articles }}">Previous</a>
+                {# <a class="page-link" href="{{ prev_page_articles }}">Previous</a> #}
+                <a class="page-link" href="{{ url_for('admin.admin', user_page=user_page, article_page=articles.prev_num) if articles.has_prev else None }}">Previous</a>
                 {% else %}
                 <a class="page-link disabled" href="{{ prev_page_articles }}">Previous</a>
                 {% endif %}
             </li>
-                {% for page in articles.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
-                    {% if page %}
-                        {% if page != articles.page %}
+                {% for article_page in articles.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                    {% if article_page %}
+                        {% if article_page != articles.page %}
                         <li class="page-item">
-                        <a href="{{ url_for('admin.admin', page=page) }}" class="page-link">{{ page }}</a>
+                        <a href="{{ url_for('admin.admin', user_page=user_page, article_page=article_page) }}" class="page-link">{{ article_page }}</a>
                         </li>
                         {% else %}
                         <li class="page-item">
-                        <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                        <strong class="page-link disabled bg-primary text-light">{{ article_page }}</strong>
                         </li>
                         {% endif %}
                     {% else %}
@@ -287,7 +311,8 @@
                 {% endfor %}
                 <li class="page-item">
                     {% if next_page_articles %}
-                    <a class="page-link" href="{{ next_page_articles }}">Next</a>
+                    {# <a class="page-link" href="{{ next_page_articles }}">Next</a> #}
+                    <a class="page-link" href="{{ url_for('admin.admin', user_page=user_page, article_page=articles.next_num) if articles.has_next else None }}">Next</a>
                     {% else %}
                     <a class="page-link disabled" href="{{ next_page_articles }}">Next</a>
                     {% endif %}

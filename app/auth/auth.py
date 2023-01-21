@@ -65,7 +65,7 @@ def sign_up():
         "form": form,
     }
 
-    return render_template("sign-up.html", **context)
+    return render_template("sign-up.html", title="Sign Up", **context)
 
 
 # LOGIN ROUTE
@@ -100,7 +100,7 @@ def login():
         "form": form
     }
 
-    return render_template("login.html", **context)
+    return render_template("login.html", title="Login", **context)
 
 
 # LOGOUT ROUTE
@@ -169,4 +169,4 @@ def change_password():
             flash("Your account is deactivated! Please contact admin in 'Contact' page.")
             return redirect(url_for("auth.change_password"))
 
-    return render_template("change-password.html", form=form)
+    return render_template("change-password.html", title="Change Password", form=form)

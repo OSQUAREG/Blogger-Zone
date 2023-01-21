@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
 
 {% for message in get_flashed_messages() %}
@@ -102,13 +103,17 @@
                     <p>
                         displaying {{ ((articles.page - 1) * articles.per_page) + 1 }}
                         {% if articles.total > articles.per_page %}
-                        - {{ articles.page * articles.per_page }} of {{ articles.total }} Articles
+                            {% if (articles.page * articles.per_page) > articles.total %}
+                            - {{ articles.total }} of {{ articles.total }} Articles
+                            {% else %}
+                            - {{ articles.page * articles.per_page }} of {{ articles.total }} Articles
+                            {% endif %}
                         {% else %}
-                        {% if articles.total > 1 %}
-                        - {{ articles.total }} of {{ articles.total }} Articles
-                        {% else %}
-                        Article
-                        {% endif %}
+                            {% if articles.total > 1 %}
+                            - {{ articles.total }} of {{ articles.total }} Articles
+                            {% else %}
+                            Article
+                            {% endif %}
                         {% endif %}
                     </p>
                 </small>
@@ -121,11 +126,12 @@
             <div class="card border-primary mb-3">
                 <small class="card-header">
                     <strong class="badge rounded border border-primary" style="color: black;">Author:</strong>
-                    {{ article.author.firstname }} {{ article.author.lastname }} |
+                    <a href="{{ url_for('general.author', id=article.author.id) }}"><b>{{ article.author.firstname }} {{ article.author.lastname }}</b></a> |
                     <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong>
                     {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
                     <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
-                    {% if article.last_updated_on is none %} {{ None }}
+                    {% if article.last_updated_on is none %} 
+                    {{ None }}
                     {% else %}
                     {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }}
                     {% endif %}
@@ -141,21 +147,22 @@
                             <!-- Articles Comments Count -->
                             {% for comment_likes_cnt in comment_likes_cnts %}
                             {% if comment_likes_cnt.article_id == article.id %}
-                            {% if comment_likes_cnt.comments_count > 1 %}
-                            {{ comment_likes_cnt.comments_count }} Comments |
-                            {% else %}
-                            {{ comment_likes_cnt.comments_count }} Comment |
-                            {% endif %}
+                                {% if comment_likes_cnt.comments_count > 1 %}
+                                {{ comment_likes_cnt.comments_count }} Comments |
+                                {% else %}
+                                {{ comment_likes_cnt.comments_count }} Comment |
+                                {% endif %}
                             {% endif %}
                             {% endfor %}
+                            
                             <!-- Articles Likes Count -->
                             {% for comment_likes_cnt in comment_likes_cnts %}
                             {% if comment_likes_cnt.article_id == article.id %}
-                            {% if comment_likes_cnt.likes_count > 1 %}
-                            {{ comment_likes_cnt.likes_count }} Likes
-                            {% else %}
-                            {{ comment_likes_cnt.likes_count }} Like
-                            {% endif %}
+                                {% if comment_likes_cnt.likes_count > 1 %}
+                                {{ comment_likes_cnt.likes_count }} Likes
+                                {% else %}
+                                {{ comment_likes_cnt.likes_count }} Like
+                                {% endif %}
                             {% endif %}
                             {% endfor %}
                         </small>
@@ -181,9 +188,14 @@
         <nav aria-label="Page navigation example">
             <center>
                 <small>
-                    <p>displaying {{ ((articles.page - 1) * articles.per_page) + 1 }}
+                    <p>
+                        displaying {{ ((articles.page - 1) * articles.per_page) + 1 }}
                         {% if articles.total > articles.per_page %}
-                        - {{ articles.page * articles.per_page }} of {{ articles.total }} Articles
+                            {% if (articles.page * articles.per_page) > articles.total %}
+                            - {{ articles.total }} of {{ articles.total }} Articles
+                            {% else %}
+                            - {{ articles.page * articles.per_page }} of {{ articles.total }} Articles
+                            {% endif %}
                         {% else %}
                             {% if articles.total > 1 %}
                             - {{ articles.total }} of {{ articles.total }} Articles
@@ -261,6 +273,7 @@
                 <li><a href="{{ url_for('general.author', id=author.id) }}">{{ author.firstname }} {{ author.lastname }} ({{ author.articles_count }})</a></li>
                 {% endfor %}
             </ul>
+            <a href="{{ url_for('general.authors') }}">See All Authors List</a>
         </div>
 
         <!-- Top Authors List -->

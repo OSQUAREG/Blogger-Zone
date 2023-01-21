@@ -1,4 +1,4 @@
-from sqlalchemy import func, or_, desc
+from sqlalchemy import func, or_, desc, distinct
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import login_required, logout_user, current_user
 from app.models import db, User, Article, Comment, ArticleLike
@@ -45,18 +45,18 @@ def dashboard():
         order_by(Article.date_posted.desc())
 
     # pagination
-    articles_pub, next_page_pub, prev_page_pub = paginate_query(articles_published, "user.dashboard")
+    articles_pub, next_page_pub, prev_page_pub, page = paginate_query(articles_published, "user.dashboard")
 
-    articles_sav, next_page_sav, prev_page_sav = paginate_query(articles_saved, "user.dashboard")
+    articles_sav, next_page_sav, prev_page_sav, page = paginate_query(articles_saved, "user.dashboard")
 
     # To get the counts of comments and likes for all articles.
-    comment_likes_cnts = db.session\
-        .query(Article.id.label("article_id"),
-               func.count(Comment.comment).label("comments_count"),
-               func.count(ArticleLike.user_id).label("likes_count")) \
-        .outerjoin(Comment, Comment.article_id == Article.id) \
-        .outerjoin(ArticleLike, ArticleLike.article_id == Article.id) \
-        .group_by(Article.id).all()
+    comment_likes_cnts = db.session. \
+        query(Article.id.label("article_id"),
+              func.count(Comment.comment).label("comments_count"),
+              func.count(distinct(ArticleLike.user_id)).label("likes_count")). \
+        outerjoin(Comment, Comment.article_id == Article.id). \
+        outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
+        group_by(Article.id).all()
 
     form = SearchForm()
     search_word = form.search_word.data
@@ -74,7 +74,7 @@ def dashboard():
         "search_word": search_word,
     }
 
-    return render_template("dashboard.html", **context)
+    return render_template("dashboard.html", title=f"{user.firstname}'s Dashboard", **context)
 
 
 # UPDATE USER ROUTE
@@ -116,7 +116,7 @@ def update():
         "user": user,
     }
 
-    return render_template("update-user.html", **context)
+    return render_template("update-user.html", title="Update Profile", **context)
 
 
 # DEACTIVATE USER ROUTE
@@ -162,7 +162,7 @@ def search(word=None):
         order_by(desc(Article.date_posted))
 
     # pagination
-    search_results, next_page, prev_page = paginate_query(search_results, "user.search")
+    search_results, next_page, prev_page, page = paginate_query(search_results, "user.search", search=word)
 
     context = {
         "form": form,
@@ -172,4 +172,4 @@ def search(word=None):
         "prev_page": prev_page,
     }
 
-    return render_template("user-search.html", **context)
+    return render_template("user-search.html", title="Your Article Search", **context)

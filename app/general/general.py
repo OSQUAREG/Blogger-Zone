@@ -3,7 +3,7 @@ from sqlalchemy.sql.operators import is_
 from app.webforms import MessageForm, SearchForm
 from flask import render_template, request, redirect, url_for, flash, Blueprint, session
 from app.models import db, Article, User, Message, Comment, ArticleLike
-from sqlalchemy import func, desc, or_, not_
+from sqlalchemy import func, desc, or_, not_, distinct
 from app.utils import paginate_query
 
 blueprint = Blueprint("general", __name__, template_folder="templates")
@@ -45,7 +45,7 @@ def index():
     comment_likes_cnts = db.session. \
         query(Article.id.label("article_id"),
               func.count(Comment.comment).label("comments_count"),
-              func.count(ArticleLike.user_id).label("likes_count")). \
+              func.count(distinct(ArticleLike.user_id)).label("likes_count")). \
         outerjoin(Comment, Comment.article_id == Article.id). \
         outerjoin(ArticleLike, ArticleLike.article_id == Article.id). \
         group_by(Article.id).all()
@@ -57,7 +57,7 @@ def index():
         order_by(Article.date_posted.desc())\
 
     # pagination
-    articles, next_page, prev_page = paginate_query(articles, "general.index")
+    articles, next_page, prev_page, page = paginate_query(articles, "general.index")
 
     form = SearchForm()
     search_word = form.search_word.data
@@ -73,7 +73,7 @@ def index():
         "search_word": search_word,
     }
 
-    return render_template("index.html", **context)
+    return render_template("index.html", title="Home", **context)
 
 
 # SEARCH ROUTE
@@ -108,10 +108,8 @@ def search(word=None):
                    )). \
         order_by(desc(Article.date_posted))
 
-    print(search_results)
-
     # pagination
-    search_results, next_page, prev_page = paginate_query(search_results, "general.search")
+    search_results, next_page, prev_page, page = paginate_query(search_results, "general.search", search=word)
 
     context = {
         "form": form,
@@ -121,7 +119,7 @@ def search(word=None):
         "prev_page": prev_page,
     }
 
-    return render_template("search.html", **context)
+    return render_template("search.html", title="Search", **context)
 
 
 # VIEW AUTHOR PROFILE
@@ -129,21 +127,27 @@ def search(word=None):
 def author(id):
     user = User.query.get_or_404(id)
 
-    user_details = db.session.query(User, User.id, func.count(Article.id).label("articles_count")). \
+    user_details = db.session.\
+        query(User, func.count(Article.id).label("articles_count")). \
         outerjoin(Article, Article.author_id == User.id). \
-        filter(user.id == Article.author_id, Article.is_draft is False, Article.is_deleted is False,
-               User.is_active is True,
+        filter(id == Article.author_id,
+               Article.is_draft == False,
+               Article.is_deleted == False,
+               User.is_active == True,
                User.username != "admin").first()
 
-    user_articles = Article.query.\
-        filter(Article.author_id == user.id, Article.is_draft == False, Article.is_deleted is False).\
-        all()
+    user_articles = db.session.query(Article).\
+        filter(id == Article.author_id,
+               Article.is_draft == False,
+               Article.is_deleted == False).all()
 
     comment_likes_cnts = db.session. \
         query(Article.id.label("article_id"),
                func.count(Comment.comment).label("comments_count"),
-               func.count(ArticleLike.user_id).label("likes_count")). \
-        filter(Article.author_id == user.id, Article.is_draft is False, Article.is_deleted is False). \
+               func.count(distinct(ArticleLike.user_id)).label("likes_count")). \
+        filter(Article.author_id == user.id,
+               Article.is_draft == False,
+               Article.is_deleted == False). \
         outerjoin(Comment, Comment.article_id == Article.id).\
         outerjoin(ArticleLike, ArticleLike.article_id == Article.id).\
         group_by(Article.id).all()
@@ -155,17 +159,39 @@ def author(id):
         "comment_likes_cnts": comment_likes_cnts
     }
 
-    return render_template("author.html", **context)
+    return render_template("author.html", title=f"{user.firstname}'s Profile", **context)
+
+
+@blueprint.route("/authors", methods=["GET"])
+def authors():
+    authors_ = User.query.all()
+
+    authors_details = db.session.query(User.firstname, User.lastname, User.id, User.username, User.email, User.profile_pic, User.bio, func.count(Article.id).label("articles_count")).\
+        outerjoin(Article, Article.author_id == User.id).\
+        filter(is_(Article.is_draft, False),
+               is_(Article.is_deleted, False),
+               is_(User.is_active, True),
+               not_(User.username == "admin"),
+               not_("articles_count" == None)
+               ).\
+        group_by(User.id).\
+        order_by(desc("articles_count"))
+
+    authors_details, next_page, prev_page, page = paginate_query(authors_details, "general.authors")
+
+    context = {
+        "authors": authors_,
+        "authors_details": authors_details,
+        "next_page": next_page,
+        "prev_page": prev_page,
+    }
+    return render_template("authors.html", title="Authors List", **context)
 
 
 # About Page Routing (done)
 @blueprint.route("/about", methods=["GET"])
 def about():
-    authors = User.query.order_by(User.id).all
-    context = {
-        "authors": authors
-    }
-    return render_template("about.html", **context)
+    return render_template("about.html", title="About")
 
 
 # Contact Page Routing (done)
@@ -195,4 +221,4 @@ def message():
         "form": form,
     }
 
-    return render_template("contact.html", **context)
+    return render_template("contact.html", title="Contact", **context)

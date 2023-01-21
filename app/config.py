@@ -13,9 +13,6 @@ class Settings:
     database_uri = os.getenv("SQLALCHEMY_DATABASE_URI")
     track_modifications = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
 
-    access_token_expires = os.getenv("JWT_ACCESS_TOKEN_EXPIRES_MINUTES")
-    refresh_token_expires = os.getenv("JWT_REFRESH_TOKEN_EXPIRES_DAYS")
-
     # Upload File Settings
     upload_folder = os.getenv("UPLOAD_FOLDER")
     allowed_extensions = os.getenv("ALLOWED_EXTENSIONS")
@@ -29,6 +26,7 @@ class Settings:
     # Pagination Settings
     per_page: int = os.getenv("PER_PAGE")
 
+    # Login Session TimeOut
     login_session_minutes: int = os.getenv("PERMANENT_SESSION_LIFETIME")
 
 

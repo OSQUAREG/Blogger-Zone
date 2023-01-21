@@ -2,5 +2,5 @@
 **/__pycache__
 **/venv/
 bkup/
-# .env
+.env
 .idea/

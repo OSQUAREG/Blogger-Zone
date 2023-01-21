@@ -30,22 +30,34 @@ def upload_image():
         return redirect(url_for("user.update_user"))
 
 
-def paginate_query(query, url_for_func: str, per_page: int = int(sett.per_page)):
+def paginate_query(query, url_for_func: str, page_str: str = "page", per_page: int = int(sett.per_page), search=None, id=None):
     # per_page is from the settings in config file further defined from .env file
     # url_for is the url for the next_page and prev_page button.
 
-    # defining page and per_page param.
-    page = request.args.get("page", default=1, type=int)
-    per_page = int(sett.per_page)
+    # defining page
+    page = request.args.get(page_str, default=1, type=int)
 
     # paginating the query result
     paginated = query.paginate(per_page=per_page, page=page, error_out=False)
 
-    # defining next page and previous page routes
-    next_page = url_for(url_for_func, page=paginated.next_num) \
-        if paginated.has_next else None
-    prev_page = url_for(url_for_func, page=paginated.prev_num) \
-        if paginated.has_prev else None
-
-    return paginated, next_page, prev_page
+    if id is None:
+        if search is None:
+            # defining next page and previous page routes
+            next_page = url_for(url_for_func, page=paginated.next_num) \
+                if paginated.has_next else None
+            prev_page = url_for(url_for_func, page=paginated.prev_num) \
+                if paginated.has_prev else None
+            return paginated, next_page, prev_page, page
+        else:
+            next_page = url_for(url_for_func, word=search, page=paginated.next_num) \
+                if paginated.has_next else None
+            prev_page = url_for(url_for_func, word=search, page=paginated.prev_num) \
+                if paginated.has_prev else None
+            return paginated, next_page, prev_page, page
+    else:
+        next_page = url_for(url_for_func, id=id, page=paginated.next_num) \
+            if paginated.has_next else None
+        prev_page = url_for(url_for_func, id=id, page=paginated.prev_num) \
+            if paginated.has_prev else None
+        return paginated, next_page, prev_page, page
 

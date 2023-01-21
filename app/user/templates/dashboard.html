@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
 
 <div class="container">
@@ -124,15 +125,15 @@
                             </li>
                             {% for page in articles_pub.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
                             {% if page %}
-                            {% if page != articles_pub.page %}
-                            <li class="page-item">
-                                <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item">
-                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                            </li>
-                            {% endif %}
+                                {% if page != articles_pub.page %}
+                                <li class="page-item">
+                                    <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                                </li>
+                                {% endif %}
                             {% else %}
                             <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
                             {% endif %}
@@ -147,15 +148,20 @@
                         </div>
                         <center>
                             <small>
-                                <p>displaying {{ ((articles_pub.page - 1) * articles_pub.per_page) + 1 }}
+                                <p>
+                                    displaying {{ ((articles_pub.page - 1) * articles_pub.per_page) + 1 }}
                                     {% if articles_pub.total > articles_pub.per_page %}
-                                    - {{ articles_pub.page * articles_pub.per_page }} of {{ articles_pub.total }} Articles
+                                        {% if (articles_pub.page * articles_pub.per_page) > articles_pub.total %}
+                                        - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
+                                        {% else %}
+                                        - {{ articles_pub.page * articles_pub.per_page }} of {{ articles_pub.total }} Articles
+                                        {% endif %}
                                     {% else %}
-                                    {% if articles_pub.total > 1 %}
-                                    - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
-                                    {% else %}
-                                    Article
-                                    {% endif %}
+                                        {% if articles_pub.total > 1 %}
+                                        - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
+                                        {% else %}
+                                        Article
+                                        {% endif %}
                                     {% endif %}
                                 </p>
                             </small>
@@ -170,19 +176,17 @@
                         {% if not article.is_draft: %}
                         <div class="card border-primary mb-3">
                             <small class="card-header">
-                                <strong class="badge rounded border border-primary"
-                                    style="color: black;">Author:</strong> {{ article.author.firstname }}
-                                {{ article.author.lastname }} |
-                                <strong class="badge rounded border border-primary" style="color: black;">Date
-                                    Created:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
-                                <strong class="badge rounded border border-primary" style="color: black;">Last
-                                    Updated:</strong>
+                                <strong class="badge rounded border border-primary" style="color: black;">Author:</strong>
+                                {{ article.author.firstname }} {{ article.author.lastname }} |
+                                <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong> 
+                                {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
+                                <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
                                 {% if article.last_updated_on is none %}
-                                {{ None }} | {% else %}
+                                {{ None }} | 
+                                {% else %}
                                 {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }} |
                                 {% endif %}
-                                <strong class="badge rounded border border-primary"
-                                    style="color: black;">Status:</strong>
+                                <strong class="badge rounded border border-primary" style="color: black;">Status:</strong>
                                 {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
                             </small>
                             <div class="card-body">
@@ -197,21 +201,22 @@
                                         <!-- Articles Comments Count -->
                                         {% for comment_likes_cnt in comment_likes_cnts %}
                                         {% if comment_likes_cnt.article_id == article.id %}
-                                        {% if comment_likes_cnt.comments_count > 1 %}
-                                        {{ comment_likes_cnt.comments_count }} Comments |
-                                        {% else %}
-                                        {{ comment_likes_cnt.comments_count }} Comment |
-                                        {% endif %}
+                                            {% if comment_likes_cnt.comments_count > 1 %}
+                                            {{ comment_likes_cnt.comments_count }} Comments |
+                                            {% else %}
+                                            {{ comment_likes_cnt.comments_count }} Comment |
+                                            {% endif %}
                                         {% endif %}
                                         {% endfor %}
+
                                         <!-- Articles Likes Count -->
                                         {% for comment_likes_cnt in comment_likes_cnts %}
                                         {% if comment_likes_cnt.article_id == article.id %}
-                                        {% if comment_likes_cnt.likes_count > 1 %}
-                                        {{ comment_likes_cnt.likes_count }} Likes
-                                        {% else %}
-                                        {{ comment_likes_cnt.likes_count }} Like
-                                        {% endif %}
+                                            {% if comment_likes_cnt.likes_count > 1 %}
+                                            {{ comment_likes_cnt.likes_count }} Likes
+                                            {% else %}
+                                            {{ comment_likes_cnt.likes_count }} Like
+                                            {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </small>
@@ -243,15 +248,20 @@
                     <nav aria-label="Page navigation example">
                         <center>
                             <small>
-                                <p>displaying {{ ((articles_pub.page - 1) * articles_pub.per_page) + 1 }}
+                                <p>
+                                    displaying {{ ((articles_pub.page - 1) * articles_pub.per_page) + 1 }}
                                     {% if articles_pub.total > articles_pub.per_page %}
-                                    - {{ articles_pub.page * articles_pub.per_page }} of {{ articles_pub.total }} Articles
+                                        {% if (articles_pub.page * articles_pub.per_page) > articles_pub.total %}
+                                        - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
+                                        {% else %}
+                                        - {{ articles_pub.page * articles_pub.per_page }} of {{ articles_pub.total }} Articles
+                                        {% endif %}
                                     {% else %}
-                                    {% if articles_pub.total > 1 %}
-                                    - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
-                                    {% else %}
-                                    Article
-                                    {% endif %}
+                                        {% if articles_pub.total > 1 %}
+                                        - {{ articles_pub.total }} of {{ articles_pub.total }} Articles
+                                        {% else %}
+                                        Article
+                                        {% endif %}
                                     {% endif %}
                                 </p>
                             </small>
@@ -268,11 +278,11 @@
                                 {% if page %}
                                     {% if page != articles_pub.page %}
                                     <li class="page-item">
-                                    <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                                        <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
                                     </li>
                                     {% else %}
                                     <li class="page-item">
-                                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                                        <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
                                     </li>
                                     {% endif %}
                                 {% else %}
@@ -308,15 +318,15 @@
                             </li>
                             {% for page in articles_sav.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
                             {% if page %}
-                            {% if page != articles_sav.page %}
-                            <li class="page-item">
-                                <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item">
-                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                            </li>
-                            {% endif %}
+                                {% if page != articles_sav.page %}
+                                <li class="page-item">
+                                    <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                                </li>
+                                {% endif %}
                             {% else %}
                             <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
                             {% endif %}
@@ -333,13 +343,17 @@
                             <small>
                                 <p>displaying {{ ((articles_sav.page - 1) * articles_sav.per_page) + 1 }}
                                     {% if articles_sav.total > articles_sav.per_page %} 
-                                    - {{ articles_sav.page * articles_sav.per_page }} of {{ articles_sav.total }} Articles
+                                        {% if (articles_sav.page * articles_sav.per_page) > articles_sav.total %}
+                                        - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
+                                        {% else %}
+                                        - {{ articles_sav.page * articles_sav.per_page }} of {{ articles_sav.total }} Articles
+                                        {% endif %}
                                     {% else %}
-                                    {% if articles_sav.total > 1 %}
-                                    - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
-                                    {% else %}
-                                    Article
-                                    {% endif %}
+                                        {% if articles_sav.total > 1 %}
+                                        - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
+                                        {% else %}
+                                        Article
+                                        {% endif %}
                                     {% endif %}
                                 </p>
                             </small>
@@ -354,20 +368,17 @@
                         {% if article.is_draft: %}
                         <div class="card border-primary mb-3">
                             <small class="card-header">
-                                <strong class="badge rounded border border-primary"
-                                    style="color: black;">Author:</strong>
+                                <strong class="badge rounded border border-primary" style="color: black;">Author:</strong>
                                 {{ article.author.firstname }} {{ article.author.lastname }} |
-                                <strong class="badge rounded border border-primary" style="color: black;">Date
-                                    Created:</strong>
+                                <strong class="badge rounded border border-primary" style="color: black;">Date Created:</strong>
                                 {{ article.date_posted.strftime('%Y-%m-%d %I:%M %p') }} |
-                                <strong class="badge rounded border border-primary" style="color: black;">Last
-                                    Updated:</strong>
+                                <strong class="badge rounded border border-primary" style="color: black;">Last Updated:</strong>
                                 {% if article.last_updated_on is none %}
-                                {{ None }} | {% else %}
+                                {{ None }} | 
+                                {% else %}
                                 {{ article.last_updated_on.strftime('%Y-%m-%d %I:%M %p') }} |
                                 {% endif %}
-                                <strong class="badge rounded border border-primary"
-                                    style="color: black;">Status:</strong>
+                                <strong class="badge rounded border border-primary" style="color: black;">Status:</strong>
                                 {% if article.is_draft %} Saved as Draft {% else %} Published {% endif %}
                             </small>
                             <div class="card-body">
@@ -389,22 +400,22 @@
                                         <!-- Articles Comments Count -->
                                         {% for comment_likes_cnt in comment_likes_cnts %}
                                         {% if comment_likes_cnt.article_id == article.id %}
-                                        {% if comment_likes_cnt.comments_count > 1 %}
-                                        {{ comment_likes_cnt.comments_count }} Comments |
-                                        {% else %}
-                                        {{ comment_likes_cnt.comments_count }} Comment |
-                                        {% endif %}
+                                            {% if comment_likes_cnt.comments_count > 1 %}
+                                            {{ comment_likes_cnt.comments_count }} Comments |
+                                            {% else %}
+                                            {{ comment_likes_cnt.comments_count }} Comment |
+                                            {% endif %}
                                         {% endif %}
                                         {% endfor %}
 
                                         <!-- Articles Likes Count -->
                                         {% for comment_likes_cnt in comment_likes_cnts %}
                                         {% if comment_likes_cnt.article_id == article.id %}
-                                        {% if comment_likes_cnt.likes_count > 1 %}
-                                        {{ comment_likes_cnt.likes_count }} Likes
-                                        {% else %}
-                                        {{ comment_likes_cnt.likes_count }} Like
-                                        {% endif %}
+                                            {% if comment_likes_cnt.likes_count > 1 %}
+                                            {{ comment_likes_cnt.likes_count }} Likes
+                                            {% else %}
+                                            {{ comment_likes_cnt.likes_count }} Like
+                                            {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </small>
@@ -421,15 +432,20 @@
                     <nav aria-label="Page navigation example">
                         <center>
                             <small>
-                                <p>displaying {{ ((articles_sav.page - 1) * articles_sav.per_page) + 1 }}
+                                <p>
+                                    displaying {{ ((articles_sav.page - 1) * articles_sav.per_page) + 1 }}
                                     {% if articles_sav.total > articles_sav.per_page %}
-                                    - {{ articles_sav.page * articles_sav.per_page }} of {{ articles_sav.total }} Articles
+                                        {% if (articles_sav.page * articles_sav.per_page) > articles_sav.total %}
+                                        - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
+                                        {% else %}
+                                        - {{ articles_sav.page * articles_sav.per_page }} of {{ articles_sav.total }} Articles
+                                        {% endif %}
                                     {% else %}
-                                    {% if articles_sav.total > 1 %}
-                                    - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
-                                    {% else %}
-                                    Article
-                                    {% endif %}
+                                        {% if articles_sav.total > 1 %}
+                                        - {{ articles_sav.total }} of {{ articles_sav.total }} Articles
+                                        {% else %}
+                                        Article
+                                        {% endif %}
                                     {% endif %}
                                 </p>
                             </small>
@@ -444,15 +460,15 @@
                             </li>
                             {% for page in articles_sav.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
                             {% if page %}
-                            {% if page != articles_sav.page %}
-                            <li class="page-item">
-                                <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item">
-                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                            </li>
-                            {% endif %}
+                                {% if page != articles_sav.page %}
+                                <li class="page-item">
+                                    <a href="{{ url_for('user.dashboard', page=page) }}" class="page-link">{{ page }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                                </li>
+                                {% endif %}
                             {% else %}
                             <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
                             {% endif %}

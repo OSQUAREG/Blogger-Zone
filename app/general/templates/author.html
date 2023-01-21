@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
-
 
 <div class="container">
     {% for message in get_flashed_messages() %}
@@ -28,11 +28,11 @@
             <br>
 
             <div>
-                <h2>Author's Details</h2>
+                <h3>Author's Details</h3>
                 <hr>
                 <strong>Name:</strong> {{ user.firstname }} {{ user.lastname }} <br>
                 <strong>Email:</strong> {{ user.email }} <br>
-                <strong>Articles Published:</strong> 
+                <strong>Articles Published:</strong>
                 {% if user_details.articles_count < 1 %}
                 None <br>
                 {% else %}
@@ -45,10 +45,9 @@
             <div>
                 <br><br><br>
                 {% if user.profile_pic %}
-                <img src="{{ url_for('static', filename='images/' + user.profile_pic)}}"
+                <img src="{{ url_for('static', filename='images/profile_pic/' + user.profile_pic)}}"
                     class="float-right img-thumbnail border-primary" width="200">
                 {% else %}
-                <center><small>No Profile Picture</small></center>
                 <img src="{{ url_for('static', filename='images/default_profile_pic.png')}}"
                     class="float-right img-thumbnail border-primary" width="200">
                 {% endif %}
@@ -60,7 +59,7 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
     <div id="user-articles">
-        <h2> User's Articles </h2>
+        <h3> User's Articles </h3>
         <hr>
         <table class="table table-sm table-hover">
             <thead class="table-responsive bg-primary text-light">
@@ -73,7 +72,7 @@
             <tbody>
                 {% for user_article in user_articles %}
                 <tr>
-                    <td><a href="{{ url_for('article.view_article', id=user_article.id) }}">{{ user_article.title }}</a>
+                    <td><a href="{{ url_for('article.view', id=user_article.id, slug=user_article.slug) }}">{{ user_article.title }}</a>
                     </td>
                     <td>{{ user_article.date_posted.strftime('%Y-%m-%d %I:%M %p') }}</td>
                     <td> {% if user_article.last_updated_on is none %}

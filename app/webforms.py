@@ -90,6 +90,7 @@ class MessageForm(FlaskForm):
 # SEARCH FORM
 class SearchForm(FlaskForm):
     search_word = StringField(label="Search Here", validators=[InputRequired()])
+    search_user = StringField(label="Search Here", validators=[InputRequired()])
     submit = SubmitField(label="Search")
 
 

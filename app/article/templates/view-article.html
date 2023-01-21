@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
 
 <div class="container">
@@ -32,9 +33,9 @@
     <div class="container">
         <h2 style="font-weight:bold">{{ article.title }}</h2>
         <hr>
-        <small><strong>Author:</strong> {{ article.author.firstname }} {{ article.author.lastname }}
-            | <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M:%S %p') }}
-            | <strong>Status:</strong>
+        <small><strong>Author:</strong> <a href="{{ url_for('general.author', id=article.author.id) }}"><b>{{ article.author.firstname }} {{ article.author.lastname }}</b></a> |
+            <strong>Date:</strong> {{ article.date_posted.strftime('%Y-%m-%d %I:%M:%S %p') }} |
+            <strong>Status:</strong>
             {% if article.is_draft %}
             Saved as Draft
             {% else %}
@@ -77,39 +78,22 @@
     <section class="comment-section container row">
         <div class="col-8">
             <div class="card col-auto shadow border border-primary">
+                
                 <div class="card-body">
-    
-                    <!-- Article Comment Count -->
-                    <small class="float-end">
-                        {% if comment_count > 1 %}
-                        {{ comment_count }} Comments
-                        {% else %}
-                        {{ comment_count }} Comment
-                        {% endif %}
-                    </small>
+                    <div class="card-title">
+                        <h5 class="float-start"><b>Comments</b></h5>
+                        <!-- Article Comment Count -->
+                        <small class="float-end">
+                            {% if comment_count > 1 %}
+                            {{ comment_count }} Comments
+                            {% else %}
+                            {{ comment_count }} Comment
+                            {% endif %}
+                        </small>
+                    </div>
     
                     <!-- Article Comment Details -->
-                    <h5 class="card-title"><b>Comments</b></h5>
-
-                    <!-- Top Pagination Display -->
-                    {% if comments.total > 0 %}
-                    <center>
-                        <small>
-                            <p>
-                                displaying {{ ((comments.page - 1) * comments.per_page) + 1 }}
-                                {% if comments.total > comments.per_page %}
-                                - {{ comments.page * comments.per_page }} of {{ comments.total }} Comments
-                                {% else %}
-                                {% if comments.total > 1 %}
-                                - {{ comments.total }} of {{ comments.total }} Comments
-                                {% else %}
-                                Comment
-                                {% endif %}
-                                {% endif %}
-                            </p>
-                        </small>
-                    </center>
-                    {% endif %}
+                    {# <h5 class="card-title"><b>Comments</b></h5> #}
 
                     <hr>
                     {% if comments.total == 0 %}
@@ -117,40 +101,67 @@
                     <hr>
                     {% else %}
 
-                    <!-- Bottom Pagination Area -->
+                    <!-- Top Pagination Area -->
                     {% if comments.total > 0 %}
                     <nav aria-label="Page navigation example">
+
+                        <!-- Pagination Buttons -->
                         <div class="pagination justify-content-center mb-3">
                             <li class="page-item">
                                 {% if prev_page %}
-                                <a class="page-link fs-1" href="{{ prev_page }}">Newer</a>
+                                {# <a class="page-link fs-1" href="{{ prev_page }}">Newer</a> #}
+                                <a class="page-link" href="{{ url_for('article.view', page=comments.prev_num, id=article.id, slug=article.slug) if comments.has_prev else None }}">Newer</a>
                                 {% else %}
                                 <a class="page-link disabled" href="{{ prev_page }}">Newer</a>
                                 {% endif %}
                             </li>
                             {% for page in comments.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
                             {% if page %}
-                            {% if page != comments.page %}
-                            <li class="page-item">
-                                <a href="{{ url_for('article.view', id=article.id, page=page) }}" class="page-link">{{ page }}</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item">
-                                <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                            </li>
-                            {% endif %}
+                                {% if page != comments.page %}
+                                <li class="page-item">
+                                    <a href="{{ url_for('article.view', id=article.id, slug=article.slug,page=page) }}" class="page-link">{{ page }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                                </li>
+                                {% endif %}
                             {% else %}
                             <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
                             {% endif %}
                             {% endfor %}
                             <li class="page-item">
                                 {% if next_page %}
-                                <a class="page-link" href="{{ next_page }}">Older</a>
+                                {# <a class="page-link" href="{{ next_page }}">Older</a> #}
+                                <a class="page-link" href="{{ url_for('article.view', page=comments.next_num, id=article.id, slug=article.slug) if comments.has_next else None }}">Older</a>
                                 {% else %}
                                 <a class="page-link disabled" href="{{ next_page }}">Older</a>
                                 {% endif %}
                             </li>
                         </div>
+
+                        <!-- Pagination Info -->
+                        <center>
+                            <small>
+                                <p>
+                                    displaying {{ ((comments.page - 1) * comments.per_page) + 1 }}
+                                    {% if comments.total > comments.per_page %}
+                                        {% if (comments.page * comments.per_page) > comments.total %}
+                                        - {{ comments.total }} of {{ comments.total }} Comments
+                                        {% else %}
+                                        - {{ comments.page * comments.per_page }} of {{ comments.total }} Comments
+                                        {% endif %}
+                                    {% else %}
+                                        {% if comments.total > 1 %}
+                                        - {{ comments.total }} of {{ comments.total }} Comments
+                                        {% else %}
+                                        Comment
+                                        {% endif %}
+                                    {% endif %}
+                                </p>
+                            </small>
+                        </center>
+
                     </nav>
                     {% endif %}
 
@@ -165,15 +176,41 @@
                     {% endfor %}
                     {% endif %}
                 </div>
+                <hr>
 
                 <!-- Bottom Pagination Area -->
                 {% if comments.total > 0 %}
                 <nav aria-label="Page navigation example">
-                    <div class="container"><hr></div>                
+
+                    <!-- Pagination Info -->
+                    <center>
+                        <small>
+                            <p>
+                                displaying {{ ((comments.page - 1) * comments.per_page) + 1 }}
+                                {% if comments.total > comments.per_page %}
+                                    {% if (comments.page * comments.per_page) > comments.total %}
+                                    - {{ comments.total }} of {{ comments.total }} Comments
+                                    {% else %}
+                                    - {{ comments.page * comments.per_page }} of {{ comments.total }} Comments
+                                    {% endif %}
+                                {% else %}
+                                    {% if comments.total > 1 %}
+                                    - {{ comments.total }} of {{ comments.total }} Comments
+                                    {% else %}
+                                    Comment
+                                    {% endif %}
+                                {% endif %}
+                            </p>
+                        </small>
+                    </center>
+
+                    <!-- Pagination Buttons -->
                     <div class="pagination justify-content-center mb-3">
                         <li class="page-item">
                             {% if prev_page %}
-                            <a class="page-link fs-1" href="{{ prev_page }}">Newer</a>
+                            {# <a class="page-link fs-1" href="{{ prev_page }}">Newer</a> #}
+                            <a class="page-link"
+                                href="{{ url_for('article.view', page=comments.prev_num, id=article.id, slug=article.slug) if comments.has_prev else None }}">Newer</a>
                             {% else %}
                             <a class="page-link disabled" href="{{ prev_page }}">Newer</a>
                             {% endif %}
@@ -182,7 +219,8 @@
                         {% if page %}
                         {% if page != comments.page %}
                         <li class="page-item">
-                            <a href="{{ url_for('article.view', id=article.id, page=page) }}" class="page-link">{{ page }}</a>
+                            <a href="{{ url_for('article.view', id=article.id, slug=article.slug,page=page) }}"
+                                class="page-link">{{ page }}</a>
                         </li>
                         {% else %}
                         <li class="page-item">
@@ -195,7 +233,9 @@
                         {% endfor %}
                         <li class="page-item">
                             {% if next_page %}
-                            <a class="page-link" href="{{ next_page }}">Older</a>
+                            {# <a class="page-link" href="{{ next_page }}">Older</a> #}
+                            <a class="page-link"
+                                href="{{ url_for('article.view', page=comments.next_num, id=article.id, slug=article.slug) if comments.has_next else None }}">Older</a>
                             {% else %}
                             <a class="page-link disabled" href="{{ next_page }}">Older</a>
                             {% endif %}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
 
 <div class="container">
@@ -43,9 +44,12 @@
             <p>You searched for <b>"{{ search_word }}"</b>. See results below:</p>
         </div>
         <hr>
+
         <!-- Top Pagination Area -->
         {% if search_results.total > 0 %}
         <nav aria-label="Page navigation example">
+
+            <!-- Pagination Buttons -->
             <div class="pagination justify-content-center mb-3">
                 <li class="page-item">
                     {% if prev_page %}
@@ -56,15 +60,15 @@
                 </li>
                 {% for page in search_results.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
                 {% if page %}
-                {% if page != search_results.page %}
-                <li class="page-item">
-                    <a href="{{ url_for('general.search', page=page, word=search_word) }}" class="page-link">{{ page }}</a>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                </li>
-                {% endif %}
+                    {% if page != search_results.page %}
+                    <li class="page-item">
+                        <a href="{{ url_for('general.search', page=page, word=search_word) }}" class="page-link">{{ page }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                    </li>
+                    {% endif %}
                 {% else %}
                 <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
                 {% endif %}
@@ -77,21 +81,28 @@
                     {% endif %}
                 </li>
             </div>
+
+            <!-- Pagination Info -->
             <center>
                 <small>
                     <p>displaying {{ ((search_results.page - 1) * search_results.per_page) + 1 }}
                         {% if search_results.total > search_results.per_page %}
-                        - {{ search_results.page * search_results.per_page }} of {{ search_results.total }} Search Results
+                            {% if (search_results.page * search_results.per_page) > search_results.total %}
+                            - {{ search_results.total }} of {{ search_results.total }} Search Results
+                            {% else %}
+                            - {{ search_results.page * search_results.per_page }} of {{ search_results.total }} Search Results
+                            {% endif %}
                         {% else %}
-                        {% if search_results.total > 1 %}
-                        - {{ search_results.total }} of {{ search_results.total }} Search Results
-                        {% else %}
-                        Search Result
-                        {% endif %}
+                            {% if search_results.total > 1 %}
+                            - {{ search_results.total }} of {{ search_results.total }} Search Results
+                            {% else %}
+                            Search Result
+                            {% endif %}
                         {% endif %}
                     </p>
                 </small>
             </center>
+
         </nav>
         {% endif %}
 
@@ -130,21 +141,29 @@
         <!-- Bottom Pagination Area -->
         {% if search_results.total > 0 %}
         <nav aria-label="Page navigation example">
+
+            <!-- Pagination Info -->
             <center>
                 <small>
                     <p>displaying {{ ((search_results.page - 1) * search_results.per_page) + 1 }}
                         {% if search_results.total > search_results.per_page %}
-                        - {{ search_results.page * search_results.per_page }} of {{ search_results.total }} Search Results
+                            {% if (search_results.page * search_results.per_page) > search_results.total %}
+                            - {{ search_results.total }} of {{ search_results.total }} Search Results
+                            {% else %}
+                            - {{ search_results.page * search_results.per_page }} of {{ search_results.total }} Search Results
+                            {% endif %}
                         {% else %}
-                        {% if search_results.total > 1 %}
-                        - {{ search_results.total }} of {{ search_results.total }} Search Results
-                        {% else %}
-                        Search Result
-                        {% endif %}
+                            {% if search_results.total > 1 %}
+                            - {{ search_results.total }} of {{ search_results.total }} Search Results
+                            {% else %}
+                            Search Result
+                            {% endif %}
                         {% endif %}
                     </p>
                 </small>
             </center>
+
+            <!-- Pagination Buttons -->
             <div class="pagination justify-content-center">
                 <li class="page-item">
                     {% if prev_page %}
@@ -155,15 +174,15 @@
                 </li>
                 {% for page in search_results.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
                 {% if page %}
-                {% if page != search_results.page %}
-                <li class="page-item">
-                    <a href="{{ url_for('general.search', page=page, word=search_word) }}" class="page-link">{{ page }}</a>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
-                </li>
-                {% endif %}
+                    {% if page != search_results.page %}
+                    <li class="page-item">
+                        <a href="{{ url_for('general.search', page=page, word=search_word) }}" class="page-link">{{ page }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <strong class="page-link disabled bg-primary text-light">{{ page }}</strong>
+                    </li>
+                    {% endif %}
                 {% else %}
                 <li class="page-item"><span class="ellipsis page-link disabled">...</span></li>
                 {% endif %}
@@ -176,6 +195,7 @@
                     {% endif %}
                 </li>
             </div>
+            
         </nav>
         {% endif %}
     </div>

@@ -26,9 +26,9 @@ def add(id):
                 return redirect(url_for("article.view_article", id=article.id))
             except:
                 flash("Whoops! Something went wrong! Please try again...!")
-                return redirect(url_for("article.view_article", id=article.id))
+                return redirect(url_for("article.view", id=article.id))
         else:
-            return redirect(url_for("article.view_article", id=article.id))
+            return redirect(url_for("article.view", id=article.id))
 
 
 # REMOVE LIKE FROM ARTICLE
@@ -43,7 +43,7 @@ def delete(id):
             try:
                 db.session.delete(like_exist)
                 db.session.commit()
-                return redirect(url_for("article.view_article", id=article.id))
+                return redirect(url_for("article.view", id=article.id))
             except:
                 flash("Whoops! Something went wrong! Please try again...!")
-                return redirect(url_for("article.view_article", id=article.id))
+                return redirect(url_for("article.view", id=article.id))

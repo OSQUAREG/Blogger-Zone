@@ -22,10 +22,10 @@ def add(id):
         db.session.commit()
 
         flash(f"Comment added successfully")
-        return redirect(url_for("article.view_article", id=article.id))
+        return redirect(url_for("article.view", id=article.id))
     else:
         flash(f"Whoops! Something went wrong. Please try again...")
-        return redirect(url_for("article.view_article", id=article.id))
+        return redirect(url_for("article.view", id=article.id))
 
 
 # DELETE COMMENT ROUTE
@@ -40,9 +40,9 @@ def delete(id):
             db.session.delete(comment)
             db.session.commit()
 
-            return redirect(url_for("article.view_article", id=comment.article_id))
+            return redirect(url_for("article.view", id=comment.article_id))
         except:
             flash("Whoops! Something went wrong! Please try again...!")
-            return redirect(url_for("article.view_article", id=comment.article_id))
+            return redirect(url_for("article.view", id=comment.article_id))
     else:
-        return redirect(url_for("article.view_article", id=comment.article_id))
+        return redirect(url_for("article.view", id=comment.article_id))

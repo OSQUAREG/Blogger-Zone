@@ -55,12 +55,13 @@ def create():
         "form": form,
     }
 
-    return render_template("create-article.html", **context)
+    return render_template("create-article.html", title="Create Article", **context)
 
 
 # VIEW SINGLE ARTICLE ROUTE
+@blueprint.route("/view/<int:id>/", methods=["GET", "POST"])
 @blueprint.route("/view/<int:id>/<slug>", methods=["GET", "POST"])
-def view(id: int, slug):
+def view(id: int, slug=None):
     form = CommentForm()
     article = Article.query.get_or_404(id)
 
@@ -70,7 +71,7 @@ def view(id: int, slug):
         .order_by(Comment.date_added.desc())
 
     # pagination
-    comments, next_page, prev_page = paginate_query(comments, "article.view")
+    comments, next_page, prev_page, page = paginate_query(comments, "article.view", id=id)
 
     # To count the comments for current article.
     comment_cnts = db.session.query(func.count(Comment.comment).label("count"))\
@@ -100,8 +101,8 @@ def view(id: int, slug):
         "prev_page": prev_page,
         }
 
-    if not article.is_draft:
-        return render_template("view-article.html", **context)
+    if not article.is_draft or current_user.is_admin:
+        return render_template("view-article.html", title=f"{article.title} - View Article", **context)
     else:
         return redirect(url_for("user.dashboard"))
 
@@ -150,7 +151,7 @@ def edit(id):
         "article": article,
     }
 
-    return render_template("edit-article.html", **context)
+    return render_template("edit-article.html", title=f"{article.title} - Edit Article", **context)
 
 
 # # DELETE ARTICLE ROUTE
